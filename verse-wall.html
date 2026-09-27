@@ -32,7 +32,7 @@ body{font-family:'Tenor Sans',sans-serif;color:#f5e3b8;min-height:100vh;}
  padding:14px 16px 10px;
  border-bottom:.5px solid rgba(201,147,58,.14);}
 .wv-title{font-family:'Cinzel',serif;font-size:16px;font-weight:600;letter-spacing:4px;color:#f5e3b8;}
-.wv-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12px;color:rgba(255,255,255,.38);margin-top:3px;}
+.wv-sub{font-family:'Cormorant Garamond',serif;font-size:12px;color:rgba(255,255,255,.38);margin-top:3px;}
 .wv-still{flex-shrink:0;padding:8px 15px;border-radius:20px;border:.5px solid rgba(255,255,255,.14);
  background:rgba(255,255,255,.03);color:rgba(255,255,255,.55);font-size:10px;font-family:'Tenor Sans',sans-serif;
  letter-spacing:.6px;cursor:pointer;}
@@ -63,7 +63,7 @@ body{font-family:'Tenor Sans',sans-serif;color:#f5e3b8;min-height:100vh;}
  background:rgba(255,255,255,.03);color:rgba(255,255,255,.75);font-family:'Tenor Sans',sans-serif;font-size:12px;
  letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;text-align:left;}
 .wv-dr-modes button.on{border-color:#c9933a;background:rgba(201,147,58,.14);color:#e8c876;}
-.wv-dr-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:rgba(255,255,255,.45);margin:4px 0 6px;}
+.wv-dr-sub{font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.5);margin:4px 0 6px;}
 .wv-dr-label{font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;
  color:rgba(201,147,58,.7);margin:14px 0 8px;}
 .wv-dr-books{display:flex;flex-wrap:wrap;gap:6px;}
@@ -94,12 +94,12 @@ body{font-family:'Tenor Sans',sans-serif;color:#f5e3b8;min-height:100vh;}
 .wv-topline{position:absolute;top:0;left:0;right:0;height:2px;opacity:.7;pointer-events:none;}
 .wv-body{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;overflow:hidden;}
 .wv-quote{font-family:'Cormorant Garamond',serif;line-height:1;margin-bottom:5px;opacity:.55;}
-.wv-text{font-family:'Cormorant Garamond',serif;font-style:italic;line-height:1.55;text-shadow:0 2px 12px rgba(0,0,0,.5);}
+.wv-text{font-family:'Cormorant Garamond',serif;line-height:1.55;text-shadow:0 2px 12px rgba(0,0,0,.5);}
 .wv-ref{margin-top:8px;font-size:9px;letter-spacing:1.6px;text-transform:uppercase;font-family:'Tenor Sans',sans-serif;}
 .wv-overlay{position:fixed;inset:0;z-index:50;display:none;flex-direction:column;justify-content:center;padding:40px 30px;}
 .wv-overlay.open{display:flex;}
 .wv-ov-quote{font-family:'Cormorant Garamond',serif;font-size:64px;line-height:1;opacity:.4;margin-bottom:10px;}
-.wv-ov-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:24px;line-height:1.7;text-shadow:0 2px 14px rgba(0,0,0,.55);}
+.wv-ov-text{font-family:'Cormorant Garamond',serif;font-size:24px;line-height:1.7;text-shadow:0 2px 14px rgba(0,0,0,.55);}
 .wv-ov-ref{margin-top:22px;font-size:12px;letter-spacing:2.5px;text-transform:uppercase;font-family:'Tenor Sans',sans-serif;}
 .wv-ov-close{position:absolute;top:18px;right:18px;width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,.4);
  border:.5px solid rgba(255,255,255,.16);color:rgba(255,255,255,.72);font-size:16px;cursor:pointer;}
@@ -143,10 +143,9 @@ body{font-family:'Tenor Sans',sans-serif;color:#f5e3b8;min-height:100vh;}
   </div>
   <div class="wv-dr-sub">Subjects</div>
   <div class="wv-dr-books" id="drSubj"></div>
-  <div class="wv-dr-sub">Custom &mdash; choose books</div>
-  <div class="wv-dr-label">Old Testament</div>
+  <div class="wv-dr-sub">Old Testament</div>
   <div class="wv-dr-books" id="drOt"></div>
-  <div class="wv-dr-label">New Testament</div>
+  <div class="wv-dr-sub">New Testament</div>
   <div class="wv-dr-books" id="drNt"></div>
 </aside>
 <div class="wv-overlay" id="overlay">
@@ -226,8 +225,12 @@ function applyFilter(redeal){
   sub.textContent = parts.length ? parts.join(" \u00B7 ") + " \u00B7 " + allow.length + " verses"
     : "Every verse keeps its own time. Some ascend, some descend.";
   document.querySelectorAll("#drModes button").forEach(b => b.classList.toggle("on", b.dataset.mode === filter.mode));
-  document.querySelectorAll(".wv-chip[data-book]").forEach(ch => ch.classList.toggle("on", filter.mode === "custom" && filter.books.indexOf(ch.dataset.book) > -1));
-  document.querySelectorAll(".wv-chip[data-subj]").forEach(ch => ch.classList.toggle("on", filter.subjects.indexOf(ch.dataset.subj) > -1));
+  document.querySelectorAll("#drOt .wv-chip, #drNt .wv-chip").forEach(ch => {
+    ch.classList.toggle("on", filter.mode === "custom" && ch._cat.books.every(b => filter.books.indexOf(b) > -1));
+  });
+  document.querySelectorAll("#drSubj .wv-chip").forEach(ch => {
+    ch.classList.toggle("on", ch._cat.subjs.every(s => filter.subjects.indexOf(s) > -1));
+  });
   if(redeal === false) return;
   if(view === "river"){ buildRiver(); startRiver(); return; }
   usedVerses.clear();
@@ -238,39 +241,75 @@ function applyFilter(redeal){
     c.timer = setTimeout(() => tick(c), Math.random() * 3000);
   });
 }
+const OT_CATS = [
+ {name:"Torah", books:["Genesis","Exodus","Leviticus","Numbers","Deuteronomy"]},
+ {name:"History", books:["Joshua","Judges","Ruth","1 Samuel","2 Samuel","1 Kings","2 Kings","1 Chronicles","2 Chronicles","Ezra","Nehemiah","Esther"]},
+ {name:"Poetry", books:["Job","Psalm","Proverbs","Ecclesiastes","Song of Solomon"]},
+ {name:"Major Prophets", books:["Isaiah","Jeremiah","Lamentations","Ezekiel","Daniel"]},
+ {name:"Minor Prophets", books:["Hosea","Joel","Amos","Obadiah","Jonah","Micah","Nahum","Habakkuk","Zephaniah","Haggai","Zechariah","Malachi"]}
+];
+const NT_CATS = [
+ {name:"Gospels", books:["Matthew","Mark","Luke","John"]},
+ {name:"History", books:["Acts"]},
+ {name:"Paul's Letters", books:["Romans","1 Corinthians","2 Corinthians","Galatians","Ephesians","Philippians","Colossians","1 Thessalonians","2 Thessalonians","1 Timothy","2 Timothy","Titus","Philemon"]},
+ {name:"General Letters", books:["Hebrews","James","1 Peter","2 Peter","1 John","2 John","3 John","Jude"]},
+ {name:"Prophecy", books:["Revelation"]}
+];
+const SUBJ_CATS = [
+ {name:"The Heart", subjs:["love","family","forgiveness","joy","gratitude"]},
+ {name:"The Walk", subjs:["faith","hope","promises","patience","purpose","work"]},
+ {name:"The Battle", subjs:["strength","courage","victory","protection","deliverance"]},
+ {name:"The Secret Place", subjs:["prayer","wisdom","guidance","rest","peace"]},
+ {name:"The Provision", subjs:["grace","favor","healing","prosperity","provision","restoration"]}
+];
 function renderDrawer(){
-  const counts = {};
-  WALL_VERSES.forEach(v => { counts[v.book] = (counts[v.book] || 0) + 1; });
+  const counts = {}, scounts = {};
+  WALL_VERSES.forEach(v => {
+    counts[v.book] = (counts[v.book] || 0) + 1;
+    v.subjs.forEach(s => { scounts[s] = (scounts[s] || 0) + 1; });
+  });
+  const catCount = cat => cat.books.reduce((a, b) => a + (counts[b] || 0), 0);
   const ot = document.getElementById("drOt"), nt = document.getElementById("drNt");
-  BOOK_ORDER.forEach(book => {
+  ot.innerHTML = ""; nt.innerHTML = "";
+  OT_CATS.forEach(cat => {
     const b = document.createElement("button");
-    b.className = "wv-chip"; b.dataset.book = book;
-    b.innerHTML = book + " <span>" + (counts[book] || 0) + "</span>";
-    b.addEventListener("click", () => toggleBook(book));
-    (NT_BOOKS.has(book) ? nt : ot).appendChild(b);
+    b.className = "wv-chip"; b._cat = cat;
+    b.innerHTML = cat.name + " <span>" + catCount(cat) + "</span>";
+    b.addEventListener("click", () => toggleBookCat(cat));
+    ot.appendChild(b);
+  });
+  NT_CATS.forEach(cat => {
+    const b = document.createElement("button");
+    b.className = "wv-chip"; b._cat = cat;
+    b.innerHTML = cat.name + " <span>" + catCount(cat) + "</span>";
+    b.addEventListener("click", () => toggleBookCat(cat));
+    nt.appendChild(b);
   });
   document.querySelectorAll("#drModes button").forEach(b => b.addEventListener("click", () => {
     filter = { mode: b.dataset.mode, books: [], subjects: [] };
     applyFilter(true); closeDrawer();
   }));
-  const sc = {}, sh = document.getElementById("drSubj");
-  WALL_VERSES.forEach(v => v.subjs.forEach(s => { sc[s] = (sc[s] || 0) + 1; }));
-  Object.keys(sc).sort((a, b) => sc[b] - sc[a]).forEach(s => {
+  const sh = document.getElementById("drSubj");
+  sh.innerHTML = "";
+  SUBJ_CATS.forEach(cat => {
+    const n = cat.subjs.reduce((a, s) => a + (scounts[s] || 0), 0);
     const c = document.createElement("button");
-    c.className = "wv-chip"; c.dataset.subj = s;
-    c.innerHTML = s.charAt(0).toUpperCase() + s.slice(1) + " <span>" + sc[s] + "</span>";
-    c.addEventListener("click", () => toggleSubject(s));
+    c.className = "wv-chip"; c._cat = cat;
+    c.innerHTML = cat.name + " <span>" + n + "</span>";
+    c.addEventListener("click", () => toggleSubjectCat(cat));
     sh.appendChild(c);
   });
 }
-function toggleSubject(s){
-  const i = filter.subjects.indexOf(s);
-  if(i > -1) filter.subjects.splice(i, 1); else filter.subjects.push(s);
+function toggleSubjectCat(cat){
+  const all = cat.subjs.every(s => filter.subjects.indexOf(s) > -1);
+  if(all) filter.subjects = filter.subjects.filter(s => cat.subjs.indexOf(s) === -1);
+  else cat.subjs.forEach(s => { if(filter.subjects.indexOf(s) === -1) filter.subjects.push(s); });
   applyFilter(true);
 }
-function toggleBook(book){
-  const i = filter.books.indexOf(book);
-  if(i > -1) filter.books.splice(i, 1); else filter.books.push(book);
+function toggleBookCat(cat){
+  const all = cat.books.every(b => filter.books.indexOf(b) > -1);
+  if(all) filter.books = filter.books.filter(b => cat.books.indexOf(b) === -1);
+  else cat.books.forEach(b => { if(filter.books.indexOf(b) === -1) filter.books.push(b); });
   filter.mode = filter.books.length ? "custom" : "all";
   applyFilter(true);
 }
@@ -318,19 +357,16 @@ const SIZE = {
  l:{fs:13.5,pad:"16px 15px", q:32}
 };
 const TYPESTYLES = [
- {font:"'Cormorant Garamond',serif", style:"italic", weight:400, ls:"0",      bump:0},
+ {font:"'Cormorant Garamond',serif", style:"normal", weight:400, ls:"0",      bump:0},
  {font:"'Cinzel',serif",            style:"normal", weight:400, ls:"0.5px",  bump:0},
- {font:"'Playfair Display',serif",  style:"italic", weight:500, ls:"0",      bump:0},
- {font:"'Lora',serif",              style:"italic", weight:400, ls:"0",      bump:0},
+ {font:"'Playfair Display',serif",  style:"normal", weight:500, ls:"0",      bump:0},
+ {font:"'Lora',serif",              style:"normal", weight:400, ls:"0",      bump:0},
  {font:"'Josefin Sans',sans-serif", style:"normal", weight:300, ls:"0.8px",  bump:1},
  {font:"'Tenor Sans',sans-serif",   style:"normal", weight:400, ls:"0.3px",  bump:1},
- {font:"'Great Vibes',cursive",     style:"normal", weight:400, ls:"0",      bump:5, script:true},
  {font:"'Libre Baskerville',serif", style:"normal", weight:400, ls:"0",      bump:0}
 ];
 function pickType(size){
-  let t = pick(TYPESTYLES), guard = 0;
-  while(t.script && (size === "s" || size === "w") && guard++ < 20) t = pick(TYPESTYLES);
-  return t;
+  return pick(TYPESTYLES);
 }
 const DIR = { up:{enter:"wv-rise-in",exit:"wv-rise-out"}, down:{enter:"wv-fall-in",exit:"wv-fall-out"} };
 let flowDir = "mix";
