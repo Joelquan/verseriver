@@ -73,7 +73,7 @@ body{font-family:'Tenor Sans',sans-serif;color:#f5e3b8;min-height:100vh;}
 .wv-chip.on{border-color:#c9933a;background:rgba(201,147,58,.16);color:#e8c876;}
 .wv-chip.on span{opacity:.8;}
 .wv-mosaic{position:relative;display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:124px;gap:8px;
- grid-auto-flow:dense;padding:12px;max-width:640px;margin:0 auto;}
+ grid-auto-flow:dense;padding:12px;margin:0 auto;}
 .sz-s{grid-column:span 1;grid-row:span 1;}
 .sz-t{grid-column:span 1;grid-row:span 2;}
 .sz-w{grid-column:span 2;grid-row:span 1;}
@@ -342,6 +342,19 @@ const cards = [];
 let heldCard = null;
 const mosaic = document.getElementById("mosaic");
 
+// Columns grow with the screen so cards stay phone-sized on tablet and PC
+let COLS = 3;
+function layoutMosaic(){
+  const w = mosaic.clientWidth || window.innerWidth;
+  const n = Math.max(3, Math.min(8, Math.round(w / 150)));
+  if(n !== COLS){
+    COLS = n;
+    mosaic.style.gridTemplateColumns = "repeat(" + COLS + ",1fr)";
+    const we = document.getElementById("wellEnd");
+    if(we) we.style.gridColumn = "span " + COLS;
+  }
+}
+
 const usedVerses = new Set();
 function fitText(c){
   const body = c.bodyEl;
@@ -376,9 +389,9 @@ function setVerse(c){
   fitText(c);
 }
 function cardDir(c){
-  const colW = mosaic.clientWidth / 3;
+  const colW = mosaic.clientWidth / COLS;
   let col = Math.round(c.cardEl.offsetLeft / colW);
-  if(col < 0) col = 0; if(col > 2) col = 2;
+  if(col < 0) col = 0; if(col > COLS - 1) col = COLS - 1;
   return col % 2 === 0 ? "up" : "down";
 }
 function play(c, kind){
@@ -569,7 +582,7 @@ SLOTS.forEach(makeCard);
 // Endless well: keep feeding cards as the reader scrolls down
 const wellEnd = document.createElement("div");
 wellEnd.id = "wellEnd";
-wellEnd.style.cssText = "grid-column:span 3;min-height:4px;pointer-events:none;";
+wellEnd.style.cssText = "grid-column:span " + COLS + ";min-height:4px;pointer-events:none;";
 mosaic.appendChild(wellEnd);
 function nextSize(){
   let dist = 0;
@@ -601,6 +614,12 @@ const wellWatcher = new IntersectionObserver(es => {
   es.forEach(e => { if(e.isIntersecting) feedWell(); });
 }, { rootMargin: "900px 0px" });
 wellWatcher.observe(wellEnd);
+layoutMosaic();
+let rszT = null;
+window.addEventListener("resize", () => {
+  clearTimeout(rszT);
+  rszT = setTimeout(layoutMosaic, 200);
+});
 
 /* ---------- River view: verses stream like a current around fixed rock tiles ---------- */
 let view = "mosaic";
