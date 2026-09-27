@@ -1,0 +1,48 @@
+=== run6 started 2026-09-20 13:42:11 UTC ===
+chapters with empty refs: 631 | cached refs: 653 | unparseable: 0
+RATE LIMITED (429) at Acts 2 - checkpoint saved; exiting so the run can be resumed later.
+=== run6-restart1 2026-09-20 13:46:59 UTC (after 429 backoff) ===
+chapters with empty refs: 631 | cached refs: 1072 | unparseable: 0
+RATE LIMITED (429) at Acts 15 - checkpoint saved; exiting so the run can be resumed later.
+=== run6-restart2 2026-09-20 13:52:39 UTC (hardened: 6s delay, 3min 429 backoff) ===
+chapters with empty refs: 631 | cached refs: 1326 | unparseable: 0
+progress: chapters fetched this run: 50 | cached refs: 2172
+progress: chapters fetched this run: 100 | cached refs: 3041
+progress: chapters fetched this run: 150 | cached refs: 3846
+progress: chapters fetched this run: 200 | cached refs: 4647
+progress: chapters fetched this run: 250 | cached refs: 5514
+progress: chapters fetched this run: 300 | cached refs: 6390
+progress: chapters fetched this run: 350 | cached refs: 7346
+progress: chapters fetched this run: 400 | cached refs: 8250
+progress: chapters fetched this run: 450 | cached refs: 9077
+progress: chapters fetched this run: 500 | cached refs: 9714
+progress: chapters fetched this run: 550 | cached refs: 10504
+chapters fetched this run: 557 | total cached refs: 10611 | 429 hits this run: 0
+missing: 78
+  MISS 2 John 1:6 (verse not in chapter response)
+  MISS 2 John 1:2 (verse not in chapter response)
+  MISS 2 John 1:3 (verse not in chapter response)
+  MISS 2 John 1:4 (verse not in chapter response)
+  MISS 2 John 1:5 (verse not in chapter response)
+  MISS 2 John 1:7 (verse not in chapter response)
+  MISS 2 John 1:8 (verse not in chapter response)
+  MISS 2 John 1:9 (verse not in chapter response)
+  MISS 2 John 1:10 (verse not in chapter response)
+  MISS 2 John 1:11 (verse not in chapter response)
+  MISS 2 John 1:12 (verse not in chapter response)
+  MISS 2 John 1:13 (verse not in chapter response)
+  MISS 3 John 1:4 (verse not in chapter response)
+  MISS 3 John 1:10 (verse not in chapter response)
+  MISS 3 John 1:2 (verse not in chapter response)
+  MISS 3 John 1:3 (verse not in chapter response)
+  MISS 3 John 1:5 (verse not in chapter response)
+  MISS 3 John 1:6 (verse not in chapter response)
+  MISS 3 John 1:7 (verse not in chapter response)
+  MISS 3 John 1:8 (verse not in chapter response)
+  MISS 3 John 1:9 (verse not in chapter response)
+  MISS 3 John 1:11 (verse not in chapter response)
+  MISS 3 John 1:12 (verse not in chapter response)
+  MISS 3 John 1:13 (verse not in chapter response)
+  MISS Jude 1:24 (verse not in chapter response)
+verses written: 12754 | still empty: 97
+DASH in verse: js/data-bible-exodus-07.js Yet now, if thou wilt forgive their sin—; and if not, blot m

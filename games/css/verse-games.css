@@ -1,0 +1,1131 @@
+/* Verse Games — Study Desk theme
+   Matches verseriver.com: a cream study desk, not arcade trivia.
+   KJV serif for Scripture, calm sans for UI, sage and gold accents. */
+
+:root{
+  --cream:#f8f4e9;
+  --cream-deep:#f1ead9;
+  --paper:#fffdf7;
+  --ink:#2c2620;
+  --ink-soft:#5c5347;
+  --ink-faint:#8a7f6d;
+  --sage:#6f7d5c;
+  --sage-deep:#57634a;
+  --gold:#a97e2f;
+  --gold-soft:#c9a45c;
+  --line:#e3d9c2;
+  --lamp-lit:#e8a83e;
+  --lamp-out:#cfc4a8;
+  --good:#5f7a4e;
+  --wrong:#a2543f;
+  --serif:Georgia,'Iowan Old Style','Times New Roman',serif;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --radius:14px;
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  font-family:var(--sans);
+  color:var(--ink);
+  background:
+    radial-gradient(1200px 500px at 50% -80px, #fffdf6 0%, var(--cream) 60%, var(--cream-deep) 100%);
+  min-height:100vh;
+}
+.vg-wrap{max-width:640px;margin:0 auto;padding:20px 18px 64px}
+
+/* ---------- header ---------- */
+.vg-house{
+  text-align:center;
+  padding:26px 10px 6px;
+}
+.vg-house .vg-kicker{
+  display:inline-block;
+  font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--ink-faint);
+  border-bottom:1px solid var(--line);
+  padding-bottom:8px;margin-bottom:14px;
+}
+.vg-house h1{
+  font-family:var(--serif);font-weight:600;
+  font-size:30px;line-height:1.25;margin:0 0 8px;
+}
+.vg-house h1 em{color:var(--sage-deep);font-style:italic}
+.vg-house .vg-sub{
+  font-family:var(--serif);font-style:italic;
+  color:var(--ink-soft);font-size:15px;line-height:1.6;margin:0 0 14px;
+}
+.vg-badges{
+  display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 6px;
+}
+.vg-badge{
+  font-size:11px;letter-spacing:.4px;color:var(--sage-deep);
+  background:#eef0e4;border:1px solid #d9ddc6;
+  padding:6px 11px;border-radius:999px;
+}
+
+/* ---------- shelves ---------- */
+.vg-shelf{margin-top:30px}
+.vg-shelf-head{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
+.vg-shelf-head h2{
+  font-family:var(--serif);font-size:20px;font-weight:600;margin:0;
+}
+.vg-shelf-head .vg-count{font-size:12px;color:var(--ink-faint)}
+.vg-shelf-note{font-size:13px;color:var(--ink-faint);font-style:italic;margin:0 0 12px}
+
+/* ---------- cards ---------- */
+.vg-card{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:18px;margin:12px 0;
+  box-shadow:0 2px 10px rgba(90,70,40,.06);
+}
+.vg-game{
+  display:block;width:100%;text-align:left;cursor:pointer;
+  font-family:inherit;color:inherit;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+button.vg-game:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(90,70,40,.10)}
+button.vg-game:disabled{cursor:default;opacity:.85}
+button.vg-game:disabled:hover{transform:none;box-shadow:0 2px 10px rgba(90,70,40,.06)}
+.vg-game .vg-gkicker{
+  font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;
+  color:var(--gold);margin-bottom:6px;
+}
+.vg-game h3{font-family:var(--serif);font-size:19px;margin:0 0 6px;font-weight:600}
+.vg-game .vg-gdesc{font-size:13.5px;color:var(--ink-soft);line-height:1.6;margin:0 0 10px}
+.vg-game .vg-gmeta{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+}
+.vg-game .vg-gtag{font-size:12px;color:var(--ink-faint)}
+.vg-play{
+  font-size:13px;color:var(--sage-deep);font-weight:600;white-space:nowrap;
+}
+.vg-soon{
+  font-size:12px;color:var(--ink-faint);font-style:italic;white-space:nowrap;
+}
+
+/* ---------- today's portion ---------- */
+.vg-portion{
+  background:linear-gradient(180deg,#fbf7ec,#f5eeda);
+  border:1px solid var(--gold-soft);
+}
+.vg-portion h3{font-family:var(--serif);font-size:18px;margin:0 0 4px}
+.vg-portion p{font-size:13.5px;color:var(--ink-soft);line-height:1.6;margin:0 0 12px}
+
+/* ---------- buttons ---------- */
+.vg-btn{
+  display:inline-block;
+  background:var(--sage);color:#fff;border:none;cursor:pointer;
+  font-family:inherit;font-size:15px;font-weight:600;
+  padding:13px 26px;border-radius:12px;
+  transition:background .15s ease, transform .1s ease;
+}
+.vg-btn:hover{background:var(--sage-deep)}
+.vg-btn:active{transform:scale(.98)}
+.vg-btn.ghost{
+  background:transparent;color:var(--sage-deep);
+  border:1px solid var(--sage);
+}
+.vg-btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+
+/* ---------- difficulty ---------- */
+.vg-diff{display:grid;gap:10px;margin:14px 0}
+.vg-dopt{
+  display:block;width:100%;text-align:left;cursor:pointer;
+  background:var(--paper);border:2px solid var(--line);border-radius:12px;
+  padding:14px 16px;font-family:inherit;color:inherit;
+  transition:border-color .15s ease, background .15s ease;
+}
+.vg-dopt.sel{border-color:var(--sage);background:#f4f6ec}
+.vg-dopt b{font-family:var(--serif);font-size:16px;display:block;margin-bottom:2px}
+.vg-dopt span{font-size:12.5px;color:var(--ink-soft);line-height:1.5;display:block}
+.vg-ddesc{font-size:13px;color:var(--ink-soft);font-style:italic;margin:6px 0 0;min-height:20px}
+
+/* ---------- player ---------- */
+.vg-topbar{display:flex;justify-content:space-between;align-items:center;margin:4px 0 12px}
+.vg-back{background:none;border:none;color:var(--ink-faint);font-size:13px;cursor:pointer;font-family:inherit;padding:6px 0}
+.vg-back:hover{color:var(--ink)}
+.vg-stage{font-size:12px;color:var(--ink-faint);letter-spacing:.6px}
+.vg-lamps{display:flex;gap:8px;justify-content:center;margin:10px 0 4px}
+.vg-lamp{width:30px;height:30px}
+.vg-lamp .flame{fill:var(--lamp-lit)}
+.vg-lamp.out .flame{fill:var(--lamp-out)}
+.vg-lamp .body{fill:none;stroke:currentColor;stroke-width:1.6}
+.vg-lamp{color:var(--gold)}
+.vg-lamp.out{color:#b3a684}
+.vg-q{
+  font-family:var(--serif);font-size:19px;line-height:1.55;margin:6px 0 16px;
+}
+.vg-opts{display:grid;gap:10px}
+.vg-opt{
+  text-align:left;cursor:pointer;font-family:inherit;font-size:15px;
+  background:var(--paper);border:1.5px solid var(--line);border-radius:12px;
+  padding:14px 16px;color:var(--ink);line-height:1.5;
+  transition:border-color .15s ease, background .15s ease;
+}
+.vg-opt:hover:not(:disabled){border-color:var(--sage);background:#fbfaf3}
+.vg-opt:disabled{cursor:default}
+.vg-opt.right{border-color:var(--good);background:#eef3e6}
+.vg-opt.wrong{border-color:var(--wrong);background:#f7ece7}
+.vg-hintbtn{
+  margin-top:14px;background:none;border:1px dashed var(--gold-soft);
+  color:var(--gold);border-radius:10px;padding:9px 16px;font-size:13px;
+  cursor:pointer;font-family:inherit;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.vg-hintbtn:disabled{opacity:.5;cursor:default}
+.vg-hintshow{
+  margin-top:14px;font-size:13px;color:var(--ink-soft);
+  background:#faf6e8;border:1px solid var(--line);border-radius:10px;padding:10px 14px;
+}
+.vg-hintshow b{color:var(--ink)}
+
+/* ---------- feedback ---------- */
+.vg-verdict{font-family:var(--serif);font-size:22px;margin:4px 0 10px}
+.vg-verdict.good{color:var(--good)}
+.vg-verdict.rest{color:var(--ink-soft)}
+.vg-verdict.gentle{color:var(--wrong)}
+.vg-verse{
+  font-family:var(--serif);font-size:17px;line-height:1.7;font-style:italic;
+  color:var(--ink);margin:0 0 8px;
+}
+.vg-ref{font-size:12.5px;letter-spacing:1px;color:var(--gold);text-transform:uppercase;margin-bottom:10px}
+.vg-insight{font-size:14px;color:var(--ink-soft);line-height:1.7;margin:0}
+
+/* ---------- progress ---------- */
+.vg-progress{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin:12px 0 4px}
+.vg-progress i{display:block;height:100%;background:var(--sage);border-radius:99px;transition:width .3s ease}
+
+/* ---------- journey map ---------- */
+.vg-jstage{
+  display:flex;gap:14px;align-items:flex-start;
+  background:var(--paper);border:1px solid var(--line);border-radius:12px;
+  padding:14px 16px;margin:10px 0;width:100%;
+  font-family:inherit;color:inherit;text-align:left;cursor:pointer;
+}
+.vg-jstage:disabled{cursor:default;opacity:.75}
+.vg-jdot{
+  flex:0 0 34px;width:34px;height:34px;border-radius:50%;
+  border:2px solid var(--sage);color:var(--sage-deep);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:15px;background:#f4f6ec;
+}
+.vg-jstage.locked .vg-jdot{border-color:var(--line);color:var(--ink-faint);background:var(--cream)}
+.vg-jstage.done .vg-jdot{background:var(--sage);color:#fff;border-color:var(--sage)}
+.vg-jstage h4{font-family:var(--serif);font-size:16px;margin:0 0 4px}
+.vg-jstage p{font-size:13px;color:var(--ink-soft);line-height:1.55;margin:0}
+.vg-jstage .vg-jtag{font-size:11.5px;color:var(--ink-faint);margin-top:6px;display:block}
+.vg-story{font-family:var(--serif);font-size:16px;line-height:1.75;color:var(--ink)}
+.vg-story p{margin:0 0 14px}
+
+/* ---------- complete / rest ---------- */
+.vg-center{text-align:center;padding:18px 6px}
+.vg-center .vg-big{font-family:var(--serif);font-size:26px;margin:8px 0 10px}
+.vg-center p{font-size:14px;color:var(--ink-soft);line-height:1.7;margin:0 0 8px}
+.vg-seal{
+  width:64px;height:64px;margin:6px auto;border-radius:50%;
+  border:2px solid var(--gold);color:var(--gold);
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* ---------- footer ---------- */
+.vg-foot{
+  text-align:center;margin-top:44px;padding-top:18px;
+  border-top:1px solid var(--line);
+  font-size:12px;color:var(--ink-faint);line-height:1.8;
+}
+.vg-foot .vg-kjv{letter-spacing:2px;text-transform:uppercase;font-size:10.5px}
+
+/* ---------- animation ---------- */
+@keyframes vgin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.vg-anim{animation:vgin .35s ease}
+@keyframes vglow{0%,100%{opacity:1}50%{opacity:.55}}
+.vg-lamp.lost .flame{animation:vglow 1.2s ease infinite}
+
+@media (max-width:420px){
+  .vg-house h1{font-size:26px}
+  .vg-q{font-size:17.5px}
+}
+
+/* ---------- card and stage art ---------- */
+.vg-card-art{
+  margin:-18px -18px 14px;
+  border-radius:var(--radius) var(--radius) 0 0;
+  overflow:hidden;aspect-ratio:16/8;
+  background:var(--cream-deep);
+}
+.vg-card-art img{display:block;width:100%;height:100%;object-fit:cover}
+.vg-stage-art{
+  border-radius:var(--radius);overflow:hidden;margin:12px 0;
+  box-shadow:0 2px 10px rgba(90,70,40,.08);
+  aspect-ratio:16/8;background:var(--cream-deep);
+}
+.vg-stage-art img{display:block;width:100%;height:100%;object-fit:cover}
+/* Plagues card: painted dusk over the Nile (no generated art available) */
+.vg-art-plagues{
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'%3E%3Cdefs%3E%3ClinearGradient id='s' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23301f10'/%3E%3Cstop offset='.55' stop-color='%237a5228'/%3E%3Cstop offset='1' stop-color='%23c99a4a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='200' fill='url(%23s)'/%3E%3Cellipse cx='120' cy='58' rx='95' ry='18' fill='%23200f08' opacity='.5'/%3E%3Cellipse cx='235' cy='38' rx='70' ry='14' fill='%23200f08' opacity='.4'/%3E%3Ccircle cx='312' cy='48' r='26' fill='%23f5d98a' opacity='.92'/%3E%3Ccircle cx='301' cy='41' r='23' fill='%234a3016' opacity='.6'/%3E%3Cpath d='M0 150 Q 50 138 100 150 T 200 150 T 300 150 T 400 150' stroke='%23a33c22' stroke-width='7' fill='none' opacity='.8'/%3E%3Cpath d='M0 168 Q 50 158 100 168 T 200 168 T 300 168 T 400 168' stroke='%23c9502e' stroke-width='5' fill='none' opacity='.7'/%3E%3Cpath d='M0 184 Q 50 176 100 184 T 200 184 T 300 184 T 400 184' stroke='%23e08a4a' stroke-width='4' fill='none' opacity='.6'/%3E%3C/svg%3E")
+    center/cover no-repeat;
+}
+
+/* ---------- The Whole Counsel ---------- */
+.vg-chapgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:14px 0}
+.vg-chap{display:flex;flex-direction:column;gap:3px;align-items:flex-start;text-align:left;
+  background:var(--paper);border:1px solid var(--line);border-radius:12px;
+  padding:10px 12px;cursor:pointer;font:inherit;color:inherit}
+.vg-chap-n{font-family:var(--serif);font-size:20px;font-weight:700;color:var(--sage-deep)}
+.vg-chap-t{font-size:13px;font-weight:600}
+.vg-chap-s{font-size:11px;color:var(--ink-faint)}
+.vg-chap.done{border-color:var(--gold-soft);background:linear-gradient(180deg,#fffdf4,var(--paper))}
+.vg-chap.done .vg-chap-n{color:var(--gold)}
+.vg-break{max-width:480px;margin:18px auto}
+.vg-break p{font-family:var(--serif);font-size:18px;line-height:1.65;margin:0}
+/* stage-break screen: vertically centered, with a lamp medallion for imagery */
+.vg-break-screen{min-height:70vh;display:flex;align-items:center;justify-content:center;padding:16px 0}
+.vg-break-screen .vg-center{width:100%}
+.vg-break-icon{
+  width:78px;height:78px;margin:0 auto 12px;border-radius:50%;
+  background:radial-gradient(circle at 50% 32%, #fff9e9 0%, #f8eed6 58%, #f0e0ba 100%);
+  border:2px solid var(--gold-soft);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 20px rgba(169,126,47,.28);
+}
+.vg-break-icon svg{width:42px;height:42px;color:var(--gold)}
+.vg-break-icon .flame{fill:var(--lamp-lit)}
+.vg-break-icon .body{fill:none;stroke:currentColor;stroke-width:1.6}
+.vg-lb-row{display:flex;justify-content:space-between;gap:10px;align-items:baseline;
+  padding:9px 2px;border-bottom:1px solid var(--line);font-size:13px}
+.vg-lb-c{font-weight:600}
+.vg-lb-s{color:var(--ink-faint);text-align:right;font-size:12px}
+.vg-bookhead .vg-card-art{margin:-6px -6px 12px;max-height:230px;overflow:hidden;border-radius:12px}
+.vg-bookhead .vg-card-art img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* Genesis theme: night sky over the garden (signature identity per book) */
+.vg-theme-genesis .vg-bookhead{
+  background:
+    radial-gradient(2px 2px at 12% 22%, #fff8 60%, transparent 61%),
+    radial-gradient(1.6px 1.6px at 32% 12%, #fff7 60%, transparent 61%),
+    radial-gradient(2px 2px at 58% 26%, #fff8 60%, transparent 61%),
+    radial-gradient(1.5px 1.5px at 76% 14%, #fff6 60%, transparent 61%),
+    radial-gradient(2px 2px at 88% 30%, #fff8 60%, transparent 61%),
+    radial-gradient(1.6px 1.6px at 45% 32%, #fff7 60%, transparent 61%),
+    linear-gradient(180deg,#0e1430 0%,#1a2450 55%,#2c3a6e 78%,#4a5a8f 100%);
+  border-color:#2a3560;
+}
+.vg-theme-genesis .vg-bookhead .vg-gkicker{color:#d8c58a}
+.vg-theme-genesis .vg-bookhead h3{color:#fdf8ea}
+.vg-theme-genesis .vg-bookhead .vg-gdesc{color:#cfd6ee}
+
+/* Exodus theme: desert sand and Red Sea (provisional; library-wide Verse River restyle later) */
+.vg-theme-exodus .vg-bookhead{
+  background:
+    linear-gradient(180deg,#0f3a44 0%,#155263 45%,#1d6e7e 70%,#c98f3d 100%);
+  border-color:#0e3540;
+}
+.vg-theme-exodus .vg-bookhead .vg-gkicker{color:#f0d49a}
+.vg-theme-exodus .vg-bookhead h3{color:#fdf8ea}
+.vg-theme-exodus .vg-bookhead .vg-gdesc{color:#dcebee}
+
+/* Leviticus theme: bronze altar and ember on dark stone (provisional; library-wide Verse River restyle later) */
+.vg-theme-leviticus .vg-bookhead{
+  background:
+    radial-gradient(3px 3px at 20% 70%, #ffb35c99 60%, transparent 61%),
+    radial-gradient(2px 2px at 55% 78%, #ff8a3d88 60%, transparent 61%),
+    radial-gradient(2.5px 2.5px at 78% 66%, #ffb35c77 60%, transparent 61%),
+    linear-gradient(180deg,#1c1410 0%,#2b1d14 45%,#4a2c17 75%,#8a4d1f 100%);
+  border-color:#3a2415;
+}
+.vg-theme-leviticus .vg-bookhead .vg-gkicker{color:#e8b06a}
+.vg-theme-leviticus .vg-bookhead h3{color:#fdf3e3}
+.vg-theme-leviticus .vg-bookhead .vg-gdesc{color:#d9c4a8}
+
+/* Numbers theme: wilderness camp, terracotta clay and cloud-white (provisional; library-wide Verse River restyle later) */
+.vg-theme-numbers .vg-bookhead{
+  background:
+    radial-gradient(70px 20px at 50% 28%, #f7ecd855 60%, transparent 61%),
+    radial-gradient(46px 14px at 30% 36%, #f7ecd844 60%, transparent 61%),
+    linear-gradient(180deg,#3a2a21 0%,#6b4230 45%,#a35a35 75%,#c97a45 100%);
+  border-color:#4a2f22;
+}
+.vg-theme-numbers .vg-bookhead .vg-gkicker{color:#f0d9b5}
+.vg-theme-numbers .vg-bookhead h3{color:#fdf6ea}
+.vg-theme-numbers .vg-bookhead .vg-gdesc{color:#e8d3b8}
+
+/* Deuteronomy theme: covenant slate and parchment gold, the Law renewed on Nebo (provisional; library-wide Verse River restyle later) */
+.vg-theme-deuteronomy .vg-bookhead{
+  background:
+    radial-gradient(3px 3px at 30% 62%, #e8c96a88 60%, transparent 61%),
+    radial-gradient(2px 2px at 64% 70%, #e8c96a66 60%, transparent 61%),
+    radial-gradient(2.5px 2.5px at 80% 58%, #e8c96a55 60%, transparent 61%),
+    linear-gradient(180deg,#202a38 0%,#2e3b4e 45%,#46566b 75%,#6b7f95 100%);
+  border-color:#1c2430;
+}
+.vg-theme-deuteronomy .vg-bookhead .vg-gkicker{color:#e8c96a}
+.vg-theme-deuteronomy .vg-bookhead h3{color:#f7f2e4}
+.vg-theme-deuteronomy .vg-bookhead .vg-gdesc{color:#c3cedd}
+
+/* Joshua theme: conquest crimson and sunrise gold, the walls of Jericho (provisional; library-wide Verse River restyle later) */
+.vg-theme-joshua .vg-bookhead{
+  background:
+    radial-gradient(3px 3px at 30% 62%, #f0c07a88 60%, transparent 61%),
+    radial-gradient(2px 2px at 64% 70%, #f0c07a66 60%, transparent 61%),
+    linear-gradient(180deg,#2a1210 0%,#5a2418 45%,#8a3a20 75%,#c96a2a 100%);
+  border-color:#20100c;
+}
+.vg-theme-joshua .vg-bookhead .vg-gkicker{color:#f0c07a}
+.vg-theme-joshua .vg-bookhead h3{color:#fdf3e3}
+.vg-theme-joshua .vg-bookhead .vg-gdesc{color:#e8c4a8}
+
+/* Judges theme: torchlight in the dark valley, charcoal and amber (provisional; library-wide Verse River restyle later) */
+.vg-theme-judges .vg-bookhead{
+  background:
+    radial-gradient(4px 4px at 50% 55%, #ffb35c99 60%, transparent 61%),
+    radial-gradient(2px 2px at 38% 66%, #ffb35c66 60%, transparent 61%),
+    radial-gradient(2.5px 2.5px at 66% 62%, #ffb35c55 60%, transparent 61%),
+    linear-gradient(180deg,#14100c 0%,#2a1f14 45%,#4a3418 75%,#6a4a20 100%);
+  border-color:#100c08;
+}
+.vg-theme-judges .vg-bookhead .vg-gkicker{color:#e8b06a}
+.vg-theme-judges .vg-bookhead h3{color:#fdf3e3}
+.vg-theme-judges .vg-bookhead .vg-gdesc{color:#d9c4a0}
+
+/* Ruth theme: harvest wheat gold and field green, gleanings at dusk (provisional; library-wide Verse River restyle later) */
+.vg-theme-ruth .vg-bookhead{
+  background:
+    radial-gradient(3px 3px at 30% 60%, #f5d97a88 60%, transparent 61%),
+    radial-gradient(2px 2px at 64% 68%, #f5d97a66 60%, transparent 61%),
+    linear-gradient(180deg,#1f2a14 0%,#3a4a1e 45%,#6a6a2a 75%,#a88a35 100%);
+  border-color:#18200e;
+}
+.vg-theme-ruth .vg-bookhead .vg-gkicker{color:#f5d97a}
+.vg-theme-ruth .vg-bookhead h3{color:#fdf8e8}
+.vg-theme-ruth .vg-bookhead .vg-gdesc{color:#dde4b8}
+
+/* 1 Samuel theme: anointing violet and oil-amber, the kingdom's birth (provisional; library-wide Verse River restyle later) */
+.vg-theme-1samuel .vg-bookhead{
+  background:
+    radial-gradient(3px 3px at 30% 62%, #e8b04a88 60%, transparent 61%),
+    radial-gradient(2px 2px at 64% 70%, #e8b04a66 60%, transparent 61%),
+    linear-gradient(180deg,#1a1430 0%,#2e2450 45%,#4a3a6e 75%,#6a5288 100%);
+  border-color:#141024;
+}
+.vg-theme-1samuel .vg-bookhead .vg-gkicker{color:#e8c06a}
+.vg-theme-1samuel .vg-bookhead h3{color:#f5eefc}
+.vg-theme-1samuel .vg-bookhead .vg-gdesc{color:#c8bce0}
+
+/* 2 Samuel theme: cedar twilight blue, the throne in Jerusalem (provisional; library-wide Verse River restyle later) */
+.vg-theme-2samuel .vg-bookhead{
+  background:
+    radial-gradient(3px 3px at 30% 62%, #9ab8d888 60%, transparent 61%),
+    radial-gradient(2px 2px at 64% 70%, #9ab8d866 60%, transparent 61%),
+    linear-gradient(180deg,#101a30 0%,#1e3a5a 45%,#33587e 75%,#4a7396 100%);
+  border-color:#0c1424;
+}
+.vg-theme-2samuel .vg-bookhead .vg-gkicker{color:#a8c4de}
+.vg-theme-2samuel .vg-bookhead h3{color:#eef4fa}
+.vg-theme-2samuel .vg-bookhead .vg-gdesc{color:#bccfe2}
+
+/* 1 Kings theme: temple cedar and gold, the house of the LORD (provisional; library-wide Verse River restyle later) */
+.vg-theme-1kings .vg-bookhead{
+  background:
+    radial-gradient(3px 3px at 30% 62%, #f0c86a88 60%, transparent 61%),
+    radial-gradient(2px 2px at 64% 70%, #f0c86a66 60%, transparent 61%),
+    linear-gradient(180deg,#241a10 0%,#4a3018 45%,#6e4520 75%,#96602a 100%);
+  border-color:#1c140c;
+}
+.vg-theme-1kings .vg-bookhead .vg-gkicker{color:#f0c86a}
+.vg-theme-1kings .vg-bookhead h3{color:#fdf4e2}
+.vg-theme-1kings .vg-bookhead .vg-gdesc{color:#e0c8a0}
+
+/* 2 Kings theme: ash grey and whirlwind ember, the road to exile (provisional; library-wide Verse River restyle later) */
+.vg-theme-2kings .vg-bookhead{
+  background:
+    radial-gradient(3px 3px at 30% 62%, #d86a4a88 60%, transparent 61%),
+    radial-gradient(2px 2px at 64% 70%, #d86a4a66 60%, transparent 61%),
+    linear-gradient(180deg,#1a1a1e 0%,#33333a 45%,#4e4a44 75%,#6a5a4c 100%);
+  border-color:#141416;
+}
+.vg-theme-2kings .vg-bookhead .vg-gkicker{color:#e09a7a}
+.vg-theme-2kings .vg-bookhead h3{color:#f5efe8}
+.vg-theme-2kings .vg-bookhead .vg-gdesc{color:#cfc4b8}
+
+/* 1 Chronicles theme: scroll parchment on deep bronze, the record kept (provisional; library-wide Verse River restyle later) */
+.vg-theme-1chronicles .vg-bookhead{
+  background:
+    radial-gradient(3px 3px at 30% 62%, #e8cf9a88 60%, transparent 61%),
+    radial-gradient(2px 2px at 64% 70%, #e8cf9a66 60%, transparent 61%),
+    linear-gradient(180deg,#201812 0%,#3a2a1a 45%,#5a4226 75%,#7a5c34 100%);
+  border-color:#181008;
+}
+.vg-theme-1chronicles .vg-bookhead .vg-gkicker{color:#e8cf9a}
+.vg-theme-1chronicles .vg-bookhead h3{color:#faf3e2}
+.vg-theme-1chronicles .vg-bookhead .vg-gdesc{color:#d8c8a8}
+
+/* 2 Chronicles theme: midnight indigo and glory gold, the cloud filling the temple (provisional; library-wide Verse River restyle later) */
+.vg-theme-2chronicles .vg-bookhead{
+  background:
+    radial-gradient(90px 34px at 50% 30%, #f5c76a77 60%, transparent 61%),
+    radial-gradient(50px 20px at 35% 40%, #f5c76a55 60%, transparent 61%),
+    linear-gradient(180deg,#10122e 0%,#23244e 45%,#3d3a6e 75%,#6e5a8f 100%);
+  border-color:#141631;
+}
+.vg-theme-2chronicles .vg-bookhead .vg-gkicker{color:#f0cf8a}
+.vg-theme-2chronicles .vg-bookhead h3{color:#fdf6e8}
+.vg-theme-2chronicles .vg-bookhead .vg-gdesc{color:#d5cdea}
+
+/* Ezra theme: dawn mist grey and returning amber, the road home (provisional; library-wide Verse River restyle later) */
+.vg-theme-ezra .vg-bookhead{
+  background:
+    radial-gradient(70px 18px at 50% 62%, #d8c8b088 60%, transparent 61%),
+    linear-gradient(180deg,#3a3f4a 0%,#5a5f6a 45%,#8a7a6a 75%,#c9a06a 100%);
+  border-color:#2a2e36;
+}
+.vg-theme-ezra .vg-bookhead .vg-gkicker{color:#ecd9a8}
+.vg-theme-ezra .vg-bookhead h3{color:#faf5ea}
+.vg-theme-ezra .vg-bookhead .vg-gdesc{color:#dcd4c4}
+
+/* Nehemiah theme: dusk blue and lantern gold, the wall rising (provisional; library-wide Verse River restyle later) */
+.vg-theme-nehemiah .vg-bookhead{
+  background:
+    radial-gradient(3px 3px at 25% 55%, #ffcf7a99 60%, transparent 61%),
+    radial-gradient(2.5px 2.5px at 60% 62%, #ffcf7a88 60%, transparent 61%),
+    radial-gradient(2px 2px at 80% 50%, #ffcf7a77 60%, transparent 61%),
+    linear-gradient(180deg,#141c34 0%,#26304f 45%,#4a5270 75%,#7a7a8f 100%);
+  border-color:#121828;
+}
+.vg-theme-nehemiah .vg-bookhead .vg-gkicker{color:#f5d28a}
+.vg-theme-nehemiah .vg-bookhead h3{color:#fbf4e4}
+.vg-theme-nehemiah .vg-bookhead .vg-gdesc{color:#ccd2e4}
+
+/* Esther theme: royal purple and candlelight gold, the palace lattice (provisional; library-wide Verse River restyle later) */
+.vg-theme-esther .vg-bookhead{
+  background:
+    radial-gradient(60px 60px at 50% 45%, #f5c76a55 60%, transparent 61%),
+    linear-gradient(180deg,#1c1230 0%,#35245a 45%,#5a3a7a 75%,#8a5a8f 100%);
+  border-color:#160e28;
+}
+.vg-theme-esther .vg-bookhead .vg-gkicker{color:#e8bd7a}
+.vg-theme-esther .vg-bookhead h3{color:#fdf0e2}
+.vg-theme-esther .vg-bookhead .vg-gdesc{color:#d8c4e0}
+
+/* Job theme: storm slate and breaking dawn, the whirlwind (provisional; library-wide Verse River restyle later) */
+.vg-theme-job .vg-bookhead{
+  background:
+    radial-gradient(80px 24px at 50% 30%, #f0e8d866 60%, transparent 61%),
+    linear-gradient(180deg,#14161c 0%,#2c3038 45%,#4e5258 75%,#7a7a72 100%);
+  border-color:#101216;
+}
+.vg-theme-job .vg-bookhead .vg-gkicker{color:#d8cfb8}
+.vg-theme-job .vg-bookhead h3{color:#f5f2ea}
+.vg-theme-job .vg-bookhead .vg-gdesc{color:#c8c4b8}
+.vg-theme-genesis .vg-bookhead .vg-gtag{color:#e9d9a8}
+.vg-theme-genesis .vg-chap-n{color:#8a6a1f}
+.vg-theme-genesis .vg-topbar .vg-stage{color:#8a6a1f}
+
+/* ---------- Whole Counsel books 19-66 themes (2026-09-20) ---------- */
+/* Psalms theme: harp strings and songs of ascent (provisional; library-wide Verse River restyle later) */
+.vg-theme-psalms .vg-bookhead{
+  background:
+    radial-gradient(2px 2px at 20% 18%, #ffe9a866 60%, transparent 61%),
+    radial-gradient(1.6px 1.6px at 70% 30%, #ffe9a855 60%, transparent 61%),
+    linear-gradient(180deg,#2a1c10 0%,#4a2f16 50%,#7a5222 80%,#c99b3f 100%);
+  border-color:#3a2410;
+}
+.vg-theme-psalms .vg-bookhead .vg-gkicker{color:#f0d49a}
+.vg-theme-psalms .vg-bookhead h3{color:#fdf3dd}
+.vg-theme-psalms .vg-bookhead .vg-gdesc{color:#e8d3a8}
+
+/* Proverbs theme: olive wood and honey (provisional; library-wide Verse River restyle later) */
+.vg-theme-proverbs .vg-bookhead{
+  background:
+    radial-gradient(60px 20px at 50% 75%, #d9a44155 60%, transparent 61%),
+    linear-gradient(180deg,#3a2c14 0%,#5c441c 50%,#8a6a2a 80%,#b98f3e 100%);
+  border-color:#2e2210;
+}
+.vg-theme-proverbs .vg-bookhead .vg-gkicker{color:#f2d894}
+.vg-theme-proverbs .vg-bookhead h3{color:#fdf6e0}
+.vg-theme-proverbs .vg-bookhead .vg-gdesc{color:#dcc389}
+
+/* Ecclesiastes theme: smoke and the sun (provisional; library-wide Verse River restyle later) */
+.vg-theme-ecclesiastes .vg-bookhead{
+  background:
+    radial-gradient(90px 30px at 50% 20%, #cfc8bb44 60%, transparent 61%),
+    linear-gradient(180deg,#3c3a34 0%,#6b6558 50%,#a39a83 80%,#d6cba8 100%);
+  border-color:#2c2a24;
+}
+.vg-theme-ecclesiastes .vg-bookhead .vg-gkicker{color:#efe3c2}
+.vg-theme-ecclesiastes .vg-bookhead h3{color:#fbf7ea}
+.vg-theme-ecclesiastes .vg-bookhead .vg-gdesc{color:#cfc4a6}
+
+/* Song of Solomon theme: the garden in bloom (provisional; library-wide Verse River restyle later) */
+.vg-theme-songofsolomon .vg-bookhead{
+  background:
+    radial-gradient(3px 3px at 30% 40%, #f2a7bb77 60%, transparent 61%),
+    radial-gradient(2.4px 2.4px at 65% 55%, #f2a7bb66 60%, transparent 61%),
+    linear-gradient(180deg,#1e3320 0%,#2f5230 50%,#4d7a44 80%,#7fae62 100%);
+  border-color:#16261a;
+}
+.vg-theme-songofsolomon .vg-bookhead .vg-gkicker{color:#f4c9d4}
+.vg-theme-songofsolomon .vg-bookhead h3{color:#fdf0f3}
+.vg-theme-songofsolomon .vg-bookhead .vg-gdesc{color:#cfe3c2}
+
+/* Isaiah theme: the seraph and the coal (provisional; library-wide Verse River restyle later) */
+.vg-theme-isaiah .vg-bookhead{
+  background:
+    radial-gradient(3px 3px at 50% 60%, #ff6a4d88 60%, transparent 61%),
+    linear-gradient(180deg,#3d0f1e 0%,#6e1a2e 50%,#a83a3a 80%,#d98a4a 100%);
+  border-color:#2c0a14;
+}
+.vg-theme-isaiah .vg-bookhead .vg-gkicker{color:#f6c87e}
+.vg-theme-isaiah .vg-bookhead h3{color:#fdf0e2}
+.vg-theme-isaiah .vg-bookhead .vg-gdesc{color:#e8b48a}
+
+/* Jeremiah theme: tears and the potter's wheel (provisional; library-wide Verse River restyle later) */
+.vg-theme-jeremiah .vg-bookhead{
+  background:
+    linear-gradient(180deg,#232c38 0%,#3d4a5c 50%,#6b7a8c 80%,#a8b4c0 100%);
+  border-color:#1a212c;
+}
+.vg-theme-jeremiah .vg-bookhead .vg-gkicker{color:#bcd0e8}
+.vg-theme-jeremiah .vg-bookhead h3{color:#f0f4f8}
+.vg-theme-jeremiah .vg-bookhead .vg-gdesc{color:#c3cfdd}
+
+/* Lamentations theme: ruins and a faint ember (provisional; library-wide Verse River restyle later) */
+.vg-theme-lamentations .vg-bookhead{
+  background:
+    radial-gradient(40px 16px at 50% 80%, #c97a3d55 60%, transparent 61%),
+    linear-gradient(180deg,#26262c 0%,#3f3f46 50%,#5c5c64 80%,#7e7e86 100%);
+  border-color:#1c1c20;
+}
+.vg-theme-lamentations .vg-bookhead .vg-gkicker{color:#e8c48a}
+.vg-theme-lamentations .vg-bookhead h3{color:#f2f0ea}
+.vg-theme-lamentations .vg-bookhead .vg-gdesc{color:#c9c2b2}
+
+/* Ezekiel theme: the river and the wheels (provisional; library-wide Verse River restyle later) */
+.vg-theme-ezekiel .vg-bookhead{
+  background:
+    radial-gradient(50px 50px at 70% 30%, #b08a3e55 60%, transparent 61%),
+    linear-gradient(180deg,#0e2e33 0%,#175057 50%,#2a7a80 80%,#5aa8a0 100%);
+  border-color:#0a2226;
+}
+.vg-theme-ezekiel .vg-bookhead .vg-gkicker{color:#e8c87e}
+.vg-theme-ezekiel .vg-bookhead h3{color:#eefaf6}
+.vg-theme-ezekiel .vg-bookhead .vg-gdesc{color:#bfe0d4}
+
+/* Daniel theme: exile and the furnace (provisional; library-wide Verse River restyle later) */
+.vg-theme-daniel .vg-bookhead{
+  background:
+    radial-gradient(60px 24px at 50% 75%, #f0a83e66 60%, transparent 61%),
+    linear-gradient(180deg,#1a2340 0%,#2c3a68 50%,#3f5a9e 80%,#7a94c8 100%);
+  border-color:#121a30;
+}
+.vg-theme-daniel .vg-bookhead .vg-gkicker{color:#f2c268}
+.vg-theme-daniel .vg-bookhead h3{color:#eef2fc}
+.vg-theme-daniel .vg-bookhead .vg-gdesc{color:#c2cfe8}
+
+/* Hosea theme: the wilderness rose and the morning dew (provisional; library-wide Verse River restyle later) */
+.vg-theme-hosea .vg-bookhead{
+  background:
+    radial-gradient(70px 26px at 50% 30%, #e8d8c055 60%, transparent 61%),
+    linear-gradient(180deg,#4a2c33 0%,#7a4a52 50%,#b07a7a 80%,#d8a8a0 100%);
+  border-color:#382028;
+}
+.vg-theme-hosea .vg-bookhead .vg-gkicker{color:#f0d0c8}
+.vg-theme-hosea .vg-bookhead h3{color:#fdf0ec}
+.vg-theme-hosea .vg-bookhead .vg-gdesc{color:#e0bcae}
+
+/* Joel theme: the locusts and the latter rain (provisional; library-wide Verse River restyle later) */
+.vg-theme-joel .vg-bookhead{
+  background:
+    linear-gradient(180deg,#3a2c18 0%,#6b4f22 45%,#2e5a7a 80%,#5a94b8 100%);
+  border-color:#2a2012;
+}
+.vg-theme-joel .vg-bookhead .vg-gkicker{color:#f0d080}
+.vg-theme-joel .vg-bookhead h3{color:#fdf6e2}
+.vg-theme-joel .vg-bookhead .vg-gdesc{color:#cfe0ea}
+
+/* Amos theme: the plumb line among the sycamores (provisional; library-wide Verse River restyle later) */
+.vg-theme-amos .vg-bookhead{
+  background:
+    linear-gradient(180deg,#2c3a24 0%,#4d6034 50%,#7a8c4e 80%,#a8b878 100%);
+  border-color:#202a1a;
+}
+.vg-theme-amos .vg-bookhead .vg-gkicker{color:#e8d88a}
+.vg-theme-amos .vg-bookhead h3{color:#f4f8ea}
+.vg-theme-amos .vg-bookhead .vg-gdesc{color:#cfd8ae}
+
+/* Obadiah theme: the eagle's height and the valley (provisional; library-wide Verse River restyle later) */
+.vg-theme-obadiah .vg-bookhead{
+  background:
+    linear-gradient(180deg,#2c3444 0%,#4a5468 50%,#6e7a94 80%,#9aa4bc 100%);
+  border-color:#20262f;
+}
+.vg-theme-obadiah .vg-bookhead .vg-gkicker{color:#cfd8ea}
+.vg-theme-obadiah .vg-bookhead h3{color:#eef1f6}
+.vg-theme-obadiah .vg-bookhead .vg-gdesc{color:#bcc6da}
+
+/* Jonah theme: the storm and the deep (provisional; library-wide Verse River restyle later) */
+.vg-theme-jonah .vg-bookhead{
+  background:
+    radial-gradient(80px 30px at 50% 25%, #9fb8c866 60%, transparent 61%),
+    linear-gradient(180deg,#1c2e33 0%,#2e4a52 50%,#4d6e74 80%,#7a9aa0 100%);
+  border-color:#142126;
+}
+.vg-theme-jonah .vg-bookhead .vg-gkicker{color:#cfe0e4}
+.vg-theme-jonah .vg-bookhead h3{color:#eef6f6}
+.vg-theme-jonah .vg-bookhead .vg-gdesc{color:#b8d0d4}
+
+/* Micah theme: Bethlehem's midnight and the manger (provisional; library-wide Verse River restyle later) */
+.vg-theme-micah .vg-bookhead{
+  background:
+    radial-gradient(2px 2px at 25% 20%, #fff8 60%, transparent 61%),
+    radial-gradient(1.6px 1.6px at 60% 12%, #fff7 60%, transparent 61%),
+    linear-gradient(180deg,#101a30 0%,#24355c 55%,#4a5f8c 85%,#c9a24a 100%);
+  border-color:#0c1424;
+}
+.vg-theme-micah .vg-bookhead .vg-gkicker{color:#f0d080}
+.vg-theme-micah .vg-bookhead h3{color:#fdf8ea}
+.vg-theme-micah .vg-bookhead .vg-gdesc{color:#d8cfae}
+
+/* Nahum theme: the flooded river and the broken wall (provisional; library-wide Verse River restyle later) */
+.vg-theme-nahum .vg-bookhead{
+  background:
+    linear-gradient(180deg,#1f3a3c 0%,#33565a 50%,#5c7e80 80%,#8ca8a4 100%);
+  border-color:#162a2c;
+}
+.vg-theme-nahum .vg-bookhead .vg-gkicker{color:#e8c87e}
+.vg-theme-nahum .vg-bookhead h3{color:#eef4f2}
+.vg-theme-nahum .vg-bookhead .vg-gdesc{color:#c4d4d0}
+
+/* Habakkuk theme: the watchtower and the vineyard (provisional; library-wide Verse River restyle later) */
+.vg-theme-habakkuk .vg-bookhead{
+  background:
+    linear-gradient(180deg,#4a3418 0%,#6e5224 50%,#96742f 80%,#c09a4a 100%);
+  border-color:#382712;
+}
+.vg-theme-habakkuk .vg-bookhead .vg-gkicker{color:#f2d88a}
+.vg-theme-habakkuk .vg-bookhead h3{color:#fdf6e2}
+.vg-theme-habakkuk .vg-bookhead .vg-gdesc{color:#d8c48e}
+
+/* Zephaniah theme: the hushed dawn and deep mercy (provisional; library-wide Verse River restyle later) */
+.vg-theme-zephaniah .vg-bookhead{
+  background:
+    linear-gradient(180deg,#3c2438 0%,#5c3a54 50%,#8c5f7c 80%,#c09aae 100%);
+  border-color:#2c1a28;
+}
+.vg-theme-zephaniah .vg-bookhead .vg-gkicker{color:#f0c8d8}
+.vg-theme-zephaniah .vg-bookhead h3{color:#fbeef2}
+.vg-theme-zephaniah .vg-bookhead .vg-gdesc{color:#ddb8c4}
+
+/* Haggai theme: the building site and the coming glory (provisional; library-wide Verse River restyle later) */
+.vg-theme-haggai .vg-bookhead{
+  background:
+    linear-gradient(180deg,#4a3a24 0%,#6e5a34 50%,#967c44 80%,#c8a85e 100%);
+  border-color:#382c1a;
+}
+.vg-theme-haggai .vg-bookhead .vg-gkicker{color:#f2d88a}
+.vg-theme-haggai .vg-bookhead h3{color:#fdf6e4}
+.vg-theme-haggai .vg-bookhead .vg-gdesc{color:#dcc48e}
+
+/* Zechariah theme: the lampstand and the olive trees (provisional; library-wide Verse River restyle later) */
+.vg-theme-zechariah .vg-bookhead{
+  background:
+    radial-gradient(3px 3px at 50% 40%, #f2c26888 60%, transparent 61%),
+    linear-gradient(180deg,#1e2e1a 0%,#33502e 50%,#557a44 80%,#8cae62 100%);
+  border-color:#16241a;
+}
+.vg-theme-zechariah .vg-bookhead .vg-gkicker{color:#f2d080}
+.vg-theme-zechariah .vg-bookhead h3{color:#f2f8ea}
+.vg-theme-zechariah .vg-bookhead .vg-gdesc{color:#cfd8ae}
+
+/* Malachi theme: the refiner's fire and the rising sun (provisional; library-wide Verse River restyle later) */
+.vg-theme-malachi .vg-bookhead{
+  background:
+    radial-gradient(50px 20px at 50% 80%, #f2a03e77 60%, transparent 61%),
+    linear-gradient(180deg,#2c3a4a 0%,#4a5f7a 55%,#7a94ae 85%,#e8b84a 100%);
+  border-color:#202c38;
+}
+.vg-theme-malachi .vg-bookhead .vg-gkicker{color:#f2c268}
+.vg-theme-malachi .vg-bookhead h3{color:#f2f6fa}
+.vg-theme-malachi .vg-bookhead .vg-gdesc{color:#cfdae8}
+
+/* Matthew theme: the scribe's ink and the kingdom (provisional; library-wide Verse River restyle later) */
+.vg-theme-matthew .vg-bookhead{
+  background:
+    linear-gradient(180deg,#1e2c4a 0%,#2e4470 50%,#4a6a9e 80%,#c9a24a 100%);
+  border-color:#16223a;
+}
+.vg-theme-matthew .vg-bookhead .vg-gkicker{color:#f0d080}
+.vg-theme-matthew .vg-bookhead h3{color:#eef2fa}
+.vg-theme-matthew .vg-bookhead .vg-gdesc{color:#c9d4ea}
+
+/* Mark theme: the fisherman's net and the dawn lake (provisional; library-wide Verse River restyle later) */
+.vg-theme-mark .vg-bookhead{
+  background:
+    linear-gradient(180deg,#3a2e1c 0%,#5c4a2e 50%,#7a94a8 80%,#a8c4d4 100%);
+  border-color:#2c2316;
+}
+.vg-theme-mark .vg-bookhead .vg-gkicker{color:#e8d8a8}
+.vg-theme-mark .vg-bookhead h3{color:#f4f2ea}
+.vg-theme-mark .vg-bookhead .vg-gdesc{color:#c4d4de}
+
+/* Luke theme: the satchel and the mercy seat (provisional; library-wide Verse River restyle later) */
+.vg-theme-luke .vg-bookhead{
+  background:
+    linear-gradient(180deg,#3c2e1e 0%,#5f4a30 50%,#8c7048 80%,#d8c8a8 100%);
+  border-color:#2e2316;
+}
+.vg-theme-luke .vg-bookhead .vg-gkicker{color:#f2e2c2}
+.vg-theme-luke .vg-bookhead h3{color:#fdf8ee}
+.vg-theme-luke .vg-bookhead .vg-gdesc{color:#e0d2b4}
+
+/* John theme: light breaking through the dark (provisional; library-wide Verse River restyle later) */
+.vg-theme-john .vg-bookhead{
+  background:
+    radial-gradient(90px 40px at 50% 35%, #ffe9a899 60%, transparent 61%),
+    linear-gradient(180deg,#101c38 0%,#1e3a68 55%,#2e5a98 85%,#7ab0d8 100%);
+  border-color:#0c162c;
+}
+.vg-theme-john .vg-bookhead .vg-gkicker{color:#ffe9a8}
+.vg-theme-john .vg-bookhead h3{color:#eef4fc}
+.vg-theme-john .vg-bookhead .vg-gdesc{color:#c9dcf0}
+
+/* Acts theme: the flame and the missionary road (provisional; library-wide Verse River restyle later) */
+.vg-theme-acts .vg-bookhead{
+  background:
+    radial-gradient(60px 24px at 50% 30%, #ff8a3d99 60%, transparent 61%),
+    linear-gradient(180deg,#3a1e10 0%,#6e3a18 50%,#a85f24 80%,#d89a4a 100%);
+  border-color:#2c160c;
+}
+.vg-theme-acts .vg-bookhead .vg-gkicker{color:#f2b268}
+.vg-theme-acts .vg-bookhead h3{color:#fdf0e2}
+.vg-theme-acts .vg-bookhead .vg-gdesc{color:#e8c49a}
+
+/* Romans theme: imperial marble and grace (provisional; library-wide Verse River restyle later) */
+.vg-theme-romans .vg-bookhead{
+  background:
+    linear-gradient(180deg,#3c3c44 0%,#5c5c68 50%,#8c8c9a 80%,#c9a24a 100%);
+  border-color:#2c2c32;
+}
+.vg-theme-romans .vg-bookhead .vg-gkicker{color:#f0d080}
+.vg-theme-romans .vg-bookhead h3{color:#f4f4f8}
+.vg-theme-romans .vg-bookhead .vg-gdesc{color:#d8d4c4}
+
+/* 1 Corinthians theme: Corinthian bronze and charity (provisional; library-wide Verse River restyle later) */
+.vg-theme-1corinthians .vg-bookhead{
+  background:
+    linear-gradient(180deg,#3a2c1c 0%,#5f4a2e 50%,#8c6e3e 80%,#c9a24a 100%);
+  border-color:#2c2214;
+}
+.vg-theme-1corinthians .vg-bookhead .vg-gkicker{color:#f2d080}
+.vg-theme-1corinthians .vg-bookhead h3{color:#fdf6e8}
+.vg-theme-1corinthians .vg-bookhead .vg-gdesc{color:#dcc48e}
+
+/* 2 Corinthians theme: the earthen vessel and the treasure (provisional; library-wide Verse River restyle later) */
+.vg-theme-2corinthians .vg-bookhead{
+  background:
+    linear-gradient(180deg,#4a3826 0%,#6e5638 50%,#967648 80%,#c9a25e 100%);
+  border-color:#382b1c;
+}
+.vg-theme-2corinthians .vg-bookhead .vg-gkicker{color:#f2d88a}
+.vg-theme-2corinthians .vg-bookhead h3{color:#fdf6ea}
+.vg-theme-2corinthians .vg-bookhead .vg-gdesc{color:#dcc89a}
+
+/* Galatians theme: the open sky and the broken chain (provisional; library-wide Verse River restyle later) */
+.vg-theme-galatians .vg-bookhead{
+  background:
+    linear-gradient(180deg,#2e4a68 0%,#4a6e94 50%,#7a9cbc 80%,#b8d0e4 100%);
+  border-color:#22364e;
+}
+.vg-theme-galatians .vg-bookhead .vg-gkicker{color:#f0d8a8}
+.vg-theme-galatians .vg-bookhead h3{color:#eef4fa}
+.vg-theme-galatians .vg-bookhead .vg-gdesc{color:#cfdce8}
+
+/* Ephesians theme: the seated places and the sword (provisional; library-wide Verse River restyle later) */
+.vg-theme-ephesians .vg-bookhead{
+  background:
+    linear-gradient(180deg,#1e2a4a 0%,#2e4470 50%,#4a6e9e 80%,#b8c8dc 100%);
+  border-color:#16203a;
+}
+.vg-theme-ephesians .vg-bookhead .vg-gkicker{color:#d8e2f2}
+.vg-theme-ephesians .vg-bookhead h3{color:#eef2f8}
+.vg-theme-ephesians .vg-bookhead .vg-gdesc{color:#bccadd}
+
+/* Philippians theme: the chains and the dawn rose (provisional; library-wide Verse River restyle later) */
+.vg-theme-philippians .vg-bookhead{
+  background:
+    linear-gradient(180deg,#3c3c44 0%,#5f4a52 50%,#8c6e78 80%,#d8a8a8 100%);
+  border-color:#2c2c30;
+}
+.vg-theme-philippians .vg-bookhead .vg-gkicker{color:#f2c8c8}
+.vg-theme-philippians .vg-bookhead h3{color:#fbf0f0}
+.vg-theme-philippians .vg-bookhead .vg-gdesc{color:#ddb8b8}
+
+/* Colossians theme: the alpine heights and the preeminence (provisional; library-wide Verse River restyle later) */
+.vg-theme-colossians .vg-bookhead{
+  background:
+    linear-gradient(180deg,#2e3a4a 0%,#4a5f7a 60%,#8ca8c4 90%,#eef2f8 100%);
+  border-color:#223041;
+}
+.vg-theme-colossians .vg-bookhead .vg-gkicker{color:#f0d080}
+.vg-theme-colossians .vg-bookhead h3{color:#eef2f8}
+.vg-theme-colossians .vg-bookhead .vg-gdesc{color:#ccd8e8}
+
+/* 1 Thessalonians theme: the dawn and the trumpet (provisional; library-wide Verse River restyle later) */
+.vg-theme-1thessalonians .vg-bookhead{
+  background:
+    radial-gradient(70px 26px at 50% 30%, #f2b8a077 60%, transparent 61%),
+    linear-gradient(180deg,#4a2e3c 0%,#6e4a5c 50%,#96707e 80%,#c9a8ae 100%);
+  border-color:#38222c;
+}
+.vg-theme-1thessalonians .vg-bookhead .vg-gkicker{color:#f2d0a8}
+.vg-theme-1thessalonians .vg-bookhead h3{color:#fbf0ee}
+.vg-theme-1thessalonians .vg-bookhead .vg-gdesc{color:#ddbcb0}
+
+/* 2 Thessalonians theme: the midnight watch and the anchor (provisional; library-wide Verse River restyle later) */
+.vg-theme-2thessalonians .vg-bookhead{
+  background:
+    linear-gradient(180deg,#24262e 0%,#3c3e48 50%,#5c5e6a 80%,#8c8e9a 100%);
+  border-color:#1a1b20;
+}
+.vg-theme-2thessalonians .vg-bookhead .vg-gkicker{color:#e8c87e}
+.vg-theme-2thessalonians .vg-bookhead h3{color:#f0f0f4}
+.vg-theme-2thessalonians .vg-bookhead .vg-gdesc{color:#c9c2ae}
+
+/* 1 Timothy theme: the shepherd's oak and sound doctrine (provisional; library-wide Verse River restyle later) */
+.vg-theme-1timothy .vg-bookhead{
+  background:
+    linear-gradient(180deg,#3a2c1a 0%,#5c4a2a 50%,#8c6e3a 80%,#c9a24a 100%);
+  border-color:#2c2212;
+}
+.vg-theme-1timothy .vg-bookhead .vg-gkicker{color:#f2d080}
+.vg-theme-1timothy .vg-bookhead h3{color:#fdf6e8}
+.vg-theme-1timothy .vg-bookhead .vg-gdesc{color:#dcc48e}
+
+/* 2 Timothy theme: the cloak at Troas and the crown (provisional; library-wide Verse River restyle later) */
+.vg-theme-2timothy .vg-bookhead{
+  background:
+    linear-gradient(180deg,#3c2e20 0%,#5c4a32 55%,#8c7448 85%,#d8b84a 100%);
+  border-color:#2c2216;
+}
+.vg-theme-2timothy .vg-bookhead .vg-gkicker{color:#f2d878}
+.vg-theme-2timothy .vg-bookhead h3{color:#fdf6e8}
+.vg-theme-2timothy .vg-bookhead .vg-gdesc{color:#dcc88e}
+
+/* Titus theme: the island cypress and good works (provisional; library-wide Verse River restyle later) */
+.vg-theme-titus .vg-bookhead{
+  background:
+    linear-gradient(180deg,#1e3a2e 0%,#2e5c48 50%,#4d8c68 80%,#8cbc92 100%);
+  border-color:#162a22;
+}
+.vg-theme-titus .vg-bookhead .vg-gkicker{color:#f2d88a}
+.vg-theme-titus .vg-bookhead h3{color:#eef8f0}
+.vg-theme-titus .vg-bookhead .vg-gdesc{color:#cfe0c8}
+
+/* Philemon theme: the papyrus and the brother (provisional; library-wide Verse River restyle later) */
+.vg-theme-philemon .vg-bookhead{
+  background:
+    linear-gradient(180deg,#4a3a22 0%,#6e5a34 50%,#96804a 80%,#d8c88e 100%);
+  border-color:#382c1a;
+}
+.vg-theme-philemon .vg-bookhead .vg-gkicker{color:#f2e2a8}
+.vg-theme-philemon .vg-bookhead h3{color:#fdf8ea}
+.vg-theme-philemon .vg-bookhead .vg-gdesc{color:#e0d2a8}
+
+/* Hebrews theme: the twilight of the covenant and the anchor (provisional; library-wide Verse River restyle later) */
+.vg-theme-hebrews .vg-bookhead{
+  background:
+    linear-gradient(180deg,#2c1e3c 0%,#4a3460 50%,#6e5488 80%,#a884b8 100%);
+  border-color:#201628;
+}
+.vg-theme-hebrews .vg-bookhead .vg-gkicker{color:#e8c87e}
+.vg-theme-hebrews .vg-bookhead h3{color:#f2eef8}
+.vg-theme-hebrews .vg-bookhead .vg-gdesc{color:#d4c4e0}
+
+/* James theme: the trial fire and the silver of wisdom (provisional; library-wide Verse River restyle later) */
+.vg-theme-james .vg-bookhead{
+  background:
+    linear-gradient(180deg,#2c2c30 0%,#4a4a52 50%,#6e6e7a 80%,#b8bcc8 100%);
+  border-color:#202024;
+}
+.vg-theme-james .vg-bookhead .vg-gkicker{color:#e8ecf4}
+.vg-theme-james .vg-bookhead h3{color:#f0f2f8}
+.vg-theme-james .vg-bookhead .vg-gdesc{color:#c9cfda}
+
+/* 1 Peter theme: the pilgrim road and the living stone (provisional; library-wide Verse River restyle later) */
+.vg-theme-1peter .vg-bookhead{
+  background:
+    linear-gradient(180deg,#3a2e22 0%,#5c4a34 50%,#8c7048 80%,#c9a25e 100%);
+  border-color:#2c2218;
+}
+.vg-theme-1peter .vg-bookhead .vg-gkicker{color:#f2d88a}
+.vg-theme-1peter .vg-bookhead h3{color:#fdf6ec}
+.vg-theme-1peter .vg-bookhead .vg-gdesc{color:#dcc89a}
+
+/* 2 Peter theme: the tempest and the day star (provisional; library-wide Verse River restyle later) */
+.vg-theme-2peter .vg-bookhead{
+  background:
+    linear-gradient(180deg,#2c3440 0%,#46566a 50%,#6e8296 80%,#b8c8dc 100%);
+  border-color:#20262e;
+}
+.vg-theme-2peter .vg-bookhead .vg-gkicker{color:#e8eef4}
+.vg-theme-2peter .vg-bookhead h3{color:#eef2f8}
+.vg-theme-2peter .vg-bookhead .vg-gdesc{color:#c9d4e0}
+
+/* 1 John theme: the sunlight of fellowship and love (provisional; library-wide Verse River restyle later) */
+.vg-theme-1john .vg-bookhead{
+  background:
+    linear-gradient(180deg,#4a2c20 0%,#6e4a30 50%,#a86e44 80%,#e8b84a 100%);
+  border-color:#382115;
+}
+.vg-theme-1john .vg-bookhead .vg-gkicker{color:#ffe9a8}
+.vg-theme-1john .vg-bookhead h3{color:#fdf2e4}
+.vg-theme-1john .vg-bookhead .vg-gdesc{color:#ecc89a}
+
+/* 2 John theme: the lamplight and the pearl of truth (provisional; library-wide Verse River restyle later) */
+.vg-theme-2john .vg-bookhead{
+  background:
+    linear-gradient(180deg,#3c3424 0%,#5c5238 50%,#8c8060 80%,#d8cc9e 100%);
+  border-color:#2c281a;
+}
+.vg-theme-2john .vg-bookhead .vg-gkicker{color:#f2e8c8}
+.vg-theme-2john .vg-bookhead h3{color:#fbf8ee}
+.vg-theme-2john .vg-bookhead .vg-gdesc{color:#ddd2ae}
+
+/* 3 John theme: the hearth and the shadow (provisional; library-wide Verse River restyle later) */
+.vg-theme-3john .vg-bookhead{
+  background:
+    linear-gradient(180deg,#3a2c1e 0%,#5c4a30 50%,#8c744e 80%,#c9a878 100%);
+  border-color:#2c2214;
+}
+.vg-theme-3john .vg-bookhead .vg-gkicker{color:#f2d8a8}
+.vg-theme-3john .vg-bookhead h3{color:#fdf6ec}
+.vg-theme-3john .vg-bookhead .vg-gdesc{color:#dcc8a2}
+
+/* Jude theme: the iron of contention and the keeper (provisional; library-wide Verse River restyle later) */
+.vg-theme-jude .vg-bookhead{
+  background:
+    linear-gradient(180deg,#2c2c34 0%,#4a4a56 50%,#6e6e7e 80%,#a8a8b4 100%);
+  border-color:#202028;
+}
+.vg-theme-jude .vg-bookhead .vg-gkicker{color:#f0d080}
+.vg-theme-jude .vg-bookhead h3{color:#f0f0f4}
+.vg-theme-jude .vg-bookhead .vg-gdesc{color:#d8d4c4}
+
+/* Revelation theme: the throne and the crystal sea (provisional; library-wide Verse River restyle later) */
+.vg-theme-revelation .vg-bookhead{
+  background:
+    radial-gradient(90px 40px at 50% 30%, #fff2c899 60%, transparent 61%),
+    linear-gradient(180deg,#1e2c4a 0%,#2e4a7a 55%,#4a7ab8 85%,#b8d8f0 100%);
+  border-color:#16223a;
+}
+.vg-theme-revelation .vg-bookhead .vg-gkicker{color:#ffe9a8}
+.vg-theme-revelation .vg-bookhead h3{color:#eef4fc}
+.vg-theme-revelation .vg-bookhead .vg-gdesc{color:#c9dcf0}
+
+/* Sound toggle: fixed speaker button, one tap to silence, choice persists */
+.vg-sound-toggle{
+  position:fixed;right:14px;bottom:14px;z-index:9999;
+  width:46px;height:46px;border-radius:50%;
+  background:#fbf7ec;border:1px solid var(--line);
+  font-size:20px;line-height:1;cursor:pointer;
+  box-shadow:0 2px 8px rgba(60,45,20,.18);
+  -webkit-tap-highlight-color:transparent;
+}
+.vg-sound-toggle:active{transform:scale(.94)}
+
+/* Who Said It campaign: own flow, own rules. Compact fit-on-screen layout. */
+.wsi-lockup{display:flex;align-items:center;gap:12px;margin:4px 0 14px}
+.wsi-lockup img{height:40px;width:auto;border-radius:8px;background:#fff;box-shadow:0 1px 4px rgba(60,45,20,.15)}
+.wsi-lockup-t{font-size:12px;line-height:1.55;color:var(--ink-faint)}
+.wsi-lockup-t a{color:#1d4fa3;font-weight:600}
+.wsi-total{margin:10px 0 0;font-size:14px;color:var(--ink-soft)}
+.wsi-total b{font-size:17px;color:var(--ink)}
+.wsi-levels{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:2px 0 12px}
+.wsi-lvl{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+  padding:12px 14px;cursor:pointer;font-family:var(--sans);color:var(--ink)}
+.wsi-lvl:hover:not(:disabled){border-color:var(--sage);background:#fbfaf3}
+.wsi-lvl:disabled{cursor:default}
+.wsi-lvl b{font-size:15px}
+.wsi-lvl span{font-size:12px;color:var(--ink-soft)}
+.wsi-lvl em{font-style:normal;font-size:11px;color:var(--ink-faint)}
+.wsi-lvl.locked{opacity:.45}
+.wsi-screen{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;justify-content:center;gap:10px;padding:6px 0}
+.wsi-score{font-size:13px;color:var(--ink-soft);text-align:center}
+.wsi-score b{color:var(--ink)}
+.wsi-qcard{margin:0}
+.wsi-q{font-size:clamp(15px,4.2vw,19px);line-height:1.55}
+.wsi-qcard.wsi-long .wsi-q{font-size:clamp(13px,3.6vw,16px)}
+.wsi-ask{margin:10px 0 8px;font-size:13px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--ink-faint);text-align:center}
+.wsi-opts{display:grid;gap:8px}
+.wsi-opt{padding:9px 12px;font-size:15px}
+
+/* ---------- king solomon: judgment series ---------- */
+.sol-screen{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;justify-content:center;gap:10px;padding:6px 0;max-width:860px;margin:0 auto}
+.sol-title{margin:2px 0;font-size:clamp(22px,5.5vw,30px)}
+.sol-sub{margin:0 0 4px;font-size:14px;color:var(--ink-soft)}
+.sol-score{margin:0;font-size:14px;color:var(--ink-soft)}
+.sol-score b{color:var(--ink);font-size:17px}
+.sol-scrolls{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:6px 0 12px}
+.sol-scroll{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;
+  padding:14px 12px;border:1px solid var(--line);border-radius:12px;background:#fffdf6;cursor:pointer}
+.sol-scroll:hover:not(:disabled){border-color:var(--sage);background:#fbfaf3}
+.sol-scroll:disabled{cursor:default}
+.sol-scroll.locked{opacity:.45}
+.sol-scroll-k{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint)}
+.sol-scroll strong{font-size:16px}
+.sol-scroll small{font-size:12px;color:var(--ink-soft);line-height:1.45}
+.sol-scroll-state{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold2)}
+.sol-cases{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:4px 0 12px}
+.sol-case{display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:center;text-align:left;
+  padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fffdf6;cursor:pointer}
+.sol-case:hover:not(:disabled){border-color:var(--sage)}
+.sol-case:disabled{cursor:default;opacity:.45}
+.sol-case-n{font-weight:700;font-size:15px;color:var(--gold2)}
+.sol-case-t{display:flex;flex-direction:column;gap:2px}
+.sol-case-meta{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint)}
+.sol-case-t strong{font-size:14px;line-height:1.3}
+.sol-case-s{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint)}
+.sol-case-s.appeal{color:#8a4b1f}
+.sol-casegrid{display:grid;grid-template-columns:1fr;gap:10px}
+.sol-img{position:relative;border-radius:12px;overflow:hidden;max-height:26vh}
+.sol-img img{width:100%;height:100%;max-height:26vh;object-fit:cover;display:block}
+.sol-cap{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;gap:8px;
+  padding:6px 12px;background:linear-gradient(transparent,rgba(20,14,6,.72));color:#f7efdd;font-size:11px}
+.sol-cap strong{font-weight:600}
+.sol-paper{background:#fffdf6;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.sol-tag{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:4px}
+.sol-paper h3{margin:0 0 4px;font-size:17px}
+.sol-story{margin:0 0 8px;font-size:13.5px;line-height:1.5;color:var(--ink-soft)}
+.sol-q{margin:0 0 8px;font-size:14px;font-weight:700}
+.sol-opt{display:flex;gap:10px;align-items:flex-start;text-align:left;padding:9px 12px;font-size:14px;line-height:1.4}
+.sol-opt b{flex:none}
+.sol-reveal{margin:0}
+.sol-proverb{margin:10px 0 0;padding:10px 14px;border-left:3px solid var(--gold2);background:#faf6ea;border-radius:0 8px 8px 0}
+.sol-proverb p{margin:0 0 4px;font-size:14px;font-style:italic}
+.sol-proverb cite{font-size:12px;color:var(--ink-faint);font-style:normal}
+.sol-consequence{margin:10px 0 0;padding:10px 14px;background:#f7ecd9;border:1px solid #e3cfa4;border-radius:8px}
+.sol-consequence strong{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#8a5a1e;margin-bottom:4px}
+.sol-consequence p{margin:0;font-size:13.5px;line-height:1.5}
+.sol-loss{display:flex;gap:8px;margin:10px 0 0}
+.sol-chip{font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:#f3dfd3;color:#8a3b1f}
+.sol-appeal{margin:12px 0 0;padding:12px 14px;border:1px dashed var(--gold2);border-radius:10px;background:#fffdf6}
+.sol-appeal h3{margin:0 0 4px;font-size:16px}
+.sol-appeal p{margin:0 0 8px;font-size:13px;color:var(--ink-soft)}
+.sol-study{margin-bottom:10px}
+.sol-note{margin-top:8px;font-size:13px;color:#8a3b1f;min-height:1.2em}
+.sol-memory{font-size:15px;line-height:2.1;margin:0 0 10px}
+.sol-blank{width:5.2em;max-width:38%;font:inherit;padding:2px 6px;border:1px solid var(--gold2);border-radius:6px;background:#fff}
+.sol-blank.ok{border-color:#2e7d32;background:#eaf5ea}
+.sol-blank.no{border-color:#b3261e;background:#fbeceb}
+@media(max-width:640px){
+  .sol-scrolls{grid-template-columns:1fr}
+  .sol-cases{grid-template-columns:1fr}
+  .sol-img{max-height:22vh}
+  .sol-img img{max-height:22vh}
+}
