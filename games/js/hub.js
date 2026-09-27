@@ -147,6 +147,11 @@ function render(){
     +shelf3
     +shelfApps
     +'<p class="vg-shelf-note" style="margin-top:18px">Four shelves: Narrative, Knowledge, the Game Mix, and the Whole Counsel, plus the app shelf. The Hidden Treasure attention game stays off this hub until it is a full Matthew text journey.</p>'
+    +'<section class="vg-river">'
+    +'<a href="https://verseriver.com" target="_blank" rel="noopener"><img class="vg-river-logo" src="img/verse-river-logo.jpg" alt="Verse River"></a>'
+    +'<p class="vg-river-text">Verseriver Games is one stream of <strong>Verse River</strong>, drinking into us all the unsearchable riches of Christ. Come drink deeper.</p>'
+    +'<a class="vg-btn" href="https://verseriver.com" target="_blank" rel="noopener">Visit verseriver.com</a>'
+    +'</section>'
     +'<footer class="vg-foot"><div class="vg-kjv">KJV · Public Domain</div>'
     +'Every answer opens the verse it came from.<br>Shelves warming; the house stays honest.</footer>'
     +'</div>';

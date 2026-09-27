@@ -232,6 +232,14 @@ button.vg-game:disabled:hover{transform:none;box-shadow:0 2px 10px rgba(90,70,40
 }
 
 /* ---------- footer ---------- */
+.vg-river{
+  text-align:center;margin-top:40px;padding:30px 22px 26px;
+  border:1px solid var(--line);border-radius:18px;background:#fff;
+}
+.vg-river-logo{display:block;width:200px;max-width:64%;height:auto;margin:0 auto 14px;}
+.vg-river-text{font-size:13.5px;color:var(--ink-soft);line-height:1.75;margin:0 auto 18px;max-width:34em;}
+.vg-river-text strong{color:var(--ink);}
+.vg-river .vg-btn{text-decoration:none;display:inline-block;}
 .vg-foot{
   text-align:center;margin-top:44px;padding-top:18px;
   border-top:1px solid var(--line);
