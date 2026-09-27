@@ -234,7 +234,8 @@ function applyFilter(redeal){
   cards.forEach(c => {
     if(c.pinned){ usedVerses.add(WALL_VERSES[c.vi].r); return; }
     clearTimeout(c.timer); c.timer = null;
-    setVerse(c); c.phase = "enter"; play(c, "enter"); tick(c);
+    setVerse(c); c.phase = "enter"; play(c, "enter");
+    c.timer = setTimeout(() => tick(c), Math.random() * 3000);
   });
 }
 function renderDrawer(){
@@ -392,7 +393,7 @@ const VLEN_MAX = Math.max.apply(null, WALL_VERSES.map(v => v.t.length));
 function verseRest(c){
   const len = WALL_VERSES[c.vi].t.length;
   const f = VLEN_MAX > VLEN_MIN ? (len - VLEN_MIN) / (VLEN_MAX - VLEN_MIN) : 0.5;
-  return 9000 + f * 9000;
+  return (9000 + f * 9000) * (0.72 + Math.random() * 0.56);
 }
 function scheduleRest(c){ c.timer = setTimeout(() => { c.phase = "exit"; play(c, "exit"); tick(c); }, verseRest(c)); }
 function scheduleSwap(c){ c.timer = setTimeout(() => { setVerse(c); c.style = pick(STYLES); c.phase = "enter"; play(c, "enter"); tick(c); }, 520); }
@@ -566,6 +567,11 @@ stillBtn.addEventListener("click", () => {
   else { cards.forEach(c => { if(!c.held && !c.pinned && !c.timer) tick(c); }); }
 });
 SLOTS.forEach(makeCard);
+// Every verse keeps its own time: stagger the opening deal so tiles never march together
+cards.forEach(c => {
+  clearTimeout(c.timer); c.timer = null;
+  c.timer = setTimeout(() => tick(c), Math.random() * 4000);
+});
 // Endless well: keep feeding cards as the reader scrolls down
 const wellEnd = document.createElement("div");
 wellEnd.id = "wellEnd";
