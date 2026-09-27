@@ -4,22 +4,19 @@
 "use strict";
 
 var APPS = [
-  {href:"../verse-wall.html", title:"Verse Wall",
+  {href:"../verse-wall.html", title:"Verse Wall", art:"img/app-verse-wall.webp",
    kicker:"KJV · 1,000 verses",
    desc:"A living wall of Scripture: a still mosaic that breathes verse by verse, and a river that flows them past. Tap any card to read.",
    meta:"Mosaic · River · Share"},
-  {href:"confessions/index.html", title:"365 Daily Confessions",
+  {href:"confessions/index.html", title:"365 Daily Confessions", art:"img/app-confessions.webp",
    kicker:"KJV · Daily",
    desc:"A confession for every day of the year, six hundred Bible promises, and the full KJV to read and flow through.",
-   meta:"Confess · Read · Flow"},
-  {href:"app-store/index.html", title:"Verse River App Store",
-   kicker:"Directory",
-   desc:"The shelf of Verse River web apps: free and faithful, all in one place.",
-   meta:"All apps"}
+   meta:"Confess · Read · Flow"}
 ];
 
 function appCard(a){
-  var inner = '<div class="vg-card-body">'
+  var inner = (a.art ? '<div class="vg-card-art"><img src="'+a.art+'"></div>' : '')
+    +'<div class="vg-card-body">'
     +'<div class="vg-gkicker">'+VG.esc(a.kicker)+'</div>'
     +'<h3>'+VG.esc(a.title)+'</h3>'
     +'<p class="vg-gdesc">'+VG.esc(a.desc)+'</p>'
