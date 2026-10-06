@@ -239,16 +239,22 @@ p.bv-hl0,p.bv-hl1,p.bv-hl2,p.bv-hl3{border-radius:6px;}
 /* full-screen verse flow: TikTok-style vertical swipe, one verse per screen */
 #bvFlow{display:none;position:fixed;inset:0;height:100vh;height:100dvh;z-index:65;background:#0a0e1c;}
 #bvFlow.open{display:block;}
-#bvFlowTrack{height:100%;height:100dvh;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none;-ms-overflow-style:none;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
+#bvFlowTrack{height:100%;height:100dvh;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none;-ms-overflow-style:none;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:manipulation;}
+#bvFlow.hideChrome #bvFlowNav,#bvFlow.hideChrome #bvFlowEdge{opacity:0;pointer-events:none;}
+#bvFlowNav,#bvFlowEdge{transition:opacity .3s ease;}
 #bvFlowTrack::-webkit-scrollbar{display:none;}
 .bv-flow-slide{height:100vh;height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:9vmin 12vmin;box-sizing:border-box;transition:background .6s ease;position:relative;}
 .bv-flow-t{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:calc(var(--bv-fs,19px)*1.7);line-height:1.55;color:rgba(245,227,184,.97);margin:0 0 3.5vmin;max-width:640px;animation:bvFlowIn .55s cubic-bezier(.22,.8,.3,1) both;}
 .bv-flow-r{font-family:'Cinzel',serif;font-weight:600;font-size:13px;letter-spacing:3.5px;text-transform:uppercase;color:#c9933a;margin:0 0 2.5vmin;animation:bvFlowIn .55s .08s cubic-bezier(.22,.8,.3,1) both;}
 .bv-flow-tr{display:inline-block;font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#e8c876;border:.5px solid rgba(201,147,58,.55);border-radius:999px;padding:7px 16px;animation:bvFlowIn .55s .16s cubic-bezier(.22,.8,.3,1) both;}
 @keyframes bvFlowIn{from{opacity:0;transform:translateY(26px);}to{opacity:1;transform:none;}}
-#bvFlowEdge{position:absolute;right:14px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:12px;z-index:3;}
+#bvFlowEdge{position:absolute;right:14px;bottom:max(24px, env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px;z-index:3;}
 #bvFlowEdge button{width:48px;height:48px;border-radius:50%;border:.5px solid rgba(201,147,58,.55);background:rgba(10,12,20,.62);color:#e8c876;font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 4px 18px rgba(0,0,0,.35);}
 #bvFlowEdge button.on{background:rgba(201,147,58,.42);color:#fff8e7;border-color:#e8c876;}
+#bvFlowNav{position:absolute;left:14px;top:max(14px, env(safe-area-inset-top));width:48px;height:48px;border-radius:50%;border:.5px solid rgba(201,147,58,.55);background:rgba(10,12,20,.62);color:#e8c876;font-family:'Tenor Sans',sans-serif;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 4px 18px rgba(0,0,0,.35);z-index:3;}
+.wv-bible.day #bvFlowNav{background:rgba(247,240,222,.82);border-color:rgba(154,107,31,.55);color:#7a5410;box-shadow:0 4px 16px rgba(120,84,16,.18);}
+body.flowNav .wv-scrim{z-index:66;}
+body.flowNav .wv-drawer{z-index:67;}
 #bvFlowBm{font-size:17px;}
 .wv-bible.day #bvFlow{background:linear-gradient(180deg,#f7f0de 0%,#f1e6cc 100%);}
 .wv-bible.day .bv-flow-t{color:#2c2318;}
@@ -367,6 +373,7 @@ p.bv-hl0,p.bv-hl1,p.bv-hl2,p.bv-hl3{border-radius:6px;}
   </div>
   <div id="bvFlow" aria-hidden="true">
     <div id="bvFlowTrack"></div>
+    <button id="bvFlowNav" aria-label="Open navigation">&#9776;</button>
     <div id="bvFlowEdge">
       <button id="bvFlowPlay" aria-label="Pause">&#10074;&#10074;</button>
       <button id="bvFlowSpeedBtn" aria-label="Flow speed">Med</button>
@@ -1444,7 +1451,14 @@ const Bible = (() => {
   });
   $("drSrchClear").addEventListener("click", () => clearSearch($("drSrchInp"), $("drSrchRes")));
   new MutationObserver(() => {
-    if(!document.getElementById("drawer").classList.contains("open")){ closeDrSettings(); closeDrSearch(); }
+    if(!document.getElementById("drawer").classList.contains("open")){
+      closeDrSettings(); closeDrSearch();
+      if(document.body.classList.contains("flowNav")){
+        document.body.classList.remove("flowNav");
+        if(flowNavWasPlaying && flow === "flow"){ flowPlaying = true; flowSyncPlayBtn(); flowArmTimer(); }
+        flowNavWasPlaying = false;
+      }
+    }
   }).observe(document.getElementById("drawer"), {attributes:true, attributeFilter:["class"]});
   document.getElementById("ovBegin").addEventListener("click", () => {
     const c = heldCard;
@@ -1514,6 +1528,7 @@ const Bible = (() => {
   /* ---------------- full-screen verse flow: TikTok-style vertical swipe ---------------- */
   let flowTimer = null;
   let flowScrollT = null, flowCur = 2;
+  let flowNavWasPlaying = false;
   function nzVerse(b_, c_, v_){
     const d = cache[code]; if(!d) return {bi:0, ci:0, vi:0};
     const b = Math.max(0, Math.min(65, b_));
@@ -1656,6 +1671,7 @@ const Bible = (() => {
     bi = cur.bi; ci = cur.ci; vi = cur.vi;
     const fl = $("bvFlow");
     fl.classList.add("open");
+    fl.classList.remove("hideChrome");
     fl.setAttribute("aria-hidden", "false");
     flowBuild();
     flowSyncPlayBtn(); flowSyncBm();
@@ -1879,6 +1895,31 @@ const Bible = (() => {
   });
   $("bvFlowBm").addEventListener("click", e => { e.stopPropagation(); flowBookmark(); });
   $("bvFlowClose").addEventListener("click", e => { e.stopPropagation(); setFlow("chapter"); });
+  $("bvFlowNav").addEventListener("click", e => {
+    e.stopPropagation();
+    flowNavWasPlaying = flowPlaying;
+    if(flowPlaying){ flowPlaying = false; flowSyncPlayBtn(); flowArmTimer(); }
+    document.body.classList.add("flowNav");
+    openDrawer();
+  });
+  /* double-tap the reel toggles all flow controls (nav icon + edge stack) */
+  let dblDownX = 0, dblDownY = 0, dblDownT = 0, dblLastT = 0, dblLastX = 0, dblLastY = 0;
+  $("bvFlowTrack").addEventListener("pointerdown", e => {
+    dblDownX = e.clientX; dblDownY = e.clientY; dblDownT = Date.now();
+  });
+  $("bvFlowTrack").addEventListener("pointerup", e => {
+    const dt = Date.now() - dblDownT;
+    const moved = Math.hypot(e.clientX - dblDownX, e.clientY - dblDownY);
+    if(dt > 450 || moved > 12) return; /* not a tap: swipe/scroll/long-press ignored */
+    const now = Date.now(), gap = now - dblLastT;
+    const d2 = Math.hypot(e.clientX - dblLastX, e.clientY - dblLastY);
+    if(gap < 350 && d2 < 40){
+      dblLastT = 0;
+      $("bvFlow").classList.toggle("hideChrome");
+    }else{
+      dblLastT = now; dblLastX = e.clientX; dblLastY = e.clientY;
+    }
+  });
   window.addEventListener("resize", () => {
     syncWvTopH();
     if(flow === "flow"){
