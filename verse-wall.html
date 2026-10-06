@@ -161,6 +161,148 @@ body{font-family:'Tenor Sans',sans-serif;color:#f5e3b8;min-height:100vh;}
  background:rgba(0,0,0,.45);border:1px solid rgba(201,147,58,.65);color:#e8c876;font-family:'Tenor Sans',sans-serif;
  font-size:12px;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;white-space:nowrap;}
 .wv-ov-begin:active{transform:translateX(-50%) scale(.96);}
+.wv-overlay.day .wv-ov-text{text-shadow:none;}
+.wv-overlay.day .wv-ov-close{background:rgba(58,34,8,.12);border-color:rgba(139,94,34,.4);color:rgba(58,34,8,.7);}
+.wv-overlay.day .wv-ov-share,.wv-overlay.day .wv-ov-begin{background:rgba(58,34,8,.82);border-color:#8b5e22;color:#f5e3b8;}
+
+/* ---- Bible reader: settings, day theme, verse flow, bookmarks, highlights, search, history ---- */
+.bv-gear{flex-shrink:0;width:42px;height:42px;border-radius:50%;border:.5px solid rgba(255,255,255,.14);
+ background:rgba(255,255,255,.03);color:#e8c876;font-size:18px;cursor:pointer;}
+.bv-search{display:flex;gap:8px;padding:8px 12px 2px;}
+.bv-search input{flex:1;background:rgba(255,255,255,.04);border:.5px solid rgba(201,147,58,.35);border-radius:12px;
+ color:#f5e3b8;font-family:'Cormorant Garamond',serif;font-size:17px;padding:10px 14px;outline:none;min-width:0;}
+.bv-search input::placeholder{color:rgba(255,255,255,.35);font-style:italic;}
+.bv-search button{flex-shrink:0;width:42px;border-radius:12px;border:.5px solid rgba(255,255,255,.14);
+ background:rgba(255,255,255,.03);color:rgba(255,255,255,.6);font-size:14px;cursor:pointer;}
+.bv-sres{padding:6px 16px 10px;display:none;}
+.bv-sres.open{display:block;}
+.bv-sres .bv-scount{font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:2px;color:#c9933a;text-transform:uppercase;margin:6px 2px 8px;}
+.bv-sres .bv-sitem{display:block;width:100%;text-align:left;margin:0 0 8px;padding:11px 13px;border-radius:10px;
+ border:.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);cursor:pointer;box-sizing:border-box;}
+.bv-sres .bv-sref{font-family:'Cinzel',serif;font-size:12px;letter-spacing:2px;color:#e8c876;margin-bottom:4px;}
+.bv-sres .bv-stext{font-family:'Cormorant Garamond',serif;font-size:16px;line-height:1.5;color:rgba(245,227,184,.85);}
+.bv-sec{margin:0 4px 6px;}
+.bv-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 14px;}
+.bv-row .bv-lab{font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:2px;color:rgba(245,227,184,.75);text-transform:uppercase;}
+.bv-step{display:flex;align-items:center;gap:10px;}
+.bv-step button{width:38px;height:38px;border-radius:50%;border:.5px solid rgba(201,147,58,.5);background:rgba(201,147,58,.1);
+ color:#e8c876;font-size:18px;line-height:1;cursor:pointer;}
+.bv-step .bv-fsval{font-family:'Cinzel',serif;font-size:15px;color:#f5e3b8;min-width:44px;text-align:center;}
+.bv-seg{display:flex;border:.5px solid rgba(201,147,58,.5);border-radius:999px;overflow:hidden;}
+.bv-seg button{border:0;background:transparent;color:rgba(245,227,184,.6);font-family:'Tenor Sans',sans-serif;
+ font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:10px 16px;cursor:pointer;}
+.bv-seg button.on{background:rgba(201,147,58,.25);color:#e8c876;}
+.bv-list{margin:0 0 6px;}
+.bv-li{display:flex;align-items:center;gap:10px;width:100%;text-align:left;margin:0 0 8px;padding:11px 13px;border-radius:10px;
+ border:.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);cursor:pointer;box-sizing:border-box;}
+.bv-li .bv-lref{font-family:'Cinzel',serif;font-size:12px;letter-spacing:1.5px;color:#e8c876;white-space:nowrap;flex-shrink:0;}
+.bv-li .bv-ltext{flex:1;min-width:0;font-family:'Cormorant Garamond',serif;font-size:15px;color:rgba(245,227,184,.8);
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bv-li .bv-lx{flex-shrink:0;width:30px;height:30px;border-radius:50%;border:0;background:transparent;color:rgba(255,255,255,.45);font-size:14px;cursor:pointer;}
+.bv-empty{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:rgba(255,255,255,.4);margin:4px 2px 14px;}
+.bv-clear{display:block;margin:2px 0 16px;padding:10px 22px;border-radius:999px;border:.5px solid rgba(255,255,255,.16);
+ background:transparent;color:rgba(255,255,255,.6);font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:2px;
+ text-transform:uppercase;cursor:pointer;}
+.bv-act{position:fixed;inset:0;z-index:70;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.55);}
+.bv-act.open{display:flex;}
+.bv-act-card{width:100%;max-width:640px;background:#14141c;border-top:.5px solid rgba(201,147,58,.5);border-radius:18px 18px 0 0;
+ padding:18px 20px 30px;box-sizing:border-box;}
+.bv-act-ref{font-family:'Cinzel',serif;font-size:13px;letter-spacing:2.5px;color:#e8c876;text-align:center;margin-bottom:8px;}
+.bv-act-text{font-family:'Cormorant Garamond',serif;font-size:18px;line-height:1.6;color:rgba(245,227,184,.92);
+ text-align:center;margin:0 0 14px;max-height:30vh;overflow-y:auto;}
+.bv-act-sw{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px;}
+.bv-act-sw span{font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:2px;color:rgba(255,255,255,.5);text-transform:uppercase;}
+.bv-act-sw button{width:34px;height:34px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;}
+.bv-act-sw button.on{border-color:#e8c876;}
+.bv-act-row{display:flex;gap:8px;}
+.bv-act-row button{flex:1;padding:12px 6px;border-radius:12px;border:.5px solid rgba(201,147,58,.45);background:rgba(201,147,58,.1);
+ color:#e8c876;font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;}
+.bv-toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);z-index:80;opacity:0;pointer-events:none;
+ transition:opacity .25s,transform .25s;background:rgba(20,20,28,.95);border:.5px solid rgba(201,147,58,.6);color:#e8c876;
+ font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:11px 22px;border-radius:999px;
+ white-space:nowrap;}
+.bv-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.bv-hl0{background:rgba(201,147,58,.30);}
+.bv-hl1{background:rgba(139,139,74,.32);}
+.bv-hl2{background:rgba(168,94,50,.30);}
+.bv-hl3{background:rgba(96,116,148,.32);}
+p.bv-hl0,p.bv-hl1,p.bv-hl2,p.bv-hl3{border-radius:6px;}
+.bv-bm .bv-vn::after{content:"\25C6";font-size:8px;color:#e8c876;margin-left:5px;vertical-align:middle;}
+.bv-vwrap{text-align:center;padding:10px 22px 8px;}
+.bv-vv{font-family:'Cormorant Garamond',serif;font-size:calc(var(--bv-fs,19px) + 6px);line-height:1.9;
+ color:rgba(245,227,184,.95);margin:14px 0 20px;cursor:pointer;}
+.bv-vnav{display:flex;gap:10px;margin:0 0 8px;}
+.bv-vnav button{flex:1;padding:14px;border-radius:12px;border:.5px solid rgba(201,147,58,.4);background:rgba(201,147,58,.08);
+ color:#e8c876;font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;}
+.bv-vnav button:disabled{opacity:.3;}
+.bv-vhint{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:rgba(255,255,255,.4);margin:10px 0 30px;}
+.bv-p{font-size:var(--bv-fs,19px);}
+/* day theme: parchment paper, same gold serif voice */
+.wv-bible.day{background:linear-gradient(180deg,#f7f0de 0%,#f1e6cc 100%);border-radius:14px;padding-bottom:8px;}
+.wv-bible.day .bv-loc{background:rgba(255,255,255,.55);border-color:rgba(154,107,31,.5);color:#5c3f0e;}
+.wv-bible.day .bv-prev,.wv-bible.day .bv-next,.wv-bible.day .bv-gear{background:rgba(255,255,255,.5);border-color:rgba(154,107,31,.35);color:#8a5f16;}
+.wv-bible.day .bv-trans button{border-color:rgba(154,107,31,.3);background:rgba(255,255,255,.4);color:rgba(92,63,14,.65);}
+.wv-bible.day .bv-trans button.on{border-color:#a5762a;background:rgba(165,118,42,.18);color:#7a5410;}
+.wv-bible.day .bv-chap h2,.wv-bible.day .bv-vwrap h2{color:#6b4a12;}
+.wv-bible.day .bv-trname{color:rgba(92,63,14,.55);}
+.wv-bible.day .bv-p,.wv-bible.day .bv-vv{color:#2c2318;}
+.wv-bible.day .bv-vn{color:#9a6b1f;}
+.wv-bible.day .bv-foot button{background:rgba(165,118,42,.12);border-color:rgba(154,107,31,.5);color:#7a5410;}
+.wv-bible.day .bv-search input{background:rgba(255,255,255,.6);border-color:rgba(154,107,31,.45);color:#2c2318;}
+.wv-bible.day .bv-search input::placeholder{color:rgba(92,63,14,.4);}
+.wv-bible.day .bv-search button{background:rgba(255,255,255,.5);border-color:rgba(154,107,31,.35);color:#7a5410;}
+.wv-bible.day .bv-sres .bv-scount{color:#9a6b1f;}
+.wv-bible.day .bv-sres .bv-sitem{background:rgba(255,255,255,.55);border-color:rgba(154,107,31,.25);}
+.wv-bible.day .bv-sres .bv-sref{color:#7a5410;}
+.wv-bible.day .bv-sres .bv-stext{color:rgba(44,35,24,.88);}
+.wv-bible.day .bv-vnav button{background:rgba(165,118,42,.12);border-color:rgba(154,107,31,.5);color:#7a5410;}
+.wv-bible.day .bv-vhint{color:rgba(92,63,14,.5);}
+.bv-pick.day{background:rgba(247,240,222,.98);}
+.bv-pick.day h3{color:#8a5f16;}
+.bv-pick.day .bv-books button,.bv-pick.day .bv-chaps button{background:rgba(255,255,255,.6);border-color:rgba(154,107,31,.3);color:#3a2c14;}
+.bv-pick.day .bv-pickclose{background:rgba(255,255,255,.6);border-color:rgba(154,107,31,.35);color:#7a5410;}
+.bv-pick.day .bv-back{border-color:rgba(154,107,31,.4);color:#7a5410;}
+.bv-pick.day .bv-row .bv-lab{color:rgba(92,63,14,.7);}
+.bv-pick.day .bv-step button{border-color:rgba(154,107,31,.55);background:rgba(165,118,42,.14);color:#7a5410;}
+.bv-pick.day .bv-step .bv-fsval{color:#5c3f0e;}
+.bv-pick.day .bv-seg{border-color:rgba(154,107,31,.55);}
+.bv-pick.day .bv-seg button{color:rgba(92,63,14,.6);}
+.bv-pick.day .bv-seg button.on{background:rgba(165,118,42,.22);color:#6b4a12;}
+.bv-pick.day .bv-li{background:rgba(255,255,255,.55);border-color:rgba(154,107,31,.25);}
+.bv-pick.day .bv-li .bv-lref{color:#7a5410;}
+.bv-pick.day .bv-li .bv-ltext{color:rgba(44,35,24,.82);}
+.bv-pick.day .bv-li .bv-lx{color:rgba(92,63,14,.5);}
+.bv-pick.day .bv-empty{color:rgba(92,63,14,.45);}
+.bv-pick.day .bv-clear{border-color:rgba(154,107,31,.4);color:#7a5410;}
+.bv-act.day .bv-act-card{background:#f7f0de;border-top-color:rgba(154,107,31,.5);}
+.bv-act.day .bv-act-ref{color:#7a5410;}
+.bv-act.day .bv-act-text{color:#2c2318;}
+.bv-act.day .bv-act-sw span{color:rgba(92,63,14,.55);}
+.bv-act.day .bv-act-row button{border-color:rgba(154,107,31,.5);background:rgba(165,118,42,.12);color:#7a5410;}
+.bv-toast.day{background:rgba(247,240,222,.97);border-color:rgba(154,107,31,.6);color:#7a5410;}
+/* swipe selection + compact color toggle */
+#bvChap p[data-vi]{touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
+.bv-sel{outline:1.5px dashed rgba(201,147,58,.85);outline-offset:3px;border-radius:6px;}
+.bv-ctog{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(16px);z-index:75;
+ opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;
+ background:rgba(20,20,28,.97);border:.5px solid rgba(201,147,58,.6);border-radius:16px;
+ padding:10px 14px;max-width:94vw;box-sizing:border-box;}
+.bv-ctog.open{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0);}
+.bv-ctog-chips{display:flex;gap:6px;justify-content:center;margin-bottom:8px;flex-wrap:wrap;max-width:72vw;}
+.bv-ctog-chips:empty{display:none;}
+.bv-chip{display:flex;align-items:center;gap:5px;border:.5px solid rgba(255,255,255,.16);background:rgba(255,255,255,.04);
+ color:#f5e3b8;border-radius:999px;padding:6px 11px;font-family:'Tenor Sans',sans-serif;font-size:11px;cursor:pointer;}
+.bv-chip.on{border-color:#c9933a;background:rgba(201,147,58,.22);color:#e8c876;}
+.bv-chip-d{width:10px;height:10px;border-radius:50%;display:inline-block;}
+.bv-ctog-row{display:flex;gap:8px;align-items:center;justify-content:center;}
+.bv-dot{width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,255,255,.25);cursor:pointer;padding:0;flex-shrink:0;}
+.bv-ctog-txt{border:0;background:transparent;color:#e8c876;font-family:'Tenor Sans',sans-serif;font-size:10px;
+ letter-spacing:2px;text-transform:uppercase;cursor:pointer;padding:8px 6px;flex-shrink:0;}
+.bv-ctog.day{background:rgba(247,240,222,.98);border-color:rgba(154,107,31,.6);}
+.bv-ctog.day .bv-chip{border-color:rgba(154,107,31,.35);background:rgba(255,255,255,.5);color:#5c3f0e;}
+.bv-ctog.day .bv-chip.on{border-color:#a5762a;background:rgba(165,118,42,.2);color:#6b4a12;}
+.bv-ctog.day .bv-ctog-txt{color:#7a5410;}
+.bv-ctog.day .bv-dot{border-color:rgba(154,107,31,.35);}
 </style>
 </head>
 <body>
@@ -188,10 +330,16 @@ body{font-family:'Tenor Sans',sans-serif;color:#f5e3b8;min-height:100vh;}
     <button class="bv-prev" id="bvPrevTop" aria-label="Previous chapter">&#10094;</button>
     <button class="bv-loc" id="bvLoc">Genesis 1</button>
     <button class="bv-next" id="bvNextTop" aria-label="Next chapter">&#10095;</button>
+    <button class="bv-gear" id="bvGear" aria-label="Reader settings">&#9881;</button>
   </div>
   <div class="bv-trans" id="bvTrans"></div>
+  <div class="bv-search">
+    <input id="bvSearch" type="search" placeholder="Search the Scriptures" aria-label="Search the Bible" autocomplete="off">
+    <button id="bvSearchClear" aria-label="Clear search">&#10005;</button>
+  </div>
+  <div class="bv-sres" id="bvSearchRes"></div>
   <div class="bv-chap" id="bvChap"></div>
-  <div class="bv-foot">
+  <div class="bv-foot" id="bvFoot">
     <button id="bvPrev">&#10094; Previous</button>
     <button id="bvNext">Next &#10095;</button>
   </div>
@@ -200,6 +348,27 @@ body{font-family:'Tenor Sans',sans-serif;color:#f5e3b8;min-height:100vh;}
   <button class="bv-pickclose" id="bvPickClose">&#10005;</button>
   <div id="bvPickBody"></div>
 </div>
+<div class="bv-pick" id="bvMenu">
+  <button class="bv-pickclose" id="bvMenuClose">&#10005;</button>
+  <div id="bvMenuBody"></div>
+</div>
+<div class="bv-act" id="bvAct">
+  <div class="bv-act-card">
+    <div class="bv-act-ref" id="bvActRef"></div>
+    <p class="bv-act-text" id="bvActText"></p>
+    <div class="bv-act-sw" id="bvActSw"></div>
+    <div class="bv-act-row">
+      <button id="bvActBm">Bookmark</button>
+      <button id="bvActCopy">Copy verse</button>
+      <button id="bvActClose">Close</button>
+    </div>
+  </div>
+</div>
+<div class="bv-ctog" id="bvCtog">
+  <div class="bv-ctog-chips" id="bvCtogChips"></div>
+  <div class="bv-ctog-row" id="bvCtogRow"></div>
+</div>
+<div class="bv-toast" id="bvToast"></div>
 <div class="wv-scrim" id="scrim"></div>
 <aside class="wv-drawer" id="drawer">
   <div class="wv-dr-title">SCRIPTURE</div>
@@ -652,14 +821,21 @@ function openVerse(c){
   heldCard = c; c.held = true;
   clearTimeout(c.timer); c.timer = null;
   const v = WALL_VERSES[c.vi];
-  overlay.style.background = c.skin.bg;
-  document.getElementById("ovQuote").style.color = c.skin.accent;
+  let dayMode = false;
+  try{ dayMode = !!((JSON.parse(localStorage.getItem("wv-bible-set") || "null") || {}).day); }catch(_){}
+  overlay.classList.toggle("day", dayMode);
+  overlay.style.background = dayMode
+    ? "linear-gradient(145deg,#f5ead0,#ede0c0,#ddd0a8)"
+    : "linear-gradient(160deg,#0c1424,#101b30,#16233d)";
+  const txc = dayMode ? "#3a2208" : "#f5e3b8";
+  const acc = dayMode ? "#8b5e22" : "#c9933a";
+  document.getElementById("ovQuote").style.color = acc;
   const ot = document.getElementById("ovText");
-  ot.textContent = v.t; ot.style.color = c.skin.text;
+  ot.textContent = v.t; ot.style.color = txc;
   ot.style.fontFamily = c.type.font; ot.style.fontStyle = c.type.style;
   ot.style.fontWeight = c.type.weight; ot.style.letterSpacing = c.type.ls;
   const or = document.getElementById("ovRef");
-  or.textContent = v.r; or.style.color = c.skin.accent;
+  or.textContent = v.r; or.style.color = acc;
   overlay.classList.add("open");
   c.shareFile = null;
   renderShareImage(c).then(f => { c.shareFile = f; });
@@ -1044,7 +1220,7 @@ const Bible = (() => {
     bi = Math.max(0, Math.min(65, bi));
     ci = Math.max(0, Math.min(d.books[bi].c.length - 1, ci));
   }
-  function savePos(){ try{ localStorage.setItem("wv-bible-pos", JSON.stringify({bi:bi, ci:ci})); }catch(_){} }
+  function savePos(){ try{ localStorage.setItem("wv-bible-pos", JSON.stringify({bi:bi, ci:ci, vi:vi})); }catch(_){} }
   function renderTrans(){
     const host = $("bvTrans"); host.innerHTML = "";
     CODES.forEach(pair => {
@@ -1062,25 +1238,57 @@ const Bible = (() => {
       host.appendChild(b);
     });
   }
+  function firstNZ(vs){ for(let i = 0; i < vs.length; i++) if(vs[i]) return i; return 0; }
+  function lastNZ(vs){ for(let i = vs.length - 1; i >= 0; i--) if(vs[i]) return i; return vs.length - 1; }
   function renderChap(){
     const d = cache[code]; if(!d) return;
     clamp();
     const names = bookNames();
-    $("bvLoc").textContent = names[bi] + " " + (ci + 1);
     const verses = d.books[bi].c[ci];
+    if(flow === "verse"){
+      if(vi < 0 || vi >= verses.length) vi = firstNZ(verses);
+      while(vi < verses.length && !verses[vi]) vi++;
+      if(vi >= verses.length) vi = firstNZ(verses);
+    }
     if(hlVerse >= verses.length) hlVerse = verses.length - 1;
-    let h = "<h2>" + esc(names[bi]) + " " + (ci + 1) + "</h2>";
+    const locRef = names[bi] + " " + (ci + 1) + (flow === "verse" ? ":" + (vi + 1) : "");
+    $("bvLoc").textContent = locRef;
+    let h = "<h2>" + esc(locRef) + "</h2>";
     h += '<div class="bv-trname">' + esc(TRNAMES[code]) + "</div>";
-    for(let i = 0; i < verses.length; i++){
-      h += '<p class="bv-p"' + (i === hlVerse ? ' id="bvHl"' : "") + '><span class="bv-vn">' + (i+1) + "</span>" + esc(verses[i]) + "</p>";
+    if(flow === "verse"){
+      const t = verses[vi] || "";
+      h += '<div class="bv-vwrap"><p class="bv-vv' + hlClass(vi) + (isBmIdx(vi) ? " bv-bm" : "") + '" data-vi="' + vi + '"><span class="bv-vn">' + (vi+1) + "</span>" + esc(t) + "</p>";
+      h += '<div class="bv-vnav"><button id="bvVPrev">&#10094; Prev verse</button><button id="bvVNext">Next verse &#10095;</button></div>';
+      h += '<p class="bv-vhint">Tap the verse for bookmark, highlight and copy.</p></div>';
+    }else{
+      for(let i = 0; i < verses.length; i++){
+        h += '<p class="bv-p' + hlClass(i) + (isBmIdx(i) ? " bv-bm" : "") + '" data-vi="' + i + '"' + (i === hlVerse ? ' id="bvHl"' : "") + '><span class="bv-vn">' + (i+1) + "</span>" + esc(verses[i]) + "</p>";
+      }
     }
     $("bvChap").innerHTML = h;
-    const atStart = (bi === 0 && ci === 0);
-    const atEnd = (bi === 65 && ci === d.books[65].c.length - 1);
+    closeCtog();
+    const vvP = $("bvVPrev"), vvN = $("bvVNext");
+    if(vvP) vvP.addEventListener("click", () => stepVerse(-1));
+    if(vvN) vvN.addEventListener("click", () => stepVerse(1));
+    $("bvFoot").style.display = flow === "verse" ? "none" : "";
+    let atStart, atEnd;
+    if(flow === "verse"){
+      atStart = (bi === 0 && ci === 0 && vi === firstNZ(verses));
+      const lastBook = d.books[65], lastCh = lastBook.c[lastBook.c.length - 1];
+      atEnd = (bi === 65 && ci === lastBook.c.length - 1 && vi === lastNZ(lastCh));
+    }else{
+      atStart = (bi === 0 && ci === 0);
+      atEnd = (bi === 65 && ci === d.books[65].c.length - 1);
+    }
     ["bvPrev","bvPrevTop"].forEach(id => { $(id).disabled = atStart; });
     ["bvNext","bvNextTop"].forEach(id => { $(id).disabled = atEnd; });
+    if(vvP) vvP.disabled = atStart;
+    if(vvN) vvN.disabled = atEnd;
     savePos();
-    if(hlVerse >= 0){
+    recHist();
+    if(flow === "verse"){
+      window.scrollTo(0, 0);
+    }else if(hlVerse >= 0){
       const el = document.getElementById("bvHl");
       if(el){ el.classList.add("bv-hl"); setTimeout(() => { try{ el.scrollIntoView({block:"center"}); }catch(_){} }, 80); }
       hlVerse = -1;
@@ -1089,6 +1297,7 @@ const Bible = (() => {
     }
   }
   function step(dir){
+    if(flow === "verse"){ stepVerse(dir); return; }
     const d = cache[code]; if(!d) return;
     ci += dir;
     if(ci < 0){
@@ -1130,11 +1339,17 @@ const Bible = (() => {
   function closePicker(){ $("bvPick").classList.remove("open"); }
   async function open(){
     renderTrans();
+    applySettings();
     if(await ensure()) renderChap();
   }
   async function openAt(ref){
     const p = parseRef(ref);
-    if(p){ bi = p.bi; ci = p.ci; hlVerse = p.vi; }
+    if(p){
+      bi = p.bi; ci = p.ci;
+      lastVi = {bi:p.bi, ci:p.ci, vi:p.vi};
+      if(flow === "verse"){ vi = p.vi; hlVerse = -1; }
+      else hlVerse = p.vi;
+    }
     if(view !== "bible") setView("bible");
     else if(await ensure()) renderChap();
   }
@@ -1150,6 +1365,455 @@ const Bible = (() => {
     closeVerse();
     if(c && WALL_VERSES[c.vi]) openAt(WALL_VERSES[c.vi].r);
   });
+/* ---------------- Bible reader settings: font size, night/day, verse flow ---------------- */
+  let fs = 19, day = false, flow = "chapter", vi = 0, lastVi = {bi:0, ci:0, vi:0};
+  let bms = [], hls = {}, hist = {}, sIdx = null, sCode = "", sDeb = null, actCtx = null, toastT = null;
+  const HLC = ["rgba(201,147,58,.30)","rgba(139,139,74,.32)","rgba(168,94,50,.30)","rgba(96,116,148,.32)"];
+  try{
+    const st = JSON.parse(localStorage.getItem("wv-bible-set") || "null");
+    if(st){
+      if(+st.fs >= 14 && +st.fs <= 28) fs = +st.fs;
+      day = !!st.day;
+      if(st.flow === "verse" || st.flow === "chapter") flow = st.flow;
+    }
+    const ps = JSON.parse(localStorage.getItem("wv-bible-pos") || "null");
+    if(ps && +ps.vi >= 0) vi = +ps.vi;
+    bms = JSON.parse(localStorage.getItem("wv-bible-bm") || "[]") || [];
+    hls = JSON.parse(localStorage.getItem("wv-bible-hl") || "{}") || {};
+    hist = JSON.parse(localStorage.getItem("wv-bible-hist") || "[]") || [];
+  }catch(_){ bms = []; hls = {}; hist = []; }
+  function saveSet(){ try{ localStorage.setItem("wv-bible-set", JSON.stringify({fs:fs, day:day, flow:flow})); }catch(_){} }
+  function saveBm(){ try{ localStorage.setItem("wv-bible-bm", JSON.stringify(bms.slice(0, 200))); }catch(_){} }
+  function saveHl(){ try{ localStorage.setItem("wv-bible-hl", JSON.stringify(hls)); }catch(_){} }
+  function saveHist(){ try{ localStorage.setItem("wv-bible-hist", JSON.stringify(hist.slice(0, 20))); }catch(_){} }
+  function hlKey(i){ return code + "|" + bi + "|" + ci + "|" + i; }
+  function hlClass(i){ const k = hlKey(i); return (k in hls) ? " bv-hl" + hls[k] : ""; }
+  function isBmIdx(i){ return bms.some(x => x.code === code && x.bi === bi && x.ci === ci && x.vi === i); }
+  function applySettings(){
+    const bp = document.getElementById("biblepane");
+    if(bp) bp.style.setProperty("--bv-fs", fs + "px");
+    ["biblepane","bvMenu","bvAct","bvPick","bvCtog"].forEach(id => {
+      const el = document.getElementById(id); if(el) el.classList.toggle("day", day);
+    });
+    const ts = $("bvToast"); if(ts) ts.classList.toggle("day", day);
+    const fv = $("bvFsVal"); if(fv) fv.textContent = fs;
+    document.querySelectorAll("#bvSegTheme button").forEach(b => b.classList.toggle("on", (b.dataset.v === "day") === day));
+    document.querySelectorAll("#bvSegFlow button").forEach(b => b.classList.toggle("on", b.dataset.v === flow));
+  }
+  function setFs(nf){ fs = Math.max(14, Math.min(28, nf)); saveSet(); applySettings(); }
+  function setFlow(f){
+    if(f === flow) return;
+    if(f === "verse"){
+      const d = cache[code];
+      if(d){
+        vi = (lastVi.bi === bi && lastVi.ci === ci) ? lastVi.vi : 0;
+        const vs = d.books[bi].c[ci];
+        if(vi < 0 || vi >= vs.length) vi = 0;
+        while(vi < vs.length && !vs[vi]) vi++;
+        if(vi >= vs.length) vi = firstNZ(vs);
+      }
+    }
+    flow = f; saveSet(); renderChap(); applySettings();
+  }
+  function stepVerse(dir){
+    const d = cache[code]; if(!d) return;
+    if(dir > 0){
+      let nvi = vi + 1;
+      const vs = d.books[bi].c[ci];
+      while(nvi < vs.length && !vs[nvi]) nvi++;
+      if(nvi < vs.length){ vi = nvi; }
+      else{
+        let nbi = bi, nci = ci + 1;
+        if(nci >= d.books[nbi].c.length){ if(nbi === 65) return; nbi++; nci = 0; }
+        bi = nbi; ci = nci;
+        const nv = d.books[bi].c[ci];
+        vi = firstNZ(nv);
+      }
+    }else{
+      let nvi = vi - 1;
+      const vs = d.books[bi].c[ci];
+      while(nvi >= 0 && !vs[nvi]) nvi--;
+      if(nvi >= 0){ vi = nvi; }
+      else{
+        let nbi = bi, nci = ci - 1;
+        if(nci < 0){ if(nbi === 0) return; nbi--; nci = d.books[nbi].c.length - 1; }
+        bi = nbi; ci = nci;
+        const nv = d.books[bi].c[ci];
+        vi = lastNZ(nv);
+      }
+    }
+    renderChap();
+  }
+  function recHist(){
+    const key = code + "|" + bi + "|" + ci + "|" + (flow === "verse" ? vi : -1);
+    if(hist.length && hist[0].key === key) return;
+    hist = hist.filter(x => x.key !== key);
+    hist.unshift({key:key, code:code, bi:bi, ci:ci, vi:(flow === "verse" ? vi : -1)});
+    hist = hist.slice(0, 20);
+    saveHist();
+  }
+  function refLabel(en){
+    return BOOKS66[en.bi] + " " + (en.ci + 1) + (en.vi >= 0 ? ":" + (en.vi + 1) : "");
+  }
+  async function jumpTo(code_, bi_, ci_, vi_){
+    if(code_ !== code){
+      code = code_;
+      try{ localStorage.setItem("wv-bible-tr", code); }catch(_){}
+      renderTrans();
+      sIdx = null;
+    }
+    bi = bi_; ci = ci_;
+    lastVi = {bi:bi_, ci:ci_, vi: vi_ >= 0 ? vi_ : 0};
+    if(flow === "verse"){ vi = vi_ >= 0 ? vi_ : 0; hlVerse = -1; }
+    else hlVerse = vi_ >= 0 ? vi_ : -1;
+    $("bvMenu").classList.remove("open");
+    clearSearch();
+    if(await ensure()){ clamp(); renderChap(); }
+  }
+  function renderBmList(){
+    const host = $("bvBmList"); if(!host) return;
+    if(!bms.length){ host.innerHTML = '<div class="bv-empty">No bookmarks yet. Tap any verse to bookmark it.</div>'; return; }
+    host.innerHTML = "";
+    bms.forEach(bm => {
+      const b = document.createElement("button");
+      b.className = "bv-li";
+      const xr = document.createElement("span");
+      xr.className = "bv-lx"; xr.setAttribute("aria-label", "Remove bookmark"); xr.textContent = "✕";
+      const lr = document.createElement("span");
+      lr.className = "bv-lref"; lr.textContent = bm.ref + " · " + bm.code.toUpperCase();
+      const lt = document.createElement("span");
+      lt.className = "bv-ltext"; lt.textContent = bm.text;
+      b.appendChild(lr); b.appendChild(lt); b.appendChild(xr);
+      b.addEventListener("click", () => jumpTo(bm.code, bm.bi, bm.ci, bm.vi));
+      xr.addEventListener("click", e => {
+        e.stopPropagation();
+        bms = bms.filter(x => x !== bm);
+        saveBm(); renderBmList(); refreshVerseMarks(); toast("Bookmark removed");
+      });
+      host.appendChild(b);
+    });
+  }
+  function renderHistList(){
+    const host = $("bvHistList"); if(!host) return;
+    if(!hist.length){ host.innerHTML = '<div class="bv-empty">Nothing read yet.</div>'; return; }
+    host.innerHTML = "";
+    hist.forEach(en => {
+      const b = document.createElement("button");
+      b.className = "bv-li";
+      const lr = document.createElement("span");
+      lr.className = "bv-lref"; lr.textContent = refLabel(en) + " · " + en.code.toUpperCase();
+      b.appendChild(lr);
+      b.addEventListener("click", () => jumpTo(en.code, en.bi, en.ci, en.vi));
+      host.appendChild(b);
+    });
+  }
+  function renderMenu(){
+    const body = $("bvMenuBody");
+    let h = '<h3>Reading settings</h3><div class="bv-sec">';
+    h += '<div class="bv-row"><span class="bv-lab">Text size</span><div class="bv-step"><button id="bvFsDown" aria-label="Smaller text">-</button><span class="bv-fsval" id="bvFsVal">' + fs + '</span><button id="bvFsUp" aria-label="Larger text">+</button></div></div>';
+    h += '<div class="bv-row"><span class="bv-lab">Appearance</span><div class="bv-seg" id="bvSegTheme"><button data-v="night">Night</button><button data-v="day">Day</button></div></div>';
+    h += '<div class="bv-row"><span class="bv-lab">Reading flow</span><div class="bv-seg" id="bvSegFlow"><button data-v="chapter">Chapter</button><button data-v="verse">Verse</button></div></div>';
+    h += '</div>';
+    h += '<h3>Bookmarks</h3><div class="bv-list" id="bvBmList"></div>';
+    h += '<h3>Recently read</h3><div class="bv-list" id="bvHistList"></div>';
+    h += '<button class="bv-clear" id="bvHistClear">Clear history</button>';
+    body.innerHTML = h;
+    $("bvFsDown").addEventListener("click", () => setFs(fs - 2));
+    $("bvFsUp").addEventListener("click", () => setFs(fs + 2));
+    body.querySelectorAll("#bvSegTheme button").forEach(b => b.addEventListener("click", () => {
+      day = (b.dataset.v === "day"); saveSet(); applySettings();
+    }));
+    body.querySelectorAll("#bvSegFlow button").forEach(b => b.addEventListener("click", () => setFlow(b.dataset.v)));
+    $("bvHistClear").addEventListener("click", () => { hist = []; saveHist(); renderHistList(); toast("History cleared"); });
+    renderBmList(); renderHistList(); applySettings();
+  }
+  function refreshVerseMarks(){
+    document.querySelectorAll("#bvChap p[data-vi]").forEach(p => {
+      const i = +p.dataset.vi;
+      p.classList.remove("bv-hl0","bv-hl1","bv-hl2","bv-hl3");
+      const hc = hlClass(i);
+      if(hc) hc.trim().split(" ").forEach(c => p.classList.add(c));
+      p.classList.toggle("bv-bm", isBmIdx(i));
+    });
+  }
+  function renderSwatches(){
+    const host = $("bvActSw");
+    host.innerHTML = "";
+    const lab = document.createElement("span"); lab.textContent = "Highlight"; host.appendChild(lab);
+    const k = actCtx.code + "|" + actCtx.bi + "|" + actCtx.ci + "|" + actCtx.vi;
+    const cur = hls[k];
+    HLC.forEach((c, idx) => {
+      const b = document.createElement("button");
+      b.style.background = c;
+      b.setAttribute("aria-label", "Highlight color " + (idx + 1));
+      if(cur === idx) b.classList.add("on");
+      b.addEventListener("click", () => {
+        if(hls[k] === idx) delete hls[k]; else hls[k] = idx;
+        saveHl(); renderSwatches(); refreshVerseMarks();
+        toast(hls[k] === idx ? "Highlight added" : "Highlight removed");
+      });
+      host.appendChild(b);
+    });
+  }
+  function openAct(bi_, ci_, vi_){
+    const d = cache[code]; if(!d) return;
+    const text = (d.books[bi_] && d.books[bi_].c[ci_] && d.books[bi_].c[ci_][vi_]) || "";
+    if(!text) return;
+    closeCtog();
+    actCtx = {bi:bi_, ci:ci_, vi:vi_, code:code, text:text};
+    lastVi = {bi:bi_, ci:ci_, vi:vi_};
+    $("bvActRef").textContent = bookNames()[bi_] + " " + (ci_ + 1) + ":" + (vi_ + 1) + " · " + code.toUpperCase();
+    $("bvActText").textContent = text;
+    renderSwatches();
+    $("bvActBm").textContent = isBmCtx() ? "Remove bookmark" : "Bookmark";
+    $("bvAct").classList.add("open");
+  }
+  function isBmCtx(){
+    return !!actCtx && bms.some(x => x.code === actCtx.code && x.bi === actCtx.bi && x.ci === actCtx.ci && x.vi === actCtx.vi);
+  }
+  function toggleBm(){
+    if(!actCtx) return;
+    const i = bms.findIndex(x => x.code === actCtx.code && x.bi === actCtx.bi && x.ci === actCtx.ci && x.vi === actCtx.vi);
+    if(i >= 0){ bms.splice(i, 1); toast("Bookmark removed"); }
+    else{
+      bms.unshift({code:actCtx.code, bi:actCtx.bi, ci:actCtx.ci, vi:actCtx.vi, text:actCtx.text,
+        ref: bookNames()[actCtx.bi] + " " + (actCtx.ci + 1) + ":" + (actCtx.vi + 1)});
+      if(bms.length > 200) bms.length = 200;
+      toast("Bookmark added");
+    }
+    saveBm();
+    $("bvActBm").textContent = isBmCtx() ? "Remove bookmark" : "Bookmark";
+    refreshVerseMarks();
+  }
+  function toast(msg){
+    const t = $("bvToast");
+    t.textContent = msg;
+    t.classList.add("show");
+    if(toastT) clearTimeout(toastT);
+    toastT = setTimeout(() => t.classList.remove("show"), 1800);
+  }
+  function copyVerse(){
+    if(!actCtx) return;
+    const ref = bookNames()[actCtx.bi] + " " + (actCtx.ci + 1) + ":" + (actCtx.vi + 1);
+    const s = '"' + actCtx.text + '" - ' + ref + ' (' + actCtx.code.toUpperCase() + ')';
+    const done = () => toast("Copied to clipboard");
+    const fallback = () => {
+      try{
+        const ta = document.createElement("textarea");
+        ta.value = s; ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta); ta.select();
+        const ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        toast(ok ? "Copied to clipboard" : "Copy not available");
+      }catch(_){ toast("Copy not available"); }
+    };
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(s).then(done).catch(fallback);
+      else fallback();
+    }catch(_){ fallback(); }
+  }
+  function buildSearchIdx(){
+    const d = cache[code]; if(!d) return false;
+    if(sCode === code && sIdx) return true;
+    sIdx = [];
+    d.books.forEach((b, bii) => b.c.forEach((ch, cii) => ch.forEach((v, vii) => {
+      if(v) sIdx.push({bi:bii, ci:cii, vi:vii, t:v});
+    })));
+    sCode = code;
+    return true;
+  }
+  function doSearch(q){
+    const box = $("bvSearchRes");
+    q = (q || "").trim().toLowerCase();
+    if(q.length < 2){ box.classList.remove("open"); box.innerHTML = ""; return; }
+    if(!buildSearchIdx()) return;
+    const out = [];
+    for(let i = 0; i < sIdx.length; i++){
+      if(sIdx[i].t.toLowerCase().indexOf(q) >= 0){ out.push(sIdx[i]); if(out.length >= 120) break; }
+    }
+    box.innerHTML = "";
+    const names = bookNames();
+    const c = document.createElement("div");
+    c.className = "bv-scount";
+    c.textContent = out.length ? (out.length + (out.length >= 120 ? "+" : "") + " results in " + code.toUpperCase()) : ("No results in " + code.toUpperCase());
+    box.appendChild(c);
+    out.forEach(e => {
+      const ref = names[e.bi] + " " + (e.ci + 1) + ":" + (e.vi + 1);
+      const snip = e.t.length > 110 ? e.t.slice(0, 110) + "..." : e.t;
+      const b = document.createElement("button");
+      b.className = "bv-sitem";
+      const r = document.createElement("div"); r.className = "bv-sref"; r.textContent = ref;
+      const t = document.createElement("div"); t.className = "bv-stext"; t.textContent = snip;
+      b.appendChild(r); b.appendChild(t);
+      b.addEventListener("click", () => jumpTo(code, e.bi, e.ci, e.vi));
+      box.appendChild(b);
+    });
+    box.classList.add("open");
+  }
+  function clearSearch(){
+    const inp = $("bvSearch");
+    if(inp) inp.value = "";
+    const box = $("bvSearchRes");
+    box.classList.remove("open"); box.innerHTML = "";
+  }
+  $("bvGear").addEventListener("click", () => { renderMenu(); $("bvMenu").classList.add("open"); });
+  $("bvMenuClose").addEventListener("click", () => $("bvMenu").classList.remove("open"));
+  $("bvChap").addEventListener("click", e => {
+    if(swiped){ swiped = false; return; }
+    const p = e.target && e.target.closest ? e.target.closest("p[data-vi]") : null;
+    if(p && p.dataset.vi !== undefined) openAct(bi, ci, +p.dataset.vi);
+  });
+  $("bvActClose").addEventListener("click", () => $("bvAct").classList.remove("open"));
+  $("bvAct").addEventListener("click", e => { if(e.target === $("bvAct")) $("bvAct").classList.remove("open"); });
+  $("bvActBm").addEventListener("click", toggleBm);
+  $("bvActCopy").addEventListener("click", copyVerse);
+  $("bvSearch").addEventListener("input", e => {
+    if(sDeb) clearTimeout(sDeb);
+    const v = e.target.value;
+    sDeb = setTimeout(() => doSearch(v), 250);
+  });
+  $("bvSearchClear").addEventListener("click", clearSearch);
+
+/* ---------------- swipe to select verses, compact color toggle ---------------- */
+  let selStart = null, selMode = false, selVerses = [], swiped = false, lpTimer = null, ctogTarget = "all";
+  function verseText(vi_){
+    const d = cache[code];
+    return (d && d.books[bi] && d.books[bi].c[ci]) ? (d.books[bi].c[ci][vi_] || "") : "";
+  }
+  function paintSel(){
+    $("bvChap").querySelectorAll("p[data-vi]").forEach(p => {
+      p.classList.toggle("bv-sel", selVerses.indexOf(+p.dataset.vi) >= 0);
+    });
+  }
+  function clearSel(){ selVerses = []; paintSel(); }
+  function closeCtog(){ $("bvCtog").classList.remove("open"); clearSel(); }
+  function enterSelMode(){
+    if(selMode || !selStart) return;
+    if(!verseText(selStart.vi)) return;
+    selMode = true; swiped = true;
+    selVerses = [selStart.vi];
+    paintSel();
+  }
+  $("bvChap").addEventListener("pointerdown", e => {
+    if(!e.isPrimary) return;
+    const p = e.target && e.target.closest ? e.target.closest("p[data-vi]") : null;
+    if(!p) return;
+    selStart = {vi:+p.dataset.vi, x:e.clientX, y:e.clientY, lx:e.clientX, ly:e.clientY, id:e.pointerId};
+    selMode = false; swiped = false;
+    if(lpTimer){ clearTimeout(lpTimer); lpTimer = null; }
+    lpTimer = setTimeout(() => {
+      if(selStart && !selMode){
+        const dx = Math.abs(selStart.lx - selStart.x), dy = Math.abs(selStart.ly - selStart.y);
+        if(dx < 12 && dy < 12) enterSelMode();
+      }
+      lpTimer = null;
+    }, 450);
+  });
+  $("bvChap").addEventListener("pointermove", e => {
+    if(!selStart || e.pointerId !== selStart.id) return;
+    selStart.lx = e.clientX; selStart.ly = e.clientY;
+    const dx = e.clientX - selStart.x, dy = e.clientY - selStart.y;
+    const adx = Math.abs(dx), ady = Math.abs(dy);
+    if(!selMode){
+      if(adx > 44 && adx > ady * 1.6){ enterSelMode(); }
+      else if(Math.max(adx, ady) > 12){
+        if(lpTimer){ clearTimeout(lpTimer); lpTimer = null; }
+        if(Math.max(adx, ady) > 18) swiped = true;
+      }
+      return;
+    }
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const p = el && el.closest ? el.closest("p[data-vi]") : null;
+    const endVi = p ? +p.dataset.vi : selStart.vi;
+    const a = Math.min(selStart.vi, endVi), b = Math.max(selStart.vi, endVi);
+    selVerses = [];
+    for(let i = a; i <= b; i++){ if(verseText(i)) selVerses.push(i); }
+    paintSel();
+  });
+  $("bvChap").addEventListener("touchmove", e => {
+    if(selMode){ try{ e.preventDefault(); }catch(_){} }
+  }, {passive:false});
+  function endSel(e){
+    if(lpTimer){ clearTimeout(lpTimer); lpTimer = null; }
+    if(selStart && e.pointerId === selStart.id){
+      if(selMode){
+        if(selVerses.length) openCtog();
+        else clearSel();
+      }
+      selStart = null; selMode = false;
+    }
+  }
+  $("bvChap").addEventListener("pointerup", endSel);
+  $("bvChap").addEventListener("pointercancel", () => {
+    if(lpTimer){ clearTimeout(lpTimer); lpTimer = null; }
+    selStart = null; selMode = false; clearSel();
+  });
+  function openCtog(){
+    ctogTarget = "all";
+    renderCtog();
+    $("bvMenu").classList.remove("open");
+    $("bvAct").classList.remove("open");
+    $("bvCtog").classList.add("open");
+  }
+  function renderCtog(){
+    const chips = $("bvCtogChips"), row = $("bvCtogRow");
+    chips.innerHTML = ""; row.innerHTML = "";
+    if(selVerses.length > 1){
+      const all = document.createElement("button");
+      all.className = "bv-chip" + (ctogTarget === "all" ? " on" : "");
+      all.textContent = "All";
+      all.addEventListener("click", () => { ctogTarget = "all"; renderCtog(); });
+      chips.appendChild(all);
+      selVerses.forEach(vi_ => {
+        const k = code + "|" + bi + "|" + ci + "|" + vi_;
+        const col = (k in hls) ? hls[k] : -1;
+        const c = document.createElement("button");
+        c.className = "bv-chip" + (ctogTarget === vi_ ? " on" : "");
+        const n = document.createElement("span"); n.textContent = (vi_ + 1);
+        c.appendChild(n);
+        if(col >= 0){
+          const d = document.createElement("span");
+          d.className = "bv-chip-d"; d.style.background = HLC[col];
+          c.appendChild(d);
+        }
+        c.addEventListener("click", () => { ctogTarget = vi_; renderCtog(); });
+        chips.appendChild(c);
+      });
+    }else if(selVerses.length === 1){
+      ctogTarget = selVerses[0];
+    }
+    HLC.forEach((cc, idx) => {
+      const b = document.createElement("button");
+      b.className = "bv-dot";
+      b.style.background = cc;
+      b.setAttribute("aria-label", "Highlight color " + (idx + 1));
+      b.addEventListener("click", () => ctogApply(idx));
+      row.appendChild(b);
+    });
+    const clr = document.createElement("button");
+    clr.className = "bv-ctog-txt"; clr.textContent = "Clear";
+    clr.addEventListener("click", ctogClear);
+    row.appendChild(clr);
+    const done = document.createElement("button");
+    done.className = "bv-ctog-txt"; done.textContent = "Done";
+    done.addEventListener("click", closeCtog);
+    row.appendChild(done);
+  }
+  function ctogApply(idx){
+    if(!selVerses.length) return;
+    const targets = ctogTarget === "all" ? selVerses.slice() : [ctogTarget];
+    targets.forEach(vi_ => {
+      const k = code + "|" + bi + "|" + ci + "|" + vi_;
+      if(ctogTarget !== "all" && hls[k] === idx) delete hls[k];
+      else hls[k] = idx;
+    });
+    saveHl(); refreshVerseMarks(); renderCtog();
+  }
+  function ctogClear(){
+    selVerses.forEach(vi_ => { delete hls[code + "|" + bi + "|" + ci + "|" + vi_]; });
+    saveHl(); refreshVerseMarks(); renderCtog();
+  }
+
   return {open:open, openAt:openAt};
 })();
 
