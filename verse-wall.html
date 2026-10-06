@@ -236,7 +236,6 @@ p.bv-hl0,p.bv-hl1,p.bv-hl2,p.bv-hl3{border-radius:6px;}
 #bvFlowTrack::-webkit-scrollbar{display:none;}
 .bv-flow-slide{height:100vh;height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:9vmin 12vmin;box-sizing:border-box;transition:background .6s ease;position:relative;}
 .bv-flow-t{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:calc(var(--bv-fs,19px)*1.7);line-height:1.55;color:rgba(245,227,184,.97);margin:0 0 3.5vmin;max-width:640px;animation:bvFlowIn .55s cubic-bezier(.22,.8,.3,1) both;}
-.bv-flow-t .bv-fq{color:#c9933a;}
 .bv-flow-r{font-family:'Cinzel',serif;font-weight:600;font-size:13px;letter-spacing:3.5px;text-transform:uppercase;color:#c9933a;margin:0 0 2.5vmin;animation:bvFlowIn .55s .08s cubic-bezier(.22,.8,.3,1) both;}
 .bv-flow-tr{display:inline-block;font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#e8c876;border:.5px solid rgba(201,147,58,.55);border-radius:999px;padding:7px 16px;animation:bvFlowIn .55s .16s cubic-bezier(.22,.8,.3,1) both;}
 @keyframes bvFlowIn{from{opacity:0;transform:translateY(26px);}to{opacity:1;transform:none;}}
@@ -246,7 +245,6 @@ p.bv-hl0,p.bv-hl1,p.bv-hl2,p.bv-hl3{border-radius:6px;}
 #bvFlowBm{font-size:17px;}
 .wv-bible.day #bvFlow{background:linear-gradient(180deg,#f7f0de 0%,#f1e6cc 100%);}
 .wv-bible.day .bv-flow-t{color:#2c2318;}
-.wv-bible.day .bv-flow-t .bv-fq{color:#9a6b1f;}
 .wv-bible.day .bv-flow-r{color:#9a6b1f;}
 .wv-bible.day .bv-flow-tr{color:#7a5410;border-color:rgba(154,107,31,.55);}
 .wv-bible.day #bvFlowEdge button{background:rgba(247,240,222,.82);border-color:rgba(154,107,31,.55);color:#7a5410;box-shadow:0 4px 16px rgba(120,84,16,.18);}
@@ -257,7 +255,6 @@ p.bv-hl0,p.bv-hl1,p.bv-hl2,p.bv-hl3{border-radius:6px;}
 .bv-flow-slide.pic2{background:radial-gradient(circle at 50% 32%,#e04949 0%,#8a1d1d 52%,#2c0a0a 100%);}
 .bv-flow-slide.pic3{background:radial-gradient(circle at 50% 32%,#93302b 0%,#4a1210 55%,#1d0605 100%);}
 .bv-flow-slide.pic .bv-flow-t{color:#fdfbf6;text-shadow:0 2px 16px rgba(0,0,0,.35);}
-.bv-flow-slide.pic .bv-flow-t .bv-fq{color:rgba(255,255,255,.75);}
 .bv-flow-slide.pic .bv-flow-r{color:rgba(255,255,255,.88);}
 .bv-flow-slide.pic .bv-flow-tr{color:#fff;border-color:rgba(255,255,255,.55);}
 /* day theme: parchment paper, same gold serif voice */
@@ -1473,7 +1470,7 @@ const Bible = (() => {
     const t = (d.books[p.bi] && d.books[p.bi].c[p.ci] && d.books[p.bi].c[p.ci][p.vi]) || "";
     const ref = bookNames()[p.bi] + " " + (p.ci + 1) + ":" + (p.vi + 1);
     const pic = flowPic ? " pic pic" + ((p.bi * 37 + p.ci * 11 + p.vi) % 4) : "";
-    return '<div class="bv-flow-slide' + pic + '" data-k="' + p.bi + "|" + p.ci + "|" + p.vi + '"><p class="bv-flow-t"><span class="bv-fq">&ldquo;</span>' + esc(t) + '<span class="bv-fq">&rdquo;</span></p><p class="bv-flow-r">' + esc(ref) + '</p><span class="bv-flow-tr">' + esc(code.toUpperCase()) + "</span></div>";
+    return '<div class="bv-flow-slide' + pic + '" data-k="' + p.bi + "|" + p.ci + "|" + p.vi + '"><p class="bv-flow-t">' + esc(t) + '</p><p class="bv-flow-r">' + esc(ref) + '</p><span class="bv-flow-tr">' + esc(code.toUpperCase()) + "</span></div>";
   }
   function flowBuild(){
     const track = $("bvFlowTrack");
