@@ -356,11 +356,6 @@ p.bv-hl0,p.bv-hl1,p.bv-hl2,p.bv-hl3{border-radius:6px;}
     <button class="bv-sbtn" id="bvSearchBtn" aria-label="Search the Bible">&#8981;</button>
   </div>
   <div class="bv-trans" id="bvTrans"></div>
-  <div class="bv-search">
-    <input id="bvSearch" type="search" placeholder="Search the Scriptures" aria-label="Search the Bible" autocomplete="off">
-    <button id="bvSearchClear" aria-label="Clear search">&#10005;</button>
-  </div>
-  <div class="bv-sres" id="bvSearchRes"></div>
   <div class="bv-chap" id="bvChap"></div>
   <div class="bv-foot" id="bvFoot">
     <button id="bvPrev">&#10094; Previous</button>
@@ -1653,7 +1648,7 @@ const Bible = (() => {
     if(flow === "flow"){ vi = vi_ >= 0 ? vi_ : 0; }
     else hlVerse = vi_ >= 0 ? vi_ : -1;
     closeDrSettings(); closeDrSearch(); closeDrawer();
-    clearSearch();
+    clearSearch($("drSrchInp"), $("drSrchRes"));
     if(await ensure()){ clamp(); renderChap(); }
   }
   function renderBmList(){
@@ -1814,6 +1809,7 @@ const Bible = (() => {
   }
   function doSearch(q, box){
     box = box || $("bvSearchRes");
+    if(!box) return;
     q = (q || "").trim().toLowerCase();
     if(q.length < 2){ box.classList.remove("open"); box.innerHTML = ""; return; }
     if(!buildSearchIdx()) return;
@@ -1844,6 +1840,7 @@ const Bible = (() => {
     inp = inp || $("bvSearch");
     box = box || $("bvSearchRes");
     if(inp) inp.value = "";
+    if(!box) return;
     box.classList.remove("open"); box.innerHTML = "";
   }
   $("drSetBack").addEventListener("click", closeDrSettings);
@@ -1856,12 +1853,6 @@ const Bible = (() => {
   $("bvAct").addEventListener("click", e => { if(e.target === $("bvAct")) $("bvAct").classList.remove("open"); });
   $("bvActBm").addEventListener("click", toggleBm);
   $("bvActCopy").addEventListener("click", copyVerse);
-  $("bvSearch").addEventListener("input", e => {
-    if(sDeb) clearTimeout(sDeb);
-    const v = e.target.value;
-    sDeb = setTimeout(() => doSearch(v), 250);
-  });
-  $("bvSearchClear").addEventListener("click", clearSearch);
 
 /* ---------------- flow overlay events: swipe snap, persistent edge buttons ---------------- */
   $("bvFlowTrack").addEventListener("scroll", () => {
