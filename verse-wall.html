@@ -1303,7 +1303,6 @@ const Bible = (() => {
     ["bvPrev","bvPrevTop"].forEach(id => { $(id).disabled = atStart; });
     ["bvNext","bvNextTop"].forEach(id => { $(id).disabled = atEnd; });
     savePos();
-    recHist();
     if(hlVerse >= 0){
       const el = document.getElementById("bvHl");
       if(el){ el.classList.add("bv-hl"); setTimeout(() => { try{ el.scrollIntoView({block:"center"}); }catch(_){} }, 80); }
@@ -1456,7 +1455,7 @@ const Bible = (() => {
   let fs = 19, day = false, flow = "chapter", vi = 0, lastVi = {bi:0, ci:0, vi:0};
   let flowSpeed = 9000, flowPlaying = true, flowPic = false;
   const FSPEEDS = [{n:"Slow", ms:12000}, {n:"Med", ms:9000}, {n:"Fast", ms:6000}];
-  let bms = [], hls = {}, hist = {}, sIdx = null, sCode = "", sDeb = null, drSdeb = null, actCtx = null, toastT = null;
+  let bms = [], hls = {}, sIdx = null, sCode = "", sDeb = null, drSdeb = null, actCtx = null, toastT = null;
   const HLC = ["rgba(201,147,58,.30)","rgba(139,139,74,.32)","rgba(168,94,50,.30)","rgba(96,116,148,.32)"];
   try{
     const st = JSON.parse(localStorage.getItem("wv-bible-set") || "null");
@@ -1473,12 +1472,10 @@ const Bible = (() => {
     if(ps && +ps.vi >= 0) vi = +ps.vi;
     bms = JSON.parse(localStorage.getItem("wv-bible-bm") || "[]") || [];
     hls = JSON.parse(localStorage.getItem("wv-bible-hl") || "{}") || {};
-    hist = JSON.parse(localStorage.getItem("wv-bible-hist") || "[]") || [];
-  }catch(_){ bms = []; hls = {}; hist = []; }
+  }catch(_){ bms = []; hls = {}; }
   function saveSet(){ try{ localStorage.setItem("wv-bible-set", JSON.stringify({fs:fs, day:day, flow:flow, fsp:flowSpeed, fpl:flowPlaying, fpic:flowPic})); }catch(_){} }
   function saveBm(){ try{ localStorage.setItem("wv-bible-bm", JSON.stringify(bms.slice(0, 200))); }catch(_){} }
   function saveHl(){ try{ localStorage.setItem("wv-bible-hl", JSON.stringify(hls)); }catch(_){} }
-  function saveHist(){ try{ localStorage.setItem("wv-bible-hist", JSON.stringify(hist.slice(0, 20))); }catch(_){} }
   function hlKey(i){ return code + "|" + bi + "|" + ci + "|" + i; }
   function hlClass(i){ const k = hlKey(i); return (k in hls) ? " bv-hl" + hls[k] : ""; }
   function isBmIdx(i){ return bms.some(x => x.code === code && x.bi === bi && x.ci === ci && x.vi === i); }
@@ -1583,7 +1580,7 @@ const Bible = (() => {
     if(idx === flowCur || idx < 0 || idx >= slides.length) return;
     const k = (slides[idx].dataset.k || "").split("|");
     if(k.length === 3){ bi = +k[0]; ci = +k[1]; vi = +k[2]; }
-    savePos(); recHist();
+    savePos();
     flowBuild();
     flowSyncBm();
     flowArmTimer();
@@ -1658,22 +1655,12 @@ const Bible = (() => {
     const cur = nzVerse(bi, ci, vi);
     bi = cur.bi; ci = cur.ci; vi = cur.vi;
     const fl = $("bvFlow");
-    const wasOpen = fl.classList.contains("open");
     fl.classList.add("open");
     fl.setAttribute("aria-hidden", "false");
     flowBuild();
-    if(!wasOpen) recHist();
     flowSyncPlayBtn(); flowSyncBm();
     flowArmTimer();
     savePos();
-  }
-  function recHist(){
-    const key = code + "|" + bi + "|" + ci + "|" + (flow === "flow" ? vi : -1);
-    if(hist.length && hist[0].key === key) return;
-    hist = hist.filter(x => x.key !== key);
-    hist.unshift({key:key, code:code, bi:bi, ci:ci, vi:(flow === "flow" ? vi : -1)});
-    hist = hist.slice(0, 20);
-    saveHist();
   }
   function refLabel(en){
     return BOOKS66[en.bi] + " " + (en.ci + 1) + (en.vi >= 0 ? ":" + (en.vi + 1) : "");
@@ -1700,33 +1687,10 @@ const Bible = (() => {
     bms.forEach(bm => {
       const b = document.createElement("button");
       b.className = "bv-li";
-      const xr = document.createElement("span");
-      xr.className = "bv-lx"; xr.setAttribute("aria-label", "Remove bookmark"); xr.textContent = "✕";
       const lr = document.createElement("span");
-      lr.className = "bv-lref"; lr.textContent = bm.ref + " · " + bm.code.toUpperCase();
-      const lt = document.createElement("span");
-      lt.className = "bv-ltext"; lt.textContent = bm.text;
-      b.appendChild(lr); b.appendChild(lt); b.appendChild(xr);
-      b.addEventListener("click", () => jumpTo(bm.code, bm.bi, bm.ci, bm.vi));
-      xr.addEventListener("click", e => {
-        e.stopPropagation();
-        bms = bms.filter(x => x !== bm);
-        saveBm(); renderBmList(); refreshVerseMarks(); toast("Bookmark removed");
-      });
-      host.appendChild(b);
-    });
-  }
-  function renderHistList(){
-    const host = $("bvHistList"); if(!host) return;
-    if(!hist.length){ host.innerHTML = '<div class="bv-empty">Nothing read yet.</div>'; return; }
-    host.innerHTML = "";
-    hist.forEach(en => {
-      const b = document.createElement("button");
-      b.className = "bv-li";
-      const lr = document.createElement("span");
-      lr.className = "bv-lref"; lr.textContent = refLabel(en) + " · " + en.code.toUpperCase();
+      lr.className = "bv-lref"; lr.textContent = refLabel(bm) + " · " + bm.code.toUpperCase();
       b.appendChild(lr);
-      b.addEventListener("click", () => jumpTo(en.code, en.bi, en.ci, en.vi));
+      b.addEventListener("click", () => jumpTo(bm.code, bm.bi, bm.ci, bm.vi));
       host.appendChild(b);
     });
   }
@@ -1738,8 +1702,6 @@ const Bible = (() => {
     h += '<div class="bv-row"><span class="bv-lab">Picture backgrounds</span><div class="bv-seg" id="bvSegPic"><button data-v="off">Off</button><button data-v="on">On</button></div></div>';
     h += '</div>';
     h += '<h3>Bookmarks</h3><div class="bv-list" id="bvBmList"></div>';
-    h += '<h3>Recently read</h3><div class="bv-list" id="bvHistList"></div>';
-    h += '<button class="bv-clear" id="bvHistClear">Clear history</button>';
     body.innerHTML = h;
     $("bvFsDown").addEventListener("click", () => setFs(fs - 2));
     $("bvFsUp").addEventListener("click", () => setFs(fs + 2));
@@ -1751,8 +1713,7 @@ const Bible = (() => {
       flowPic = (b.dataset.v === "on"); saveSet(); applySettings();
       if(flow === "flow") renderFlow();
     }));
-    $("bvHistClear").addEventListener("click", () => { hist = []; saveHist(); renderHistList(); toast("History cleared"); });
-    renderBmList(); renderHistList(); applySettings();
+    renderBmList(); applySettings();
   }
   function refreshVerseMarks(){
     document.querySelectorAll("#bvChap p[data-vi]").forEach(p => {
