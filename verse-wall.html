@@ -63,6 +63,10 @@ body{font-family:'Tenor Sans',sans-serif;color:#f5e3b8;min-height:100vh;}
  background:rgba(255,255,255,.03);color:rgba(255,255,255,.75);font-family:'Tenor Sans',sans-serif;font-size:12px;
  letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;text-align:left;}
 .wv-dr-modes button.on{border-color:#c9933a;background:rgba(201,147,58,.14);color:#e8c876;}
+.wv-dr-bible{display:block;width:100%;margin:0 0 16px;padding:11px 12px;border-radius:10px;border:.5px solid rgba(201,147,58,.55);
+ background:rgba(201,147,58,.10);color:#e8c876;font-family:'Tenor Sans',sans-serif;font-size:12px;
+ letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;text-align:left;}
+.wv-dr-bible:active{transform:scale(.98);}
 .wv-dr-sub{font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.5);margin:4px 0 6px;}
 .wv-dr-label{font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;
  color:rgba(201,147,58,.7);margin:14px 0 8px;}
@@ -114,10 +118,6 @@ body{font-family:'Tenor Sans',sans-serif;color:#f5e3b8;min-height:100vh;}
 .wv-shareprev button{margin-top:16px;padding:11px 34px;border-radius:999px;border:1px solid #c9933a;background:transparent;color:#c9933a;font-size:15px;}
 
 /* ---- Bible reader tab ---- */
-.wv-biblebtn{flex-shrink:0;padding:8px 15px;border-radius:20px;border:.5px solid rgba(201,147,58,.55);
- background:rgba(201,147,58,.10);color:#e8c876;font-size:10px;font-family:'Tenor Sans',sans-serif;
- letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-right:8px;}
-.wv-biblebtn:active{transform:scale(.96);}
 .wv-bible{max-width:640px;margin:0 auto;min-height:60vh;}
 .bv-bar{display:flex;align-items:center;gap:8px;padding:12px 12px 4px;}
 .bv-loc{flex:1;min-width:0;text-align:center;background:rgba(255,255,255,.04);border:.5px solid rgba(201,147,58,.35);
@@ -171,7 +171,6 @@ body{font-family:'Tenor Sans',sans-serif;color:#f5e3b8;min-height:100vh;}
     <div class="wv-title">VERSE WALL</div>
     <div class="wv-sub" id="filterSub">Every verse keeps its own time. Some ascend, some descend.</div>
   </div>
-  <button class="wv-biblebtn" id="bibleBtn">Bible</button>
   <button class="wv-still" id="stillBtn">&#10074;&#10074; Still</button>
 </div>
 <div class="wv-viewbar" id="viewbar">
@@ -209,6 +208,7 @@ body{font-family:'Tenor Sans',sans-serif;color:#f5e3b8;min-height:100vh;}
     <button data-mode="ot">Old Testament</button>
     <button data-mode="nt">New Testament</button>
   </div>
+  <button class="wv-dr-bible" id="drBible">Bible</button>
   <div class="wv-dr-sub">Subjects</div>
   <div class="wv-dr-books" id="drSubj"></div>
   <div class="wv-dr-sub">Old Testament</div>
@@ -1144,7 +1144,7 @@ const Bible = (() => {
   $("bvNext").addEventListener("click", () => step(1));
   $("bvPrevTop").addEventListener("click", () => step(-1));
   $("bvNextTop").addEventListener("click", () => step(1));
-  document.getElementById("bibleBtn").addEventListener("click", () => setView("bible"));
+  document.getElementById("drBible").addEventListener("click", () => { closeDrawer(); setView("bible"); });
   document.getElementById("ovBegin").addEventListener("click", () => {
     const c = heldCard;
     closeVerse();
