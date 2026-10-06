@@ -228,24 +228,47 @@ body{font-family:'Tenor Sans',sans-serif;color:#f5e3b8;min-height:100vh;}
 .bv-hl3{background:rgba(96,116,148,.32);}
 p.bv-hl0,p.bv-hl1,p.bv-hl2,p.bv-hl3{border-radius:6px;}
 .bv-bm .bv-vn::after{content:"\25C6";font-size:8px;color:#e8c876;margin-left:5px;vertical-align:middle;}
-.bv-vwrap{text-align:center;padding:10px 22px 8px;}
-.bv-vv{font-family:'Cormorant Garamond',serif;font-size:calc(var(--bv-fs,19px) + 6px);line-height:1.9;
- color:rgba(245,227,184,.95);margin:14px 0 20px;cursor:pointer;}
-.bv-vnav{display:flex;gap:10px;margin:0 0 8px;}
-.bv-vnav button{flex:1;padding:14px;border-radius:12px;border:.5px solid rgba(201,147,58,.4);background:rgba(201,147,58,.08);
- color:#e8c876;font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;}
-.bv-vnav button:disabled{opacity:.3;}
-.bv-vhint{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:rgba(255,255,255,.4);margin:10px 0 30px;}
 .bv-p{font-size:var(--bv-fs,19px);}
+/* full-screen verse flow: TikTok-style vertical swipe, one verse per screen */
+#bvFlow{display:none;position:fixed;inset:0;height:100vh;height:100dvh;z-index:65;background:#0a0e1c;}
+#bvFlow.open{display:block;}
+#bvFlowTrack{height:100%;height:100dvh;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none;-ms-overflow-style:none;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
+#bvFlowTrack::-webkit-scrollbar{display:none;}
+.bv-flow-slide{height:100vh;height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:9vmin 12vmin;box-sizing:border-box;transition:background .6s ease;position:relative;}
+.bv-flow-t{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:calc(var(--bv-fs,19px)*1.7);line-height:1.55;color:rgba(245,227,184,.97);margin:0 0 3.5vmin;max-width:640px;animation:bvFlowIn .55s cubic-bezier(.22,.8,.3,1) both;}
+.bv-flow-t .bv-fq{color:#c9933a;}
+.bv-flow-r{font-family:'Cinzel',serif;font-weight:600;font-size:13px;letter-spacing:3.5px;text-transform:uppercase;color:#c9933a;margin:0 0 2.5vmin;animation:bvFlowIn .55s .08s cubic-bezier(.22,.8,.3,1) both;}
+.bv-flow-tr{display:inline-block;font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#e8c876;border:.5px solid rgba(201,147,58,.55);border-radius:999px;padding:7px 16px;animation:bvFlowIn .55s .16s cubic-bezier(.22,.8,.3,1) both;}
+@keyframes bvFlowIn{from{opacity:0;transform:translateY(26px);}to{opacity:1;transform:none;}}
+#bvFlowEdge{position:absolute;right:14px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:12px;z-index:3;}
+#bvFlowEdge button{width:48px;height:48px;border-radius:50%;border:.5px solid rgba(201,147,58,.55);background:rgba(10,12,20,.62);color:#e8c876;font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 4px 18px rgba(0,0,0,.35);}
+#bvFlowEdge button.on{background:rgba(201,147,58,.42);color:#fff8e7;border-color:#e8c876;}
+#bvFlowBm{font-size:17px;}
+.wv-bible.day #bvFlow{background:linear-gradient(180deg,#f7f0de 0%,#f1e6cc 100%);}
+.wv-bible.day .bv-flow-t{color:#2c2318;}
+.wv-bible.day .bv-flow-t .bv-fq{color:#9a6b1f;}
+.wv-bible.day .bv-flow-r{color:#9a6b1f;}
+.wv-bible.day .bv-flow-tr{color:#7a5410;border-color:rgba(154,107,31,.55);}
+.wv-bible.day #bvFlowEdge button{background:rgba(247,240,222,.82);border-color:rgba(154,107,31,.55);color:#7a5410;box-shadow:0 4px 16px rgba(120,84,16,.18);}
+.wv-bible.day #bvFlowEdge button.on{background:rgba(165,118,42,.38);color:#5c3f0e;border-color:#a5762a;}
+/* picture mode: per-verse gradient backgrounds */
+.bv-flow-slide.pic0{background:radial-gradient(circle at 50% 32%,#caa14e 0%,#7d5c14 52%,#2c2004 100%);}
+.bv-flow-slide.pic1{background:radial-gradient(circle at 50% 32%,#d344d8 0%,#7c1a80 52%,#2b0a2e 100%);}
+.bv-flow-slide.pic2{background:radial-gradient(circle at 50% 32%,#e04949 0%,#8a1d1d 52%,#2c0a0a 100%);}
+.bv-flow-slide.pic3{background:radial-gradient(circle at 50% 32%,#93302b 0%,#4a1210 55%,#1d0605 100%);}
+.bv-flow-slide.pic .bv-flow-t{color:#fdfbf6;text-shadow:0 2px 16px rgba(0,0,0,.35);}
+.bv-flow-slide.pic .bv-flow-t .bv-fq{color:rgba(255,255,255,.75);}
+.bv-flow-slide.pic .bv-flow-r{color:rgba(255,255,255,.88);}
+.bv-flow-slide.pic .bv-flow-tr{color:#fff;border-color:rgba(255,255,255,.55);}
 /* day theme: parchment paper, same gold serif voice */
 .wv-bible.day{background:linear-gradient(180deg,#f7f0de 0%,#f1e6cc 100%);border-radius:14px;padding-bottom:8px;}
 .wv-bible.day .bv-loc{background:rgba(255,255,255,.55);border-color:rgba(154,107,31,.5);color:#5c3f0e;}
 .wv-bible.day .bv-prev,.wv-bible.day .bv-next,.wv-bible.day .bv-gear{background:rgba(255,255,255,.5);border-color:rgba(154,107,31,.35);color:#8a5f16;}
 .wv-bible.day .bv-trans button{border-color:rgba(154,107,31,.3);background:rgba(255,255,255,.4);color:rgba(92,63,14,.65);}
 .wv-bible.day .bv-trans button.on{border-color:#a5762a;background:rgba(165,118,42,.18);color:#7a5410;}
-.wv-bible.day .bv-chap h2,.wv-bible.day .bv-vwrap h2{color:#6b4a12;}
+.wv-bible.day .bv-chap h2{color:#6b4a12;}
 .wv-bible.day .bv-trname{color:rgba(92,63,14,.55);}
-.wv-bible.day .bv-p,.wv-bible.day .bv-vv{color:#2c2318;}
+.wv-bible.day .bv-p{color:#2c2318;}
 .wv-bible.day .bv-vn{color:#9a6b1f;}
 .wv-bible.day .bv-foot button{background:rgba(165,118,42,.12);border-color:rgba(154,107,31,.5);color:#7a5410;}
 .wv-bible.day .bv-search input{background:rgba(255,255,255,.6);border-color:rgba(154,107,31,.45);color:#2c2318;}
@@ -255,8 +278,6 @@ p.bv-hl0,p.bv-hl1,p.bv-hl2,p.bv-hl3{border-radius:6px;}
 .wv-bible.day .bv-sres .bv-sitem{background:rgba(255,255,255,.55);border-color:rgba(154,107,31,.25);}
 .wv-bible.day .bv-sres .bv-sref{color:#7a5410;}
 .wv-bible.day .bv-sres .bv-stext{color:rgba(44,35,24,.88);}
-.wv-bible.day .bv-vnav button{background:rgba(165,118,42,.12);border-color:rgba(154,107,31,.5);color:#7a5410;}
-.wv-bible.day .bv-vhint{color:rgba(92,63,14,.5);}
 .bv-pick.day{background:rgba(247,240,222,.98);}
 .bv-pick.day h3{color:#8a5f16;}
 .bv-pick.day .bv-books button,.bv-pick.day .bv-chaps button{background:rgba(255,255,255,.6);border-color:rgba(154,107,31,.3);color:#3a2c14;}
@@ -342,6 +363,15 @@ p.bv-hl0,p.bv-hl1,p.bv-hl2,p.bv-hl3{border-radius:6px;}
   <div class="bv-foot" id="bvFoot">
     <button id="bvPrev">&#10094; Previous</button>
     <button id="bvNext">Next &#10095;</button>
+  </div>
+  <div id="bvFlow" aria-hidden="true">
+    <div id="bvFlowTrack"></div>
+    <div id="bvFlowEdge">
+      <button id="bvFlowPlay" aria-label="Pause">&#10074;&#10074;</button>
+      <button id="bvFlowSpeedBtn" aria-label="Flow speed">Med</button>
+      <button id="bvFlowBm" aria-label="Bookmark this verse">&#9734;</button>
+      <button id="bvFlowClose" aria-label="Exit flow">&#10005;</button>
+    </div>
   </div>
 </div>
 <div class="bv-pick" id="bvPick">
@@ -1238,57 +1268,31 @@ const Bible = (() => {
       host.appendChild(b);
     });
   }
-  function firstNZ(vs){ for(let i = 0; i < vs.length; i++) if(vs[i]) return i; return 0; }
-  function lastNZ(vs){ for(let i = vs.length - 1; i >= 0; i--) if(vs[i]) return i; return vs.length - 1; }
   function renderChap(){
     const d = cache[code]; if(!d) return;
+    if(flow === "flow"){ renderFlow(); return; }
+    flowHide();
     clamp();
     const names = bookNames();
     const verses = d.books[bi].c[ci];
-    if(flow === "verse"){
-      if(vi < 0 || vi >= verses.length) vi = firstNZ(verses);
-      while(vi < verses.length && !verses[vi]) vi++;
-      if(vi >= verses.length) vi = firstNZ(verses);
-    }
     if(hlVerse >= verses.length) hlVerse = verses.length - 1;
-    const locRef = names[bi] + " " + (ci + 1) + (flow === "verse" ? ":" + (vi + 1) : "");
+    const locRef = names[bi] + " " + (ci + 1);
     $("bvLoc").textContent = locRef;
     let h = "<h2>" + esc(locRef) + "</h2>";
     h += '<div class="bv-trname">' + esc(TRNAMES[code]) + "</div>";
-    if(flow === "verse"){
-      const t = verses[vi] || "";
-      h += '<div class="bv-vwrap"><p class="bv-vv' + hlClass(vi) + (isBmIdx(vi) ? " bv-bm" : "") + '" data-vi="' + vi + '"><span class="bv-vn">' + (vi+1) + "</span>" + esc(t) + "</p>";
-      h += '<div class="bv-vnav"><button id="bvVPrev">&#10094; Prev verse</button><button id="bvVNext">Next verse &#10095;</button></div>';
-      h += '<p class="bv-vhint">Tap the verse for bookmark, highlight and copy.</p></div>';
-    }else{
-      for(let i = 0; i < verses.length; i++){
-        h += '<p class="bv-p' + hlClass(i) + (isBmIdx(i) ? " bv-bm" : "") + '" data-vi="' + i + '"' + (i === hlVerse ? ' id="bvHl"' : "") + '><span class="bv-vn">' + (i+1) + "</span>" + esc(verses[i]) + "</p>";
-      }
+    for(let i = 0; i < verses.length; i++){
+      h += '<p class="bv-p' + hlClass(i) + (isBmIdx(i) ? " bv-bm" : "") + '" data-vi="' + i + '"' + (i === hlVerse ? ' id="bvHl"' : "") + '><span class="bv-vn">' + (i+1) + "</span>" + esc(verses[i]) + "</p>";
     }
     $("bvChap").innerHTML = h;
     closeCtog();
-    const vvP = $("bvVPrev"), vvN = $("bvVNext");
-    if(vvP) vvP.addEventListener("click", () => stepVerse(-1));
-    if(vvN) vvN.addEventListener("click", () => stepVerse(1));
-    $("bvFoot").style.display = flow === "verse" ? "none" : "";
-    let atStart, atEnd;
-    if(flow === "verse"){
-      atStart = (bi === 0 && ci === 0 && vi === firstNZ(verses));
-      const lastBook = d.books[65], lastCh = lastBook.c[lastBook.c.length - 1];
-      atEnd = (bi === 65 && ci === lastBook.c.length - 1 && vi === lastNZ(lastCh));
-    }else{
-      atStart = (bi === 0 && ci === 0);
-      atEnd = (bi === 65 && ci === d.books[65].c.length - 1);
-    }
+    $("bvFoot").style.display = "";
+    const atStart = (bi === 0 && ci === 0);
+    const atEnd = (bi === 65 && ci === d.books[65].c.length - 1);
     ["bvPrev","bvPrevTop"].forEach(id => { $(id).disabled = atStart; });
     ["bvNext","bvNextTop"].forEach(id => { $(id).disabled = atEnd; });
-    if(vvP) vvP.disabled = atStart;
-    if(vvN) vvN.disabled = atEnd;
     savePos();
     recHist();
-    if(flow === "verse"){
-      window.scrollTo(0, 0);
-    }else if(hlVerse >= 0){
+    if(hlVerse >= 0){
       const el = document.getElementById("bvHl");
       if(el){ el.classList.add("bv-hl"); setTimeout(() => { try{ el.scrollIntoView({block:"center"}); }catch(_){} }, 80); }
       hlVerse = -1;
@@ -1297,7 +1301,7 @@ const Bible = (() => {
     }
   }
   function step(dir){
-    if(flow === "verse"){ stepVerse(dir); return; }
+    if(flow === "flow"){ flowManual(dir); return; }
     const d = cache[code]; if(!d) return;
     ci += dir;
     if(ci < 0){
@@ -1347,7 +1351,7 @@ const Bible = (() => {
     if(p){
       bi = p.bi; ci = p.ci;
       lastVi = {bi:p.bi, ci:p.ci, vi:p.vi};
-      if(flow === "verse"){ vi = p.vi; hlVerse = -1; }
+      if(flow === "flow"){ vi = p.vi; }
       else hlVerse = p.vi;
     }
     if(view !== "bible") setView("bible");
@@ -1367,6 +1371,8 @@ const Bible = (() => {
   });
 /* ---------------- Bible reader settings: font size, night/day, verse flow ---------------- */
   let fs = 19, day = false, flow = "chapter", vi = 0, lastVi = {bi:0, ci:0, vi:0};
+  let flowSpeed = 9000, flowPlaying = true, flowPic = false;
+  const FSPEEDS = [{n:"Slow", ms:12000}, {n:"Med", ms:9000}, {n:"Fast", ms:6000}];
   let bms = [], hls = {}, hist = {}, sIdx = null, sCode = "", sDeb = null, actCtx = null, toastT = null;
   const HLC = ["rgba(201,147,58,.30)","rgba(139,139,74,.32)","rgba(168,94,50,.30)","rgba(96,116,148,.32)"];
   try{
@@ -1374,7 +1380,11 @@ const Bible = (() => {
     if(st){
       if(+st.fs >= 14 && +st.fs <= 28) fs = +st.fs;
       day = !!st.day;
-      if(st.flow === "verse" || st.flow === "chapter") flow = st.flow;
+      if(st.flow === "flow" || st.flow === "verse") flow = "flow";
+      else flow = "chapter";
+      if(+st.fsp >= 2000 && +st.fsp <= 30000) flowSpeed = +st.fsp;
+      flowPlaying = st.fpl !== false;
+      flowPic = !!st.fpic;
     }
     const ps = JSON.parse(localStorage.getItem("wv-bible-pos") || "null");
     if(ps && +ps.vi >= 0) vi = +ps.vi;
@@ -1382,7 +1392,7 @@ const Bible = (() => {
     hls = JSON.parse(localStorage.getItem("wv-bible-hl") || "{}") || {};
     hist = JSON.parse(localStorage.getItem("wv-bible-hist") || "[]") || [];
   }catch(_){ bms = []; hls = {}; hist = []; }
-  function saveSet(){ try{ localStorage.setItem("wv-bible-set", JSON.stringify({fs:fs, day:day, flow:flow})); }catch(_){} }
+  function saveSet(){ try{ localStorage.setItem("wv-bible-set", JSON.stringify({fs:fs, day:day, flow:flow, fsp:flowSpeed, fpl:flowPlaying, fpic:flowPic})); }catch(_){} }
   function saveBm(){ try{ localStorage.setItem("wv-bible-bm", JSON.stringify(bms.slice(0, 200))); }catch(_){} }
   function saveHl(){ try{ localStorage.setItem("wv-bible-hl", JSON.stringify(hls)); }catch(_){} }
   function saveHist(){ try{ localStorage.setItem("wv-bible-hist", JSON.stringify(hist.slice(0, 20))); }catch(_){} }
@@ -1399,56 +1409,186 @@ const Bible = (() => {
     const fv = $("bvFsVal"); if(fv) fv.textContent = fs;
     document.querySelectorAll("#bvSegTheme button").forEach(b => b.classList.toggle("on", (b.dataset.v === "day") === day));
     document.querySelectorAll("#bvSegFlow button").forEach(b => b.classList.toggle("on", b.dataset.v === flow));
+    document.querySelectorAll("#bvSegPic button").forEach(b => b.classList.toggle("on", (b.dataset.v === "on") === flowPic));
   }
   function setFs(nf){ fs = Math.max(14, Math.min(28, nf)); saveSet(); applySettings(); }
   function setFlow(f){
     if(f === flow) return;
-    if(f === "verse"){
+    if(f === "flow"){
       const d = cache[code];
       if(d){
-        vi = (lastVi.bi === bi && lastVi.ci === ci) ? lastVi.vi : 0;
-        const vs = d.books[bi].c[ci];
-        if(vi < 0 || vi >= vs.length) vi = 0;
-        while(vi < vs.length && !vs[vi]) vi++;
-        if(vi >= vs.length) vi = firstNZ(vs);
+        const cur = nzVerse(bi, ci, vi);
+        bi = cur.bi; ci = cur.ci; vi = cur.vi;
       }
-    }
-    flow = f; saveSet(); renderChap(); applySettings();
-  }
-  function stepVerse(dir){
-    const d = cache[code]; if(!d) return;
-    if(dir > 0){
-      let nvi = vi + 1;
-      const vs = d.books[bi].c[ci];
-      while(nvi < vs.length && !vs[nvi]) nvi++;
-      if(nvi < vs.length){ vi = nvi; }
-      else{
-        let nbi = bi, nci = ci + 1;
-        if(nci >= d.books[nbi].c.length){ if(nbi === 65) return; nbi++; nci = 0; }
-        bi = nbi; ci = nci;
-        const nv = d.books[bi].c[ci];
-        vi = firstNZ(nv);
-      }
+      flow = f; saveSet();
+      $("bvMenu").classList.remove("open");
+      renderFlow();
     }else{
-      let nvi = vi - 1;
-      const vs = d.books[bi].c[ci];
-      while(nvi >= 0 && !vs[nvi]) nvi--;
-      if(nvi >= 0){ vi = nvi; }
-      else{
-        let nbi = bi, nci = ci - 1;
-        if(nci < 0){ if(nbi === 0) return; nbi--; nci = d.books[nbi].c.length - 1; }
-        bi = nbi; ci = nci;
-        const nv = d.books[bi].c[ci];
-        vi = lastNZ(nv);
-      }
+      flow = f; saveSet();
+      flowHide();
+      hlVerse = vi;
+      renderChap();
     }
-    renderChap();
+    applySettings();
+  }
+  /* ---------------- full-screen verse flow: TikTok-style vertical swipe ---------------- */
+  let flowTimer = null;
+  let flowScrollT = null, flowCur = 2;
+  function nzVerse(b_, c_, v_){
+    const d = cache[code]; if(!d) return {bi:0, ci:0, vi:0};
+    const b = Math.max(0, Math.min(65, b_));
+    const c = Math.max(0, Math.min(d.books[b].c.length - 1, c_));
+    const vs = d.books[b].c[c];
+    let v = Math.max(0, v_);
+    while(v < vs.length && !vs[v]) v++;
+    if(v >= vs.length){ v = 0; while(v < vs.length && !vs[v]) v++; }
+    return {bi:b, ci:c, vi:v};
+  }
+  function flowStepPos(p, dir){
+    const d = cache[code]; if(!d) return p;
+    let b = p.bi, c = p.ci, v = p.vi;
+    if(dir > 0){
+      let nv = v + 1;
+      const vs = d.books[b].c[c];
+      while(nv < vs.length && !vs[nv]) nv++;
+      if(nv < vs.length) return {bi:b, ci:c, vi:nv};
+      let nb = b, nc = c + 1;
+      if(nc >= d.books[nb].c.length){ nb++; if(nb > 65) nb = 0; nc = 0; }
+      const nvs = d.books[nb].c[nc];
+      let nvi = 0; while(nvi < nvs.length && !nvs[nvi]) nvi++;
+      return {bi:nb, ci:nc, vi:nvi};
+    }
+    let nv = v - 1;
+    const vs = d.books[b].c[c];
+    while(nv >= 0 && !vs[nv]) nv--;
+    if(nv >= 0) return {bi:b, ci:c, vi:nv};
+    let nb = b, nc = c - 1;
+    if(nc < 0){ nb--; if(nb < 0) nb = 65; nc = d.books[nb].c.length - 1; }
+    const nvs = d.books[nb].c[nc];
+    let nvi = nvs.length - 1; while(nvi >= 0 && !nvs[nvi]) nvi--;
+    return {bi:nb, ci:nc, vi:nvi};
+  }
+  function flowSlideHTML(p){
+    const d = cache[code];
+    const t = (d.books[p.bi] && d.books[p.bi].c[p.ci] && d.books[p.bi].c[p.ci][p.vi]) || "";
+    const ref = bookNames()[p.bi] + " " + (p.ci + 1) + ":" + (p.vi + 1);
+    const pic = flowPic ? " pic pic" + ((p.bi * 37 + p.ci * 11 + p.vi) % 4) : "";
+    return '<div class="bv-flow-slide' + pic + '" data-k="' + p.bi + "|" + p.ci + "|" + p.vi + '"><p class="bv-flow-t"><span class="bv-fq">&ldquo;</span>' + esc(t) + '<span class="bv-fq">&rdquo;</span></p><p class="bv-flow-r">' + esc(ref) + '</p><span class="bv-flow-tr">' + esc(code.toUpperCase()) + "</span></div>";
+  }
+  function flowBuild(){
+    const track = $("bvFlowTrack");
+    const center = {bi:bi, ci:ci, vi:vi};
+    const slides = [];
+    let p = center;
+    const backs = [];
+    for(let k = 0; k < 2; k++){ p = flowStepPos(p, -1); backs.unshift(p); }
+    slides.push.apply(slides, backs.concat([center]));
+    p = center;
+    for(let k = 0; k < 2; k++){ p = flowStepPos(p, 1); slides.push(p); }
+    track.innerHTML = slides.map(flowSlideHTML).join("");
+    flowCur = 2;
+    const H = track.clientHeight || window.innerHeight || 600;
+    track.scrollTop = flowCur * H;
+  }
+  function flowSettle(){
+    flowScrollT = null;
+    if(flow !== "flow") return;
+    const track = $("bvFlowTrack");
+    const H = track.clientHeight || 1;
+    const idx = Math.round(track.scrollTop / H);
+    const slides = track.children;
+    if(idx === flowCur || idx < 0 || idx >= slides.length) return;
+    const k = (slides[idx].dataset.k || "").split("|");
+    if(k.length === 3){ bi = +k[0]; ci = +k[1]; vi = +k[2]; }
+    savePos(); recHist();
+    flowBuild();
+    flowSyncBm();
+    flowArmTimer();
+  }
+  function flowTick(){
+    if(flow !== "flow" || !flowPlaying) return;
+    const track = $("bvFlowTrack");
+    const H = track.clientHeight || 1;
+    try{ track.scrollTo({top:(flowCur + 1) * H, behavior:"smooth"}); }
+    catch(_){ track.scrollTop = (flowCur + 1) * H; }
+  }
+  function flowManual(dir){
+    if(flow !== "flow") return;
+    const track = $("bvFlowTrack");
+    const H = track.clientHeight || 1;
+    try{ track.scrollTo({top:(flowCur + dir) * H, behavior:"smooth"}); }
+    catch(_){ track.scrollTop = (flowCur + dir) * H; }
+  }
+  function flowArmTimer(){
+    if(flowTimer){ clearInterval(flowTimer); flowTimer = null; }
+    if(flow === "flow" && flowPlaying) flowTimer = setInterval(flowTick, flowSpeed);
+  }
+  function flowUserTakeover(){
+    if(flowPlaying){
+      flowPlaying = false;
+      saveSet(); flowSyncPlayBtn(); flowArmTimer();
+    }
+  }
+  function flowHide(){
+    if(flowTimer){ clearInterval(flowTimer); flowTimer = null; }
+    if(flowScrollT){ clearTimeout(flowScrollT); flowScrollT = null; }
+    const fl = $("bvFlow");
+    if(fl){ fl.classList.remove("open"); fl.setAttribute("aria-hidden", "true"); }
+  }
+  function flowSpeedLabel(){
+    const s = FSPEEDS.find(x => x.ms === flowSpeed) || FSPEEDS[1];
+    return s.n;
+  }
+  function flowSyncPlayBtn(){
+    const b = $("bvFlowPlay");
+    b.innerHTML = flowPlaying ? "&#10074;&#10074;" : "&#9654;";
+    b.setAttribute("aria-label", flowPlaying ? "Pause auto-scroll" : "Start auto-scroll");
+    b.classList.toggle("on", flowPlaying);
+    const sb = $("bvFlowSpeedBtn");
+    if(sb) sb.textContent = flowSpeedLabel();
+  }
+  function flowIsBm(){
+    return bms.some(x => x.code === code && x.bi === bi && x.ci === ci && x.vi === vi);
+  }
+  function flowSyncBm(){
+    const b = $("bvFlowBm");
+    const on = flowIsBm();
+    b.innerHTML = on ? "&#9733;" : "&#9734;";
+    b.classList.toggle("on", on);
+  }
+  function flowBookmark(){
+    const d = cache[code]; if(!d) return;
+    const text = (d.books[bi].c[ci][vi]) || "";
+    if(!text) return;
+    const i = bms.findIndex(x => x.code === code && x.bi === bi && x.ci === ci && x.vi === vi);
+    if(i >= 0){ bms.splice(i, 1); toast("Bookmark removed"); }
+    else{
+      bms.unshift({code:code, bi:bi, ci:ci, vi:vi, text:text,
+        ref: bookNames()[bi] + " " + (ci + 1) + ":" + (vi + 1)});
+      if(bms.length > 200) bms.length = 200;
+      toast("Bookmark added");
+    }
+    saveBm(); flowSyncBm();
+  }
+  function renderFlow(){
+    const d = cache[code]; if(!d){ flowHide(); return; }
+    const cur = nzVerse(bi, ci, vi);
+    bi = cur.bi; ci = cur.ci; vi = cur.vi;
+    const fl = $("bvFlow");
+    const wasOpen = fl.classList.contains("open");
+    fl.classList.add("open");
+    fl.setAttribute("aria-hidden", "false");
+    flowBuild();
+    if(!wasOpen) recHist();
+    flowSyncPlayBtn(); flowSyncBm();
+    flowArmTimer();
+    savePos();
   }
   function recHist(){
-    const key = code + "|" + bi + "|" + ci + "|" + (flow === "verse" ? vi : -1);
+    const key = code + "|" + bi + "|" + ci + "|" + (flow === "flow" ? vi : -1);
     if(hist.length && hist[0].key === key) return;
     hist = hist.filter(x => x.key !== key);
-    hist.unshift({key:key, code:code, bi:bi, ci:ci, vi:(flow === "verse" ? vi : -1)});
+    hist.unshift({key:key, code:code, bi:bi, ci:ci, vi:(flow === "flow" ? vi : -1)});
     hist = hist.slice(0, 20);
     saveHist();
   }
@@ -1464,7 +1604,7 @@ const Bible = (() => {
     }
     bi = bi_; ci = ci_;
     lastVi = {bi:bi_, ci:ci_, vi: vi_ >= 0 ? vi_ : 0};
-    if(flow === "verse"){ vi = vi_ >= 0 ? vi_ : 0; hlVerse = -1; }
+    if(flow === "flow"){ vi = vi_ >= 0 ? vi_ : 0; }
     else hlVerse = vi_ >= 0 ? vi_ : -1;
     $("bvMenu").classList.remove("open");
     clearSearch();
@@ -1512,7 +1652,8 @@ const Bible = (() => {
     let h = '<h3>Reading settings</h3><div class="bv-sec">';
     h += '<div class="bv-row"><span class="bv-lab">Text size</span><div class="bv-step"><button id="bvFsDown" aria-label="Smaller text">-</button><span class="bv-fsval" id="bvFsVal">' + fs + '</span><button id="bvFsUp" aria-label="Larger text">+</button></div></div>';
     h += '<div class="bv-row"><span class="bv-lab">Appearance</span><div class="bv-seg" id="bvSegTheme"><button data-v="night">Night</button><button data-v="day">Day</button></div></div>';
-    h += '<div class="bv-row"><span class="bv-lab">Reading flow</span><div class="bv-seg" id="bvSegFlow"><button data-v="chapter">Chapter</button><button data-v="verse">Verse</button></div></div>';
+    h += '<div class="bv-row"><span class="bv-lab">Reading flow</span><div class="bv-seg" id="bvSegFlow"><button data-v="chapter">Chapter</button><button data-v="flow">Flow</button></div></div>';
+    h += '<div class="bv-row"><span class="bv-lab">Picture backgrounds</span><div class="bv-seg" id="bvSegPic"><button data-v="off">Off</button><button data-v="on">On</button></div></div>';
     h += '</div>';
     h += '<h3>Bookmarks</h3><div class="bv-list" id="bvBmList"></div>';
     h += '<h3>Recently read</h3><div class="bv-list" id="bvHistList"></div>';
@@ -1524,6 +1665,10 @@ const Bible = (() => {
       day = (b.dataset.v === "day"); saveSet(); applySettings();
     }));
     body.querySelectorAll("#bvSegFlow button").forEach(b => b.addEventListener("click", () => setFlow(b.dataset.v)));
+    body.querySelectorAll("#bvSegPic button").forEach(b => b.addEventListener("click", () => {
+      flowPic = (b.dataset.v === "on"); saveSet(); applySettings();
+      if(flow === "flow") renderFlow();
+    }));
     $("bvHistClear").addEventListener("click", () => { hist = []; saveHist(); renderHistList(); toast("History cleared"); });
     renderBmList(); renderHistList(); applySettings();
   }
@@ -1673,6 +1818,36 @@ const Bible = (() => {
     sDeb = setTimeout(() => doSearch(v), 250);
   });
   $("bvSearchClear").addEventListener("click", clearSearch);
+
+/* ---------------- flow overlay events: swipe snap, persistent edge buttons ---------------- */
+  $("bvFlowTrack").addEventListener("scroll", () => {
+    if(flowScrollT) clearTimeout(flowScrollT);
+    flowScrollT = setTimeout(flowSettle, 150);
+  }, {passive:true});
+  $("bvFlowTrack").addEventListener("pointerdown", () => { flowUserTakeover(); });
+  $("bvFlowTrack").addEventListener("wheel", () => { flowUserTakeover(); }, {passive:true});
+  $("bvFlowPlay").addEventListener("click", e => {
+    e.stopPropagation();
+    flowPlaying = !flowPlaying;
+    saveSet(); flowSyncPlayBtn(); flowArmTimer();
+  });
+  $("bvFlowSpeedBtn").addEventListener("click", e => {
+    e.stopPropagation();
+    const i = FSPEEDS.findIndex(x => x.ms === flowSpeed);
+    const nx = FSPEEDS[(i + 1 + FSPEEDS.length) % FSPEEDS.length];
+    flowSpeed = nx.ms;
+    saveSet(); flowSyncPlayBtn(); flowArmTimer();
+    toast("Speed: " + nx.n);
+  });
+  $("bvFlowBm").addEventListener("click", e => { e.stopPropagation(); flowBookmark(); });
+  $("bvFlowClose").addEventListener("click", e => { e.stopPropagation(); setFlow("chapter"); });
+  window.addEventListener("resize", () => {
+    if(flow === "flow"){
+      const track = $("bvFlowTrack");
+      const H = track.clientHeight || 1;
+      track.scrollTop = flowCur * H;
+    }
+  });
 
 /* ---------------- swipe to select verses, compact color toggle ---------------- */
   let selStart = null, selMode = false, selVerses = [], swiped = false, lpTimer = null, ctogTarget = "all";
