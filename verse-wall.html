@@ -368,6 +368,8 @@ body.flowNav .wv-drawer{z-index:67;}
 .gm-back{background:none;border:0;color:#e8c876;font-size:14px;cursor:pointer;font-family:'Tenor Sans',sans-serif;}
 .gm-count{color:rgba(255,255,255,.6);font-size:12px;letter-spacing:2px;font-family:'Tenor Sans',sans-serif;}
 .gm-score{color:#e8c876;font-size:12px;letter-spacing:2px;font-family:'Tenor Sans',sans-serif;}
+.gm-restart{background:none;border:0;color:rgba(255,255,255,.45);font-size:11px;letter-spacing:1.5px;cursor:pointer;font-family:'Tenor Sans',sans-serif;padding:4px 2px;}
+.gm-restart.armed{color:#e8a0a0;}
 .gm-prog{height:4px;background:rgba(255,255,255,.12);border-radius:2px;margin-bottom:14px;overflow:hidden;}
 .gm-prog i{display:block;height:100%;border-radius:2px;transition:width .3s;}
 .gm-qcard{position:relative;overflow:hidden;border-radius:16px;padding:20px 16px;margin-bottom:14px;border:1px solid;}
@@ -1451,6 +1453,53 @@ const Games = (() => {
   function gdef(id){ return GAMES.find(g=>g.id===id); }
   function getBest(id){ try{ return +(localStorage.getItem(gdef(id).best)||0); }catch(_){ return 0; } }
   function setBest(id,s){ if(s>getBest(id)){ try{ localStorage.setItem(gdef(id).best, String(s)); }catch(_){} } }
+  function rkey(id){ return "wv-game-round-"+id; }
+  function sampleIdx(n,count){ const ix=[]; for(let k=0;k<n;k++) ix.push(k); shuffle(ix); return ix.slice(0,Math.min(count,n)); }
+  function saveRound(){
+    if(!R || !R.qs) return;
+    try{
+      localStorage.setItem(rkey(R.id), JSON.stringify({v:1, id:R.id, i:R.i, score:R.score, done:!!R.done, qs:R.qs.map(q=>({q:q._qi, o:q._qo}))}));
+    }catch(_){}
+  }
+  function clearRound(id){ try{ localStorage.removeItem(rkey(id)); }catch(_){} }
+  function loadRound(id){
+    try{
+      const raw = localStorage.getItem(rkey(id));
+      if(!raw) return null;
+      const sv = JSON.parse(raw);
+      if(!sv || sv.v!==1 || sv.id!==id || !Array.isArray(sv.qs) || !sv.qs.length) return null;
+      if(!Number.isInteger(sv.i) || sv.i<0 || sv.i>=sv.qs.length) return null;
+      if(!Number.isInteger(sv.score) || sv.score<0 || sv.score>sv.qs.length) return null;
+      return sv;
+    }catch(_){ return null; }
+  }
+  async function rebuildRound(id, sv){
+    const qs = [];
+    for(const sq of sv.qs){
+      if(!sq || typeof sq.q!=="number" || !Array.isArray(sq.o)) return null;
+      if(id==="wsi"){
+        const src = WSI_Q[sq.q];
+        if(!src || !Array.isArray(src.o) || src.o.length<4) return null;
+        if(sq.o.length!==4 || !sq.o.every(ix=>Number.isInteger(ix)&&ix>=0&&ix<src.o.length)) return null;
+        if(new Set(sq.o).size!==4) return null;
+        qs.push({prompt:src.q, plabel:"Who said it?", options:sq.o.map(ix=>src.o[ix]), correct:sq.o.indexOf(src.a), ref:src.r, verse:"", insight:"", _qi:sq.q, _qo:sq.o.slice()});
+      }else if(id==="gen"){
+        const src = GEN_Q[sq.q];
+        if(!src || !Array.isArray(src.o) || src.o.length!==4) return null;
+        if(sq.o.length!==4 || !sq.o.every(ix=>Number.isInteger(ix)&&ix>=0&&ix<4)) return null;
+        if(new Set(sq.o).size!==4) return null;
+        qs.push({prompt:src.q, plabel:"", options:sq.o.map(ix=>src.o[ix]), correct:sq.o.indexOf(0), ref:src.r, verse:src.v, insight:src.i, _qi:sq.q, _qo:sq.o.slice()});
+      }else if(id==="where"){
+        const ref = (typeof KNOWN_VERSES!=="undefined") ? KNOWN_VERSES[sq.q] : null;
+        if(!ref || sq.o.length!==4 || sq.o.indexOf(ref)<0) return null;
+        const d = await kjv();
+        const hit = kjvText(d, ref);
+        if(!hit || !hit.text) return null;
+        qs.push({prompt:hit.text, plabel:"Where is it found?", options:sq.o.slice(), correct:sq.o.indexOf(ref), ref:ref, verse:"", insight:"", _qi:sq.q, _qo:sq.o.slice()});
+      }else return null;
+    }
+    return qs.length ? qs : null;
+  }
 
   async function kjv(){
     if(kjvCache) return kjvCache;
@@ -1504,9 +1553,21 @@ const Games = (() => {
     const gp = $("gamespane");
     gp.innerHTML = '<div class="gm-load">Preparing your round...</div>';
     try{
-      const qs = await buildRound(id);
-      if(!qs.length) throw new Error("empty");
-      R = {id, qs, i:0, score:0};
+      let qs = null, ri = 0, rscore = 0;
+      const sv = loadRound(id);
+      if(sv){
+        const rb = await rebuildRound(id, sv);
+        if(rb){
+          const nxt = sv.done ? sv.i+1 : sv.i;
+          if(nxt < rb.length){ qs = rb; ri = nxt; rscore = sv.score; }
+        }
+      }
+      if(!qs){
+        qs = await buildRound(id);
+        if(!qs.length) throw new Error("empty");
+        clearRound(id);
+      }
+      R = {id, qs, i:ri, score:rscore, done:false};
       renderQ();
     }catch(e){
       gp.innerHTML = '<div class="gm-load">The game could not load. Please check your connection and try again.</div>'
@@ -1517,19 +1578,20 @@ const Games = (() => {
 
   async function buildRound(id){
     if(id==="wsi"){
-      return sample(WSI_Q, NQ).map(q => {
-        const correct = q.o[q.a];
-        const distract = sample(q.o.filter((_,ix)=>ix!==q.a), 3);
-        const opts = shuffle([correct].concat(distract));
-        return {prompt:q.q, plabel:"Who said it?", options:opts, correct:opts.indexOf(correct), ref:q.r, verse:"", insight:""};
+      return sampleIdx(WSI_Q.length, NQ).map(qi => {
+        const q = WSI_Q[qi];
+        const distractIx = sample(q.o.map((_,ix)=>ix).filter(ix=>ix!==q.a), 3);
+        const dispIx = shuffle([q.a].concat(distractIx));
+        return {prompt:q.q, plabel:"Who said it?", options:dispIx.map(ix=>q.o[ix]), correct:dispIx.indexOf(q.a), ref:q.r, verse:"", insight:"", _qi:qi, _qo:dispIx};
       });
     }
     if(id==="where"){
       const d = await kjv();
       const used = new Set(), out = [];
-      const refs = shuffle(KNOWN_VERSES.slice());
-      for(const ref of refs){
+      const order = sampleIdx(KNOWN_VERSES.length, KNOWN_VERSES.length);
+      for(const ri of order){
         if(out.length>=NQ) break;
+        const ref = KNOWN_VERSES[ri];
         if(used.has(ref)) continue;
         const hit = kjvText(d, ref);
         if(!hit || !hit.text) continue;
@@ -1538,14 +1600,14 @@ const Games = (() => {
         for(let k=0;k<3;k++){ const dr = randRef(d, hit.bi, dset); if(dr) dopts.push(dr); }
         if(dopts.length<3) continue;
         const opts = shuffle([ref].concat(dopts));
-        out.push({prompt:hit.text, plabel:"Where is it found?", options:opts, correct:opts.indexOf(ref), ref:ref, verse:"", insight:""});
+        out.push({prompt:hit.text, plabel:"Where is it found?", options:opts, correct:opts.indexOf(ref), ref:ref, verse:"", insight:"", _qi:ri, _qo:opts.slice()});
       }
       return out;
     }
-    return sample(GEN_Q, NQ).map(q => {
-      const correct = q.o[0];
-      const opts = shuffle(q.o.slice());
-      return {prompt:q.q, plabel:"", options:opts, correct:opts.indexOf(correct), ref:q.r, verse:q.v, insight:q.i};
+    return sampleIdx(GEN_Q.length, NQ).map(qi => {
+      const q = GEN_Q[qi];
+      const dispIx = shuffle(q.o.map((_,ix)=>ix));
+      return {prompt:q.q, plabel:"", options:dispIx.map(ix=>q.o[ix]), correct:dispIx.indexOf(0), ref:q.r, verse:q.v, insight:q.i, _qi:qi, _qo:dispIx};
     });
   }
 
@@ -1555,7 +1617,8 @@ const Games = (() => {
     gp.innerHTML =
       '<div class="gm-top"><button class="gm-back" id="gmBack">&#10094; Games</button>'
       + '<span class="gm-count">'+(R.i+1)+' OF '+R.qs.length+'</span>'
-      + '<span class="gm-score">SCORE '+R.score+'</span></div>'
+      + '<span class="gm-score">SCORE '+R.score+'</span>'
+      + '<button class="gm-restart" id="gmRestart">RESTART</button></div>'
       + '<div class="gm-prog"><i style="width:'+(R.i/R.qs.length*100)+'%;background:'+s.accent+'"></i></div>'
       + '<div class="gm-qcard" style="background:'+s.bg+';border-color:'+s.accent+'">'
       + '<div class="gm-ov" style="background:'+s.overlay+'"></div>'
@@ -1566,6 +1629,19 @@ const Games = (() => {
       + q.options.map((o,ix)=>'<button class="gm-opt" data-ix="'+ix+'">'+esc(o)+'</button>').join("")
       + '</div><div id="gmFb"></div>';
     $("gmBack").addEventListener("click", open);
+    let rsArm = null;
+    $("gmRestart").addEventListener("click", ()=>{
+      const b = $("gmRestart");
+      if(b.classList.contains("armed")){
+        clearTimeout(rsArm);
+        clearRound(R.id);
+        start(R.id);
+      }else{
+        b.classList.add("armed");
+        b.textContent = "SURE?";
+        rsArm = setTimeout(()=>{ try{ b.classList.remove("armed"); b.textContent = "RESTART"; }catch(_){} }, 3000);
+      }
+    });
     gp.querySelectorAll(".gm-opt").forEach(b => b.addEventListener("click", () => answer(+b.dataset.ix)));
     window.scrollTo(0,0);
   }
@@ -1574,6 +1650,8 @@ const Games = (() => {
     const q = R.qs[R.i];
     const ok = ix === q.correct;
     if(ok) R.score++;
+    R.done = true;
+    saveRound();
     document.querySelectorAll(".gm-opt").forEach((b,bix)=>{
       b.disabled = true;
       if(bix===q.correct) b.classList.add("correct");
@@ -1590,13 +1668,14 @@ const Games = (() => {
     html += '</div><button class="gm-next" id="gmNext">'+(last?"SEE RESULTS":"NEXT")+'</button>';
     const fb = $("gmFb");
     fb.innerHTML = html;
-    $("gmNext").addEventListener("click", ()=>{ R.i++; if(R.i>=R.qs.length) renderEnd(); else renderQ(); });
+    $("gmNext").addEventListener("click", ()=>{ R.i++; if(R.i>=R.qs.length){ renderEnd(); }else{ R.done=false; saveRound(); renderQ(); } });
     try{ fb.scrollIntoView({block:"nearest"}); }catch(_){}
   }
 
   function renderEnd(){
     const g = gdef(R.id), s = skin(g.skin), gp = $("gamespane"), id = R.id, n = R.qs.length, sc = R.score;
     setBest(id, sc);
+    clearRound(id);
     const b = getBest(id);
     const msg = sc>=Math.ceil(n*0.9)?"Outstanding.":sc>=Math.ceil(n*0.7)?"Well done.":sc>=Math.ceil(n*0.5)?"Good effort.":"Keep digging in the Word.";
     gp.innerHTML =
