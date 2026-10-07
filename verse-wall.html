@@ -1279,7 +1279,7 @@ function setView(v){
     Bible.open();
   } else if(v === "games"){
     if(!window._wvSubSaved) window._wvSubSaved = sub.textContent;
-    sub.textContent = "Sharpen your sword. Ten questions a round.";
+    sub.textContent = "Sharpen your sword. Fifty questions a round.";
     stopRiver();
     rv.style.display = "none";
     rv.innerHTML = "";
@@ -1307,9 +1307,9 @@ const Games = (() => {
   const GAMES = [
     {id:"wsi", title:"Who Said It", desc:"A voice from Scripture speaks. Name the speaker.", skin:"gold", best:"wv-game-best-wsi"},
     {id:"where", title:"Where Is It Found", desc:"Read the verse. Find where it lives in the Bible.", skin:"ocean", best:"wv-game-best-where"},
-    {id:"gen", title:"General Bible Questions", desc:"Ten questions drawn from all sixty six books.", skin:"ember", best:"wv-game-best-gen"}
+    {id:"gen", title:"General Bible Questions", desc:"Fifty questions drawn from all sixty six books.", skin:"ember", best:"wv-game-best-gen"}
   ];
-  const NQ = 10;
+  const NQ = 50;
   let R = null, kjvCache = null;
 
   function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
@@ -1361,7 +1361,7 @@ const Games = (() => {
         + '</div></button>';
     }).join("");
     gp.innerHTML = '<div class="gm-head"><div class="gm-title">GAMES</div>'
-      + '<div class="gm-sub">Sharpen your sword. Ten questions a round.</div></div>' + cards;
+      + '<div class="gm-sub">Sharpen your sword. Fifty questions a round.</div></div>' + cards;
     gp.querySelectorAll(".gm-card").forEach(c => c.addEventListener("click", () => start(c.dataset.g)));
     window.scrollTo(0,0);
   }
