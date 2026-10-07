@@ -1485,14 +1485,29 @@ const BibleCache = (() => {
   }
   return { get, set };
 })();
+function stripPilcrows(d){
+  try{
+    if(d && d.books) for(const b of d.books){
+      if(b && b.c) for(const ch of b.c){
+        if(Array.isArray(ch)) for(let i=0;i<ch.length;i++){
+          if(typeof ch[i]==="string" && ch[i].indexOf("¶")>=0){
+            ch[i]=ch[i].replace(/^¶+\s*/,"").replace(/¶/g,"");
+          }
+        }
+      }
+    }
+  }catch(_){}
+  return d;
+}
 async function loadKjvJson(){
   try{
     const cached = await BibleCache.get();
-    if(cached && cached.books && cached.books.length === 66) return cached;
+    if(cached && cached.books && cached.books.length === 66) return stripPilcrows(cached);
   }catch(_){}
   const r = await fetch("bible-data/kjv.json");
   if(!r.ok) throw new Error("kjv");
   const d = await r.json();
+  stripPilcrows(d);
   try{ await BibleCache.set(d); }catch(_){}
   return d;
 }
@@ -1847,6 +1862,7 @@ const Bible = (() => {
         const r = await fetch("bible-data/" + code + ".json");
         if(!r.ok) throw new Error("http");
         d = await r.json();
+        stripPilcrows(d);
       }
       if(!d.books || d.books.length !== 66) throw new Error("shape");
       cache[code] = d;
