@@ -141,6 +141,7 @@ body{font-family:'Tenor Sans',sans-serif;color:#f5e3b8;min-height:100vh;}
 .bv-chap{padding:16px 22px 8px;}
 .bv-chap h2{font-family:'Cinzel',serif;font-weight:600;font-size:22px;letter-spacing:3px;color:#f5e3b8;text-align:center;margin:6px 0 4px;}
 .bv-trname{text-align:center;font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:rgba(255,255,255,.42);letter-spacing:1px;margin-bottom:16px;}
+.bv-sech{text-align:center;font-family:'Cinzel',serif;font-size:12.5px;font-weight:600;letter-spacing:2.5px;color:#c9933a;margin:1.7em 0 .9em;text-transform:uppercase;}
 .bv-p{font-family:'Cormorant Garamond',serif;font-size:19px;line-height:1.85;color:rgba(245,227,184,.93);margin:0 0 .85em;}
 .bv-vn{font-family:'Tenor Sans',sans-serif;font-size:10px;color:#c9933a;vertical-align:super;margin-right:7px;letter-spacing:.5px;}
 .bv-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:18px 22px 46px;}
@@ -296,6 +297,7 @@ body.flowNav .wv-drawer{z-index:67;}
 .wv-bible.day .bv-trans button.on{border-color:#a5762a;background:rgba(165,118,42,.18);color:#7a5410;}
 .wv-bible.day .bv-chap h2{color:#6b4a12;}
 .wv-bible.day .bv-trname{color:rgba(92,63,14,.55);}
+.wv-bible.day .bv-sech{color:#9a6b1f;}
 .wv-bible.day .bv-p{color:#2c2318;}
 .wv-bible.day .bv-vn{color:#9a6b1f;}
 .wv-bible.day .bv-foot button{background:rgba(165,118,42,.12);border-color:rgba(154,107,31,.5);color:#7a5410;}
@@ -1833,6 +1835,7 @@ const Bible = (() => {
   const BOOKS66 = ["Genesis","Exodus","Leviticus","Numbers","Deuteronomy","Joshua","Judges","Ruth","1 Samuel","2 Samuel","1 Kings","2 Kings","1 Chronicles","2 Chronicles","Ezra","Nehemiah","Esther","Job","Psalms","Proverbs","Ecclesiastes","Song of Solomon","Isaiah","Jeremiah","Lamentations","Ezekiel","Daniel","Hosea","Joel","Amos","Obadiah","Jonah","Micah","Nahum","Habakkuk","Zephaniah","Haggai","Zechariah","Malachi","Matthew","Mark","Luke","John","Acts","Romans","1 Corinthians","2 Corinthians","Galatians","Ephesians","Philippians","Colossians","1 Thessalonians","2 Thessalonians","1 Timothy","2 Timothy","Titus","Philemon","Hebrews","James","1 Peter","2 Peter","1 John","2 John","3 John","Jude","Revelation"];
   const ALIAS = {"psalm":"Psalms"};
   const cache = {};
+  let HD = null;
   let code = "kjv", bi = 0, ci = 0, hlVerse = -1;
   try{
     const s1 = localStorage.getItem("wv-bible-tr");
@@ -1856,6 +1859,7 @@ const Bible = (() => {
     return {bi:i, ci:+m[2]-1, vi:+m[3]-1};
   }
   async function ensure(){
+    if(!HD){ try{ const hr = await fetch("bible-data/headings.json"); HD = hr.ok ? await hr.json() : {}; }catch(_){ HD = {}; } }
     if(cache[code]) return true;
     $("bvChap").innerHTML = '<p class="bv-p" style="text-align:center;color:rgba(255,255,255,.5)">Loading the Scriptures...</p>';
     try{
@@ -1913,7 +1917,10 @@ const Bible = (() => {
     $("bvLoc").textContent = locRef;
     let h = "<h2>" + esc(locRef) + "</h2>";
     h += '<div class="bv-trname">' + esc(TRNAMES[code]) + "</div>";
+    const chH = (HD && HD[names[bi]] && HD[names[bi]][String(ci+1)]) || null;
+    let hhi = 0;
     for(let i = 0; i < verses.length; i++){
+      while(chH && hhi < chH.length && chH[hhi][0] === i+1){ h += '<div class="bv-sech">' + esc(chH[hhi][1]) + "</div>"; hhi++; }
       h += '<p class="bv-p' + hlClass(i) + (isBmIdx(i) ? " bv-bm" : "") + '" data-vi="' + i + '"' + (i === hlVerse ? ' id="bvHl"' : "") + '><span class="bv-vn">' + (i+1) + "</span>" + esc(verses[i]) + "</p>";
     }
     $("bvChap").innerHTML = h;
