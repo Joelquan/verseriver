@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
+<meta name="referrer" content="no-referrer"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
 <title>Verse Wall</title>
 <style>
@@ -2101,9 +2102,12 @@ const Bible = (() => {
     saveHl(); refreshVerseMarks(); renderCtog();
   }
 
-  /* ---------------- chapter audio: human-voice reader (Amy) ---------------- */
-  /* Pipeline copied from Joelquan/voices api/_tts.js: StreamElements (voice Amy,
-     no key) first, Google Translate free TTS second, browser speech last. */
+  /* ---------------- chapter audio: human-voice reader ---------------- */
+  /* Google Translate free TTS first (no key). Note: Google 404s any TTS request
+     carrying a non-Google Referer, so the page sets <meta name="referrer"
+     content="no-referrer"> (element-level referrerpolicy is ignored for media
+     loads in Chromium). StreamElements (voice Amy) is the fallback, browser
+     speech last. */
   const SE_VOICE = "Amy";
   const speakCache = new Map();
   const LS = {playing:false, vi:0, chunks:[], qi:0, au:null, prov:-1, gen:0};
@@ -2127,7 +2131,7 @@ const Bible = (() => {
   }
   function seUrl(t){ return "https://api.streamelements.com/kappa/v2/speech?" + new URLSearchParams({voice:SE_VOICE, text:t}); }
   function gtUrl(t){ return "https://translate.google.com/translate_tts?" + new URLSearchParams({ie:"UTF-8", q:t, tl:"en", client:"tw-ob"}); }
-  function chunkUrl(p, t){ return p === 0 ? seUrl(t) : gtUrl(t); }
+  function chunkUrl(p, t){ return p === 0 ? gtUrl(t) : seUrl(t); }
   function listenPaint(){
     const b = $("bvListenBtn");
     if(!b) return;
