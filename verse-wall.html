@@ -203,6 +203,10 @@ body{font-family:'Tenor Sans',sans-serif;color:#f5e3b8;min-height:100vh;}
 .bv-seg button{border:0;background:transparent;color:rgba(245,227,184,.6);font-family:'Tenor Sans',sans-serif;
  font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:10px 10px;cursor:pointer;flex:1;white-space:nowrap;}
 .bv-seg button.on{background:rgba(201,147,58,.25);color:#e8c876;}
+.bv-row.col{flex-direction:column;align-items:stretch;}
+.bv-row.col .bv-lab{margin-bottom:8px;}
+.bv-sel{width:100%;box-sizing:border-box;background:rgba(201,147,58,.08);border:.5px solid rgba(201,147,58,.5);border-radius:10px;color:#e8c876;font-family:'Tenor Sans',sans-serif;font-size:12px;letter-spacing:.5px;padding:11px 12px;cursor:pointer;}
+.bv-note{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:rgba(245,227,184,.5);margin:6px 2px 0;}
 .bv-list{margin:0 0 6px;}
 .bv-li{display:flex;align-items:center;gap:10px;width:100%;text-align:left;margin:0 0 8px;padding:11px 13px;border-radius:10px;
  border:.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);cursor:pointer;box-sizing:border-box;}
@@ -1452,6 +1456,11 @@ const Bible = (() => {
   $("drSetBack").addEventListener("click", closeDrSettings);
   $("bvSearchBtn").addEventListener("click", () => { openDrawer(); openDrSearch(); });
   $("bvListenBtn").addEventListener("click", listenToggle);
+  try{
+    if("speechSynthesis" in window){
+      speechSynthesis.onvoiceschanged = () => { if($("bvVoiceSel")) fillVoiceSel(); };
+    }
+  }catch(_){}
   $("drSrchBack").addEventListener("click", closeDrSearch);
   $("drSrchInp").addEventListener("input", e => {
     if(drSdeb) clearTimeout(drSdeb);
@@ -1477,6 +1486,7 @@ const Bible = (() => {
 /* ---------------- Bible reader settings: font size, night/day, verse flow ---------------- */
   let fs = 19, day = false, flow = "chapter", vi = 0, lastVi = {bi:0, ci:0, vi:0};
   let flowSpeed = 9000, flowPlaying = true, flowPic = false;
+  let lspRate = 1, lvcVoice = "";
   const FSPEEDS = [{n:"Slow", ms:12000}, {n:"Med", ms:9000}, {n:"Fast", ms:6000}];
   let bms = [], hls = {}, sIdx = null, sCode = "", sDeb = null, drSdeb = null, actCtx = null, toastT = null;
   const HLC = ["rgba(201,147,58,.30)","rgba(139,139,74,.32)","rgba(168,94,50,.30)","rgba(96,116,148,.32)"];
@@ -1490,13 +1500,15 @@ const Bible = (() => {
       if(+st.fsp >= 2000 && +st.fsp <= 30000) flowSpeed = +st.fsp;
       flowPlaying = st.fpl !== false;
       flowPic = !!st.fpic;
+      if(+st.lsp >= 0.5 && +st.lsp <= 2) lspRate = +st.lsp;
+      if(typeof st.lvc === "string") lvcVoice = st.lvc;
     }
     const ps = JSON.parse(localStorage.getItem("wv-bible-pos") || "null");
     if(ps && +ps.vi >= 0) vi = +ps.vi;
     bms = JSON.parse(localStorage.getItem("wv-bible-bm") || "[]") || [];
     hls = JSON.parse(localStorage.getItem("wv-bible-hl") || "{}") || {};
   }catch(_){ bms = []; hls = {}; }
-  function saveSet(){ try{ localStorage.setItem("wv-bible-set", JSON.stringify({fs:fs, day:day, flow:flow, fsp:flowSpeed, fpl:flowPlaying, fpic:flowPic})); }catch(_){} }
+  function saveSet(){ try{ localStorage.setItem("wv-bible-set", JSON.stringify({fs:fs, day:day, flow:flow, fsp:flowSpeed, fpl:flowPlaying, fpic:flowPic, lsp:lspRate, lvc:lvcVoice})); }catch(_){} }
   function saveBm(){ try{ localStorage.setItem("wv-bible-bm", JSON.stringify(bms.slice(0, 200))); }catch(_){} }
   function saveHl(){ try{ localStorage.setItem("wv-bible-hl", JSON.stringify(hls)); }catch(_){} }
   function hlKey(i){ return code + "|" + bi + "|" + ci + "|" + i; }
@@ -1513,6 +1525,9 @@ const Bible = (() => {
     document.querySelectorAll("#bvSegTheme button").forEach(b => b.classList.toggle("on", (b.dataset.v === "day") === day));
     document.querySelectorAll("#bvSegFlow button").forEach(b => b.classList.toggle("on", b.dataset.v === flow));
     document.querySelectorAll("#bvSegPic button").forEach(b => b.classList.toggle("on", (b.dataset.v === "on") === flowPic));
+    document.querySelectorAll("#bvSegLsp button").forEach(b => b.classList.toggle("on", parseFloat(b.dataset.v) === lspRate));
+    const vsel = $("bvVoiceSel");
+    if(vsel) vsel.value = lvcVoice || "";
   }
   function setFs(nf){ fs = Math.max(14, Math.min(28, nf)); saveSet(); applySettings(); }
   function setFlow(f){
@@ -1720,12 +1735,56 @@ const Bible = (() => {
       host.appendChild(b);
     });
   }
+  function escAttr(s){ return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;"); }
+  function deviceVoices(){
+    try{
+      if(!("speechSynthesis" in window)) return [];
+      const vs = speechSynthesis.getVoices() || [];
+      const en = vs.filter(v => /^en/i.test(v.lang || ""));
+      const rest = vs.filter(v => !/^en/i.test(v.lang || ""));
+      return en.concat(rest);
+    }catch(_){ return []; }
+  }
+  function pickVoice(){
+    if(!lvcVoice) return null;
+    try{
+      const vs = speechSynthesis.getVoices() || [];
+      return vs.find(v => v.voiceURI === lvcVoice) || null;
+    }catch(_){ return null; }
+  }
+  function fillVoiceSel(){
+    const sel = $("bvVoiceSel"); if(!sel) return;
+    const vs = deviceVoices();
+    let h = '<option value="">Online voice (default)</option>';
+    vs.forEach(v => {
+      h += '<option value="' + escAttr(v.voiceURI) + '">' + escAttr(v.name) + ' (' + escAttr(v.lang || "") + ')</option>';
+    });
+    sel.innerHTML = h;
+    sel.value = lvcVoice || "";
+    const note = $("bvVoiceNote");
+    if(note) note.style.display = vs.length ? "none" : "";
+  }
+  function setLsp(r){
+    lspRate = r; saveSet(); applySettings();
+    if(!LS.playing) return;
+    if(LS.spk){
+      try{ speechSynthesis.cancel(); }catch(_){}
+      playChunk();
+    }else if(LS.au){
+      try{ LS.au.playbackRate = lspRate; }catch(_){}
+    }
+  }
+  function setLvc(uri){
+    lvcVoice = uri || ""; saveSet(); fillVoiceSel();
+  }
   function renderMenu(body){
     let h = '<h3>Reading settings</h3><div class="bv-sec">';
     h += '<div class="bv-row"><span class="bv-lab">Text size</span><div class="bv-step"><button id="bvFsDown" aria-label="Smaller text">-</button><span class="bv-fsval" id="bvFsVal">' + fs + '</span><button id="bvFsUp" aria-label="Larger text">+</button></div></div>';
     h += '<div class="bv-row"><span class="bv-lab">Appearance</span><div class="bv-seg" id="bvSegTheme"><button data-v="night">Night</button><button data-v="day">Day</button></div></div>';
     h += '<div class="bv-row"><span class="bv-lab">Reading flow</span><div class="bv-seg" id="bvSegFlow"><button data-v="chapter">Chapter</button><button data-v="flow">Flow</button></div></div>';
     h += '<div class="bv-row"><span class="bv-lab">Picture backgrounds</span><div class="bv-seg" id="bvSegPic"><button data-v="off">Off</button><button data-v="on">On</button></div></div>';
+    h += '<div class="bv-row col"><span class="bv-lab">Listening speed</span><div class="bv-seg" id="bvSegLsp"><button data-v="0.75">0.75x</button><button data-v="1">1x</button><button data-v="1.25">1.25x</button><button data-v="1.5">1.5x</button></div></div>';
+    h += '<div class="bv-row col"><span class="bv-lab">Voice</span><select id="bvVoiceSel" class="bv-sel" aria-label="Reading voice"></select><div class="bv-note" id="bvVoiceNote" style="display:none">No device voices found. The online voice will be used.</div></div>';
     h += '</div>';
     h += '<h3>Bookmarks</h3><div class="bv-list" id="bvBmList"></div>';
     body.innerHTML = h;
@@ -1739,6 +1798,10 @@ const Bible = (() => {
       flowPic = (b.dataset.v === "on"); saveSet(); applySettings();
       if(flow === "flow") renderFlow();
     }));
+    body.querySelectorAll("#bvSegLsp button").forEach(b => b.addEventListener("click", () => setLsp(parseFloat(b.dataset.v))));
+    const vsel = $("bvVoiceSel");
+    if(vsel) vsel.addEventListener("change", e => setLvc(e.target.value));
+    fillVoiceSel();
     renderBmList(); applySettings();
   }
   function refreshVerseMarks(){
@@ -2110,7 +2173,7 @@ const Bible = (() => {
      speech last. */
   const SE_VOICE = "Amy";
   const speakCache = new Map();
-  const LS = {playing:false, vi:0, chunks:[], qi:0, au:null, prov:-1, gen:0};
+  const LS = {playing:false, vi:0, chunks:[], qi:0, au:null, prov:-1, gen:0, spk:false};
   let lastChapKey = "";
   function speakClean(s){ return String(s || "").replace(/¶/g, " ").replace(/\s+/g, " ").trim(); }
   function splitChunks(text, maxLen){
@@ -2144,6 +2207,7 @@ const Bible = (() => {
   }
   function listenStop(){
     LS.playing = false;
+    LS.spk = false;
     try{ if(LS.au){ LS.au.onended = null; LS.au.onerror = null; LS.au.pause(); LS.au.removeAttribute("src"); LS.au.load(); } }catch(_){}
     try{ if("speechSynthesis" in window) speechSynthesis.cancel(); }catch(_){}
     clearSpeak();
@@ -2157,9 +2221,12 @@ const Bible = (() => {
     try{
       if(!("speechSynthesis" in window)){ listenFail(); return; }
       const u = new SpeechSynthesisUtterance(text);
-      u.lang = "en-US"; u.rate = 1;
+      const vv = pickVoice();
+      try{ if(vv) u.voice = vv; }catch(_){}
+      u.lang = (vv && vv.lang) || "en-US";
+      u.rate = lspRate;
       u.onend = () => { if(!LS.playing) return; LS.qi++; playChunk(); };
-      u.onerror = () => { if(LS.playing) listenFail(); };
+      u.onerror = (e) => { if(e && (e.error === "canceled" || e.error === "interrupted")) return; if(LS.playing) listenFail(); };
       speechSynthesis.cancel();
       speechSynthesis.speak(u);
     }catch(_){ listenFail(); }
@@ -2168,7 +2235,9 @@ const Bible = (() => {
     if(!LS.playing) return;
     if(LS.qi >= LS.chunks.length){ playVerse(LS.vi + 1); return; }
     const text = LS.chunks[LS.qi];
-    if(LS.prov === 2){ speakUtterance(text); return; }
+    const forcedSpeech = !!lvcVoice;
+    if(forcedSpeech || LS.prov === 2){ LS.spk = true; speakUtterance(text); return; }
+    LS.spk = false;
     const p = LS.prov < 0 ? 0 : LS.prov;
     let url = speakCache.get(p + "|" + text);
     if(!url){ url = chunkUrl(p, text); speakCache.set(p + "|" + text, url); }
@@ -2183,6 +2252,7 @@ const Bible = (() => {
     au.onended = () => { if(!LS.playing) return; LS.qi++; playChunk(); };
     try{
       au.src = url;
+      au.playbackRate = lspRate;
       const pr = au.play();
       if(pr && pr.catch) pr.catch(() => {
         if(!LS.playing || gen !== LS.gen) return;
@@ -2223,15 +2293,15 @@ const Bible = (() => {
     if(LS.playing){
       LS.playing = false;
       try{
-        if(LS.prov === 2){ speechSynthesis.pause(); }
+        if(LS.spk){ speechSynthesis.pause(); }
         else if(LS.au){ LS.au.pause(); }
       }catch(_){}
       listenPaint();
-    }else if(LS.au && LS.au.src && document.querySelector('#bvChap p[data-vi="' + LS.vi + '"]')){
+    }else if(LS.au && (LS.au.src || LS.spk) && document.querySelector('#bvChap p[data-vi="' + LS.vi + '"]')){
       LS.playing = true;
       try{
-        if(LS.prov === 2){ speechSynthesis.resume(); }
-        else{ const pr = LS.au.play(); if(pr && pr.catch) pr.catch(()=>{}); }
+        if(LS.spk){ speechSynthesis.resume(); }
+        else{ LS.au.playbackRate = lspRate; const pr = LS.au.play(); if(pr && pr.catch) pr.catch(()=>{}); }
       }catch(_){}
       listenPaint();
     }else{
