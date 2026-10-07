@@ -1435,6 +1435,65 @@ function setView(v){
   }
 }
 
+/* ---------------- KJV local cache (IndexedDB) ----------------
+   First need: read from IndexedDB under a versioned key; on miss, fetch
+   bible-data/kjv.json once from the network, store it, then use it.
+   IndexedDB unavailable: falls back to plain fetch. Other translations
+   (WEB/ASV/BBE) stay network-fetched. */
+const BibleCache = (() => {
+  const DB = "verseriver-bible", STORE = "texts", KEY = "kjv-v1";
+  function openDb(){
+    return new Promise((res, rej) => {
+      try{
+        if(!("indexedDB" in window)) return rej(new Error("nodb"));
+        const rq = indexedDB.open(DB, 1);
+        rq.onupgradeneeded = e => { e.target.result.createObjectStore(STORE); };
+        rq.onsuccess = e => res(e.target.result);
+        rq.onerror = () => rej(rq.error || new Error("open"));
+      }catch(err){ rej(err); }
+    });
+  }
+  async function get(){
+    const db = await openDb();
+    try{
+      return await new Promise(res => {
+        try{
+          const tx = db.transaction(STORE, "readonly");
+          const rq = tx.objectStore(STORE).get(KEY);
+          rq.onsuccess = () => res(rq.result || null);
+          rq.onerror = () => res(null);
+        }catch(_){ res(null); }
+      });
+    }finally{ try{ db.close(); }catch(_){} }
+  }
+  async function set(data){
+    const db = await openDb();
+    try{
+      await new Promise(res => {
+        try{
+          const tx = db.transaction(STORE, "readwrite");
+          tx.objectStore(STORE).put(data, KEY);
+          tx.oncomplete = () => res(true);
+          tx.onerror = () => res(false);
+        }catch(_){ res(false); }
+      });
+    }finally{ try{ db.close(); }catch(_){} }
+    return true;
+  }
+  return { get, set };
+})();
+async function loadKjvJson(){
+  try{
+    const cached = await BibleCache.get();
+    if(cached && cached.books && cached.books.length === 66) return cached;
+  }catch(_){}
+  const r = await fetch("bible-data/kjv.json");
+  if(!r.ok) throw new Error("kjv");
+  const d = await r.json();
+  try{ await BibleCache.set(d); }catch(_){}
+  return d;
+}
+
 /* ---------------- Games tab ---------------- */
 const Games = (() => {
   const $ = id => document.getElementById(id);
@@ -1503,9 +1562,7 @@ const Games = (() => {
 
   async function kjv(){
     if(kjvCache) return kjvCache;
-    const r = await fetch("bible-data/kjv.json");
-    if(!r.ok) throw new Error("kjv");
-    kjvCache = await r.json();
+    kjvCache = await loadKjvJson();
     return kjvCache;
   }
   function kjvText(d, ref){
@@ -1732,9 +1789,14 @@ const Bible = (() => {
     if(cache[code]) return true;
     $("bvChap").innerHTML = '<p class="bv-p" style="text-align:center;color:rgba(255,255,255,.5)">Loading the Scriptures...</p>';
     try{
-      const r = await fetch("bible-data/" + code + ".json");
-      if(!r.ok) throw new Error("http");
-      const d = await r.json();
+      let d;
+      if(code === "kjv"){
+        d = await loadKjvJson();
+      }else{
+        const r = await fetch("bible-data/" + code + ".json");
+        if(!r.ok) throw new Error("http");
+        d = await r.json();
+      }
       if(!d.books || d.books.length !== 66) throw new Error("shape");
       cache[code] = d;
       return true;
