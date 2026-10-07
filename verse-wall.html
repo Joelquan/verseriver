@@ -113,10 +113,10 @@ body{font-family:'Tenor Sans',sans-serif;color:#f5e3b8;min-height:100vh;}
 .wv-ov-ref{margin-top:22px;font-size:12px;letter-spacing:2.5px;text-transform:uppercase;font-family:'Tenor Sans',sans-serif;}
 .wv-ov-close{position:absolute;top:18px;right:18px;width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,.4);
  border:.5px solid rgba(255,255,255,.16);color:rgba(255,255,255,.72);font-size:16px;cursor:pointer;}
-.wv-ov-share{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);padding:13px 34px;border-radius:999px;
+.wv-ov-menu{position:absolute;bottom:60px;left:50%;transform:translateX(-50%);padding:13px 40px;border-radius:999px;
  background:rgba(0,0,0,.45);border:1px solid rgba(201,147,58,.65);color:#e8c876;font-family:'Tenor Sans',sans-serif;
- font-size:13px;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;}
-.wv-ov-share:active{transform:translateX(-50%) scale(.96);}
+ font-size:15px;letter-spacing:6px;cursor:pointer;}
+.wv-ov-menu:active{transform:translateX(-50%) scale(.96);}
 .wv-shareprev{position:fixed;inset:0;z-index:90;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.93);padding:22px;box-sizing:border-box;}
 .wv-shareprev.open{display:flex;}
 .wv-shareprev img{max-width:100%;max-height:72vh;border-radius:10px;box-shadow:0 8px 40px rgba(0,0,0,.6);}
@@ -165,13 +165,22 @@ body{font-family:'Tenor Sans',sans-serif;color:#f5e3b8;min-height:100vh;}
  text-transform:uppercase;cursor:pointer;}
 .bv-hl{animation:bv-flash 2.6s ease;border-radius:6px;}
 @keyframes bv-flash{0%,55%{background:rgba(201,147,58,.30);}100%{background:transparent;}}
-.wv-ov-begin{position:absolute;bottom:100px;left:50%;transform:translateX(-50%);padding:12px 30px;border-radius:999px;
- background:rgba(0,0,0,.45);border:1px solid rgba(201,147,58,.65);color:#e8c876;font-family:'Tenor Sans',sans-serif;
- font-size:12px;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;white-space:nowrap;}
-.wv-ov-begin:active{transform:translateX(-50%) scale(.96);}
+.wv-actsheet{position:fixed;inset:0;z-index:60;display:none;align-items:flex-end;justify-content:center;
+ background:rgba(0,0,0,.55);}
+.wv-actsheet.open{display:flex;}
+.wv-actsheet-box{width:100%;max-width:520px;background:linear-gradient(160deg,#0c1424,#101b30);
+ border-top:1px solid rgba(201,147,58,.5);border-radius:18px 18px 0 0;padding:14px 22px 34px;box-sizing:border-box;
+ animation:ovsheetup .22s ease;}
+@keyframes ovsheetup{from{transform:translateY(40px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.wv-actsheet-x{display:block;margin:0 0 4px auto;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.4);
+ border:.5px solid rgba(255,255,255,.16);color:rgba(255,255,255,.72);font-size:14px;cursor:pointer;}
+.wv-actsheet-opt{display:block;width:100%;padding:16px 10px;background:transparent;border:0;border-top:.5px solid rgba(201,147,58,.25);
+ color:#e8c876;font-family:'Tenor Sans',sans-serif;font-size:14px;letter-spacing:2px;cursor:pointer;text-align:center;}
+.wv-actsheet-opt:first-of-type{border-top:0;}
+.wv-actsheet-opt:active{background:rgba(201,147,58,.12);}
 .wv-overlay.day .wv-ov-text{text-shadow:none;}
 .wv-overlay.day .wv-ov-close{background:rgba(58,34,8,.12);border-color:rgba(139,94,34,.4);color:rgba(58,34,8,.7);}
-.wv-overlay.day .wv-ov-share,.wv-overlay.day .wv-ov-begin{background:rgba(58,34,8,.82);border-color:#8b5e22;color:#f5e3b8;}
+.wv-overlay.day .wv-ov-menu{background:rgba(58,34,8,.82);border-color:#8b5e22;color:#f5e3b8;}
 
 /* ---- Bible reader: settings, day theme, verse flow, bookmarks, highlights, search, history ---- */
 .bv-sbtn{flex-shrink:0;width:42px;height:42px;border-radius:50%;border:.5px solid rgba(255,255,255,.14);
@@ -496,8 +505,15 @@ body.flowNav .wv-drawer{z-index:67;}
   <div class="wv-ov-quote" id="ovQuote">&ldquo;</div>
   <div class="wv-ov-text" id="ovText"></div>
   <div class="wv-ov-ref" id="ovRef"></div>
-  <button class="wv-ov-share" id="ovShare">Share</button>
-  <button class="wv-ov-begin" id="ovBegin">Begin here</button>
+  <button class="wv-ov-menu" id="ovMenu">&#8226;&#8226;&#8226;</button>
+</div>
+<div class="wv-actsheet" id="ovSheet">
+  <div class="wv-actsheet-box">
+    <button class="wv-actsheet-x" id="ovSheetX">&#10005;</button>
+    <button class="wv-actsheet-opt" id="ovOptRead">Read here</button>
+    <button class="wv-actsheet-opt" id="ovOptText">Share as text</button>
+    <button class="wv-actsheet-opt" id="ovOptPic">Share as picture</button>
+  </div>
 </div>
 <div class="wv-shareprev" id="sharePrev">
   <img id="sharePrevImg" alt="Verse image">
@@ -950,8 +966,6 @@ function openVerse(c){
   const or = document.getElementById("ovRef");
   or.textContent = v.r; or.style.color = acc;
   overlay.classList.add("open");
-  c.shareFile = null;
-  renderShareImage(c).then(f => { c.shareFile = f; });
 }
 function closeVerse(){
   overlay.classList.remove("open");
@@ -974,19 +988,101 @@ function closeSharePreview(){
 }
 document.getElementById("sharePrevClose").addEventListener("click", closeSharePreview);
 sharePrev.addEventListener("click", e => { if(e.target === sharePrev) closeSharePreview(); });
-document.getElementById("ovShare").addEventListener("click", async () => {
-  const c = heldCard;
-  if(!c || !c.shareFile) return;
-  const file = c.shareFile;
-  const data = { files: [file], title: WALL_VERSES[c.vi].r + " (KJV)" };
+let ovToastT = null;
+function ovToast(msg){
+  const t = document.getElementById("bvToast");
+  if(!t) return;
+  t.textContent = msg;
+  t.classList.add("show");
+  if(ovToastT) clearTimeout(ovToastT);
+  ovToastT = setTimeout(() => t.classList.remove("show"), 1800);
+}
+const ovSheet = document.getElementById("ovSheet");
+function openOvSheet(){ ovSheet.classList.add("open"); }
+function closeOvSheet(){ ovSheet.classList.remove("open"); }
+document.getElementById("ovMenu").addEventListener("click", openOvSheet);
+document.getElementById("ovSheetX").addEventListener("click", closeOvSheet);
+ovSheet.addEventListener("click", e => { if(e.target === ovSheet) closeOvSheet(); });
+function renderWallVerseImage(v){
+  const W = 1080, H = 1350;
+  const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+  const x = cv.getContext("2d");
+  const g = x.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, "#0c1424"); g.addColorStop(0.5, "#101b30"); g.addColorStop(1, "#16233d");
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.fillStyle = "#c9933a"; x.fillRect(W * 0.22, 76, W * 0.56, 3);
+  x.textAlign = "center"; x.textBaseline = "alphabetic";
+  x.fillStyle = "#c9933a";
+  x.font = "400 170px 'Cormorant Garamond', serif";
+  x.fillText("\u201C", W / 2, 300);
+  const fs = 64;
+  x.font = "400 " + fs + "px 'Cormorant Garamond', serif";
+  try { x.letterSpacing = "1px"; } catch (e) {}
+  x.fillStyle = "#f5e3b8";
+  const words = v.t.split(" "), lines = [];
+  let line = "";
+  const maxW = W - 220;
+  words.forEach(w => {
+    const test = line ? line + " " + w : w;
+    if (x.measureText(test).width > maxW && line) { lines.push(line); line = w; }
+    else line = test;
+  });
+  if (line) lines.push(line);
+  const lh = fs * 1.45, blockH = lines.length * lh;
+  let y = (H - blockH) / 2 - 30;
+  lines.forEach(l => { x.fillText(l, W / 2, y); y += lh; });
+  x.font = "400 46px 'Tenor Sans', sans-serif";
+  try { x.letterSpacing = "7px"; } catch (e) {}
+  x.fillStyle = "#c9933a";
+  x.fillText(v.r.toUpperCase(), W / 2, y + 80);
+  try { x.letterSpacing = "5px"; } catch (e) {}
+  x.globalAlpha = 0.9;
+  x.font = "300 36px 'Josefin Sans', sans-serif";
+  x.fillStyle = "#c9933a";
+  x.fillText("verseriver.com", W / 2, H - 92);
+  x.globalAlpha = 1;
+  try { x.letterSpacing = "0px"; } catch (e) {}
+  return new Promise(res => cv.toBlob(b => res(new File([b], "verse.png", { type: "image/png" })), "image/png"));
+}
+document.getElementById("ovOptText").addEventListener("click", async () => {
+  const c = heldCard; closeOvSheet();
+  if(!c || !WALL_VERSES[c.vi]) return;
+  const v = WALL_VERSES[c.vi];
+  const text = "\u201C" + v.t + "\u201D\n" + v.r + " (KJV)";
+  if(navigator.share){
+    try { await navigator.share({ title: v.r + " (KJV)", text }); return; }
+    catch(e){ if(e && e.name === "AbortError") return; }
+  }
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      await navigator.clipboard.writeText(text);
+    } else {
+      const ta = document.createElement("textarea");
+      ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      document.execCommand("copy"); ta.remove();
+    }
+    ovToast("Copied to clipboard");
+  }catch(e){ ovToast("Copy failed"); }
+});
+document.getElementById("ovOptPic").addEventListener("click", async () => {
+  const c = heldCard; closeOvSheet();
+  if(!c || !WALL_VERSES[c.vi]) return;
+  const v = WALL_VERSES[c.vi];
+  const file = await renderWallVerseImage(v);
+  if(!file) return;
+  const data = { files: [file], title: v.r + " (KJV)" };
   if(navigator.share){
     try {
-      if(!navigator.canShare || navigator.canShare(data)) await navigator.share(data);
-      else showSharePreview(file);
-    } catch(e){ if(!e || e.name !== "AbortError") showSharePreview(file); }
-  } else {
-    showSharePreview(file);
+      if(!navigator.canShare || navigator.canShare(data)){ await navigator.share(data); return; }
+    } catch(e){ if(e && e.name === "AbortError") return; }
   }
+  const url = URL.createObjectURL(file);
+  const a = document.createElement("a");
+  a.href = url; a.download = "verse.png";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  ovToast("Image downloaded");
 });
 overlay.addEventListener("click", e => { if(e.target === overlay) closeVerse(); });
 const stillBtn = document.getElementById("stillBtn");
@@ -1734,9 +1830,9 @@ const Bible = (() => {
       }
     }
   }).observe(document.getElementById("drawer"), {attributes:true, attributeFilter:["class"]});
-  document.getElementById("ovBegin").addEventListener("click", () => {
+  document.getElementById("ovOptRead").addEventListener("click", () => {
     const c = heldCard;
-    closeVerse();
+    closeOvSheet(); closeVerse();
     if(c && WALL_VERSES[c.vi]) openAt(WALL_VERSES[c.vi].r);
   });
 /* ---------------- Bible reader settings: font size, night/day, verse flow ---------------- */
