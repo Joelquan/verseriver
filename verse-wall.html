@@ -300,6 +300,12 @@ body.flowNav .wv-drawer{z-index:67;}
 .wv-bible.day .bv-sech{color:#9a6b1f;}
 .wv-bible.day .bv-p{color:#2c2318;}
 .wv-bible.day .bv-vn{color:#9a6b1f;}
+#bvChap .bv-p{color:var(--bv-txc, rgba(245,227,184,.93));}
+.wv-bible.day #bvChap .bv-p{color:var(--bv-txc, #2c2318);}
+.bv-swrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.bv-swrow button{width:34px;height:34px;border-radius:50%;border:2px solid rgba(201,147,58,.35);cursor:pointer;padding:0;}
+.bv-swrow button.on{border-color:#e8c876;box-shadow:0 0 0 2px rgba(232,200,118,.35);}
+.bv-swname{font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:2px;color:rgba(245,227,184,.6);text-transform:uppercase;}
 .wv-bible.day .bv-foot button{background:rgba(165,118,42,.12);border-color:rgba(154,107,31,.5);color:#7a5410;}
 .wv-bible.day .bv-search input{background:rgba(255,255,255,.6);border-color:rgba(154,107,31,.45);color:#2c2318;}
 .wv-bible.day .bv-search input::placeholder{color:rgba(92,63,14,.4);}
@@ -2095,10 +2101,12 @@ const Bible = (() => {
 /* ---------------- Bible reader settings: font size, night/day, verse flow ---------------- */
   let fs = 19, day = false, flow = "chapter", vi = 0, lastVi = {bi:0, ci:0, vi:0};
   let flowSpeed = 9000, flowPlaying = true, flowPic = false;
-  let lspRate = 1, lvcVoice = "";
+  let lspRate = 1, lvcVoice = "", txNight = "", txDay = "";
   const FSPEEDS = [{n:"Slow", ms:12000}, {n:"Med", ms:9000}, {n:"Fast", ms:6000}];
   let bms = [], hls = {}, sIdx = null, sCode = "", sDeb = null, drSdeb = null, actCtx = null, toastT = null;
   const HLC = ["rgba(201,147,58,.30)","rgba(139,139,74,.32)","rgba(168,94,50,.30)","rgba(96,116,148,.32)"];
+  const TXC = [["","Default","linear-gradient(135deg,#c9933a 0 50%,#2c2318 50% 100%)"],["#ffffff","White","#ffffff"],["#111111","Black","#111111"],["#f5e3b8","Cream","#f5e3b8"],["#c9933a","Gold","#c9933a"]];
+  const TXC_OK = TXC.map(function(o){ return o[0]; });
   try{
     const st = JSON.parse(localStorage.getItem("wv-bible-set") || "null");
     if(st){
@@ -2111,13 +2119,15 @@ const Bible = (() => {
       flowPic = !!st.fpic;
       if(+st.lsp >= 0.5 && +st.lsp <= 2) lspRate = +st.lsp;
       if(typeof st.lvc === "string") lvcVoice = st.lvc;
+      if(TXC_OK.indexOf(st.txn) >= 0) txNight = st.txn;
+      if(TXC_OK.indexOf(st.txd) >= 0) txDay = st.txd;
     }
     const ps = JSON.parse(localStorage.getItem("wv-bible-pos") || "null");
     if(ps && +ps.vi >= 0) vi = +ps.vi;
     bms = JSON.parse(localStorage.getItem("wv-bible-bm") || "[]") || [];
     hls = JSON.parse(localStorage.getItem("wv-bible-hl") || "{}") || {};
   }catch(_){ bms = []; hls = {}; }
-  function saveSet(){ try{ localStorage.setItem("wv-bible-set", JSON.stringify({fs:fs, day:day, flow:flow, fsp:flowSpeed, fpl:flowPlaying, fpic:flowPic, lsp:lspRate, lvc:lvcVoice})); }catch(_){} }
+  function saveSet(){ try{ localStorage.setItem("wv-bible-set", JSON.stringify({fs:fs, day:day, flow:flow, fsp:flowSpeed, fpl:flowPlaying, fpic:flowPic, lsp:lspRate, lvc:lvcVoice, txn:txNight, txd:txDay})); }catch(_){} }
   function saveBm(){ try{ localStorage.setItem("wv-bible-bm", JSON.stringify(bms.slice(0, 200))); }catch(_){} }
   function saveHl(){ try{ localStorage.setItem("wv-bible-hl", JSON.stringify(hls)); }catch(_){} }
   function hlKey(i){ return code + "|" + bi + "|" + ci + "|" + i; }
@@ -2125,7 +2135,12 @@ const Bible = (() => {
   function isBmIdx(i){ return bms.some(x => x.code === code && x.bi === bi && x.ci === ci && x.vi === i); }
   function applySettings(){
     const bp = document.getElementById("biblepane");
-    if(bp) bp.style.setProperty("--bv-fs", fs + "px");
+    if(bp){
+      bp.style.setProperty("--bv-fs", fs + "px");
+      const txc = day ? txDay : txNight;
+      if(txc) bp.style.setProperty("--bv-txc", txc);
+      else bp.style.removeProperty("--bv-txc");
+    }
     ["biblepane","bvAct","bvPick","bvCtog"].forEach(id => {
       const el = document.getElementById(id); if(el) el.classList.toggle("day", day);
     });
@@ -2390,6 +2405,8 @@ const Bible = (() => {
     let h = '<h3>Reading settings</h3><div class="bv-sec">';
     h += '<div class="bv-row"><span class="bv-lab">Text size</span><div class="bv-step"><button id="bvFsDown" aria-label="Smaller text">-</button><span class="bv-fsval" id="bvFsVal">' + fs + '</span><button id="bvFsUp" aria-label="Larger text">+</button></div></div>';
     h += '<div class="bv-row"><span class="bv-lab">Appearance</span><div class="bv-seg" id="bvSegTheme"><button data-v="night">Night</button><button data-v="day">Day</button></div></div>';
+    h += '<div class="bv-row col"><span class="bv-lab">Night text color</span><div class="bv-swrow" id="bvSwNight"></div></div>';
+    h += '<div class="bv-row col"><span class="bv-lab">Day text color</span><div class="bv-swrow" id="bvSwDay"></div></div>';
     h += '<div class="bv-row"><span class="bv-lab">Reading flow</span><div class="bv-seg" id="bvSegFlow"><button data-v="chapter">Chapter</button><button data-v="flow">Flow</button></div></div>';
     h += '<div class="bv-row"><span class="bv-lab">Picture backgrounds</span><div class="bv-seg" id="bvSegPic"><button data-v="off">Off</button><button data-v="on">On</button></div></div>';
     h += '<div class="bv-row col"><span class="bv-lab">Listening speed</span><div class="bv-seg" id="bvSegLsp"><button data-v="0.75">0.75x</button><button data-v="1">1x</button><button data-v="1.25">1.25x</button><button data-v="1.5">1.5x</button></div></div>';
@@ -2411,7 +2428,31 @@ const Bible = (() => {
     const vsel = $("bvVoiceSel");
     if(vsel) vsel.addEventListener("change", e => setLvc(e.target.value));
     fillVoiceSel();
+    renderTxSwatches();
     renderBmList(); applySettings();
+  }
+  function renderTxSwatches(){
+    [["bvSwNight","night"],["bvSwDay","day"]].forEach(function(pair){
+      const host = $(pair[0]); if(!host) return;
+      const cur = pair[1] === "night" ? txNight : txDay;
+      host.innerHTML = "";
+      TXC.forEach(function(o){
+        const b = document.createElement("button");
+        b.style.background = o[2];
+        b.title = o[1];
+        b.setAttribute("aria-label", o[1] + " verse text");
+        if(cur === o[0]) b.classList.add("on");
+        b.addEventListener("click", function(){
+          if(pair[1] === "night") txNight = o[0]; else txDay = o[0];
+          saveSet(); applySettings(); renderTxSwatches();
+        });
+        host.appendChild(b);
+      });
+      const nm = document.createElement("span");
+      nm.className = "bv-swname";
+      nm.textContent = TXC.filter(function(o){ return o[0] === cur; })[0][1];
+      host.appendChild(nm);
+    });
   }
   function refreshVerseMarks(){
     document.querySelectorAll("#bvChap p[data-vi]").forEach(p => {
