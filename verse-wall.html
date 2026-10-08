@@ -1578,11 +1578,11 @@ const Games = (() => {
   const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const skin = id => SKINS.find(s => s.id === id) || SKINS[0];
   const GAMES = [
-    {id:"wsi", title:"Who Said It", desc:"A voice from Scripture speaks. Name the speaker.", skin:"gold", nq:100, best:"wv-game-best-wsi"},
-    {id:"where", title:"Where Is It Found", desc:"Read the verse. Find where it lives in the Bible.", skin:"ocean", nq:100, best:"wv-game-best-where"},
+    {id:"wsi", title:"Who Said It", desc:"500 voices from Scripture. Name the speaker.", skin:"gold", nq:100, best:"wv-game-best-wsi"},
+    {id:"where", title:"Where Is It Found", desc:"500 verses. Find where each lives in the Bible.", skin:"ocean", nq:100, best:"wv-game-best-where"},
     {id:"gen", title:"General Bible Questions", desc:"Fifty questions drawn from all sixty six books.", skin:"ember", nq:50, best:"wv-game-best-gen"},
     {id:"rid", title:"Bible Riddles", desc:"Old riddles from Scripture. Can you solve them?", skin:"forest", nq:50, best:"wv-game-best-rid"},
-    {id:"fact", title:"Bible Facts", desc:"True or false? Test what you know.", skin:"crimson", nq:100, best:"wv-game-best-fact"},
+    {id:"fact", title:"Bible Facts", desc:"500 statements. True or false? Test what you know.", skin:"crimson", nq:100, best:"wv-game-best-fact"},
     {id:"sort", title:"Verse Sort", desc:"Catch each falling verse in the right bin.", skin:"slate", best:"wv-game-best-sort"}
   ];
   let R = null, kjvCache = null;
