@@ -5,16 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Darby's Synopsis — New Testament</title>
 <style>
-:root{--gold:#c9a227;--ink:#f0e9d8;--bg:#141210;--panel:#1e1a16;--muted:#9a8f7a;}
+:root{--gold:#e8b64c;--ink:#eef2ff;--bg:#0d1a33;--panel:#132441;--muted:#8fa0c2;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--ink);font-family:Georgia,'Times New Roman',serif;}
-header{padding:34px 20px 22px;text-align:center;border-bottom:1px solid #3a2f1d;}
+header{padding:34px 20px 22px;text-align:center;border-bottom:1px solid #2a3d66;}
 header .series{color:var(--gold);letter-spacing:.25em;font-size:12px;text-transform:uppercase;}
 header h1{font-size:clamp(26px,5vw,44px);margin:10px 0 6px;font-weight:normal;}
 header .author{color:var(--muted);font-style:italic;}
-header .priv{margin-top:10px;font-size:12px;color:#6f675a;font-style:italic;}
+header .priv{margin-top:10px;font-size:12px;color:#5f7396;font-style:italic;}
 #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;padding:26px;max-width:1000px;margin:0 auto;}
-.book{background:var(--panel);border:1px solid #3a2f1d;border-radius:10px;padding:20px 10px;text-align:center;cursor:pointer;transition:.2s;}
+.book{background:var(--panel);border:1px solid #2a3d66;border-radius:10px;padding:20px 10px;text-align:center;cursor:pointer;transition:.2s;}
 .book:hover{border-color:var(--gold);transform:translateY(-2px);}
 .book .n{font-size:17px;}
 .book .w{font-size:11px;color:var(--muted);margin-top:6px;}
@@ -24,11 +24,11 @@ header .priv{margin-top:10px;font-size:12px;color:#6f675a;font-style:italic;}
 #reader h3{font-size:19px;margin:26px 0 10px;color:var(--gold);font-weight:normal;}
 #reader p{line-height:1.75;margin-bottom:14px;text-align:justify;font-size:17px;}
 #reader p.fn{font-size:14px;color:var(--muted);}
-.bar{position:sticky;top:0;background:rgba(20,18,16,.96);border-bottom:1px solid #3a2f1d;padding:10px 14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;z-index:5;}
-.bar button{background:var(--panel);color:var(--ink);border:1px solid #3a2f1d;border-radius:8px;padding:9px 14px;font-size:14px;cursor:pointer;font-family:inherit;}
+.bar{position:sticky;top:0;background:rgba(13,26,51,.96);border-bottom:1px solid #2a3d66;padding:10px 14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;z-index:5;}
+.bar button{background:var(--panel);color:var(--ink);border:1px solid #2a3d66;border-radius:8px;padding:9px 14px;font-size:14px;cursor:pointer;font-family:inherit;}
 .bar button:hover{border-color:var(--gold);}
 .bar .sp{flex:1;}
-footer{text-align:center;color:#6f675a;font-size:12px;padding:26px;font-style:italic;}
+footer{text-align:center;color:#5f7396;font-size:12px;padding:26px;font-style:italic;}
 @media print{
   header,#grid,.bar.no-print,footer{display:none !important;}
   #reader{display:block !important;max-width:100%;padding:0;}
@@ -58,7 +58,7 @@ footer{text-align:center;color:#6f675a;font-size:12px;padding:26px;font-style:it
   <h2 id="rname"></h2>
   <div class="sub">Darby's Synopsis</div>
   <div id="rbody"></div>
-  <div class="bar no-print" style="position:static;border:1px solid #3a2f1d;border-radius:10px;margin-top:30px;">
+  <div class="bar no-print" style="position:static;border:1px solid #2a3d66;border-radius:10px;margin-top:30px;">
     <button onclick="stepBook(-1)">← Prev book</button><span class="sp"></span>
     <button onclick="showGrid()">← All books</button><span class="sp"></span>
     <button onclick="stepBook(1)">Next book →</button>
