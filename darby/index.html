@@ -31,6 +31,7 @@ header .priv{margin-top:10px;font-size:12px;color:#5f7396;font-style:italic;}
 footer{text-align:center;color:#5f7396;font-size:12px;padding:26px;font-style:italic;}
 #listenbar{position:fixed;left:0;right:0;bottom:0;background:rgba(13,26,51,.97);border-top:1px solid #2a3d66;padding:10px 14px;display:flex;gap:10px;align-items:center;z-index:20;}
 #listenbar button{background:var(--panel);color:var(--ink);border:1px solid #2a3d66;border-radius:8px;padding:9px 14px;font-size:15px;cursor:pointer;font-family:inherit;}
+#listenbar select{background:var(--panel);color:var(--ink);border:1px solid #2a3d66;border-radius:8px;padding:8px 6px;font-size:13px;max-width:130px;font-family:inherit;}
 #llabel{flex:1;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .gbtn{background:transparent;color:var(--gold);border:1px solid var(--gold);border-radius:10px;padding:11px 22px;font-size:16px;cursor:pointer;font-family:inherit;margin-top:14px;}
 .shelf{max-width:1000px;margin:0 auto;padding:8px 26px 0;color:var(--muted);font-size:13px;letter-spacing:.15em;text-transform:uppercase;}
@@ -75,6 +76,7 @@ footer{text-align:center;color:#5f7396;font-size:12px;padding:26px;font-style:it
 <div id="listenbar" style="display:none">
   <button id="lplay" onclick="listenToggle()">&#10074;&#10074;</button>
   <div id="llabel"></div>
+  <select id="lvoice" onchange="setVoice()" title="Voice"></select>
   <button id="lrate" onclick="cycleRate()">1x</button>
   <button onclick="listenStop()">&#9632;</button>
 </div>
@@ -168,7 +170,12 @@ function speakChunk(){
   var u = new SpeechSynthesisUtterance(c.t);
   u.rate = L.rate;
   try{
-    var v = synth.getVoices().filter(function(x){ return x.lang && x.lang.toLowerCase().indexOf('en') === 0; })[0];
+    var want = null;
+    try{ want = localStorage.getItem('darby-voice'); }catch(e){}
+    var vs = synth.getVoices();
+    var v = null;
+    if(want) v = vs.filter(function(x){ return x.name === want; })[0];
+    if(!v) v = vs.filter(function(x){ return x.lang && x.lang.toLowerCase().indexOf('en') === 0; })[0];
     if(v) u.voice = v;
   }catch(e){}
   u.onend = function(){ if(my !== L.tok) return; L.ci++; saveListen(); speakChunk(); updateListenUI(); };
@@ -212,8 +219,31 @@ function cycleRate(){
   document.getElementById('lrate').textContent = L.rate + 'x';
   if(L.playing){ L.tok++; try{ synth.cancel(); }catch(e){} speakChunk(); }
 }
-function updateListenUI(){
-  var bar = document.getElementById('listenbar');
+function populateVoices(){
+  if(!synth) return;
+  var sel = document.getElementById('lvoice');
+  var vs = synth.getVoices().filter(function(x){ return x.lang && x.lang.toLowerCase().indexOf('en') === 0; });
+  if(!vs.length) return;
+  var want = null;
+  try{ want = localStorage.getItem('darby-voice'); }catch(e){}
+  sel.innerHTML = '';
+  vs.forEach(function(v){
+    var o = document.createElement('option');
+    o.value = v.name; o.textContent = v.name;
+    if(v.name === want) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+function setVoice(){
+  var sel = document.getElementById('lvoice');
+  try{ localStorage.setItem('darby-voice', sel.value); }catch(e){}
+  if(L.playing){ L.tok++; try{ synth.cancel(); }catch(e){} speakChunk(); }
+}
+if(synth){
+  populateVoices();
+  if(typeof speechSynthesis.onvoiceschanged !== 'undefined') speechSynthesis.onvoiceschanged = populateVoices;
+}
+function updateListenUI(){  var bar = document.getElementById('listenbar');
   var btn = document.getElementById('listenbtn');
   if(L.playing || L.chunks.length){
     bar.style.display = 'flex';
