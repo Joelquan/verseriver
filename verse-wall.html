@@ -2607,8 +2607,10 @@ const Bible = (() => {
   const FSPEEDS = [{n:"Slow", ms:12000}, {n:"Med", ms:9000}, {n:"Fast", ms:6000}];
   let bms = [], hls = {}, sIdx = null, sCode = "", sDeb = null, drSdeb = null, actCtx = null, toastT = null;
   const HLC = ["rgba(201,147,58,.30)","rgba(139,139,74,.32)","rgba(168,94,50,.30)","rgba(96,116,148,.32)"];
-  const TXC = [["","Default","linear-gradient(135deg,#c9933a 0 50%,#2c2318 50% 100%)"],["#ffffff","White","#ffffff"],["#111111","Black","#111111"],["#f5e3b8","Cream","#f5e3b8"],["#c9933a","Gold","#c9933a"]];
-  const TXC_OK = TXC.map(function(o){ return o[0]; });
+  const TXC_DEF = ["","Default","linear-gradient(135deg,#c9933a 0 50%,#2c2318 50% 100%)"];
+  const TXC_NIGHT = [TXC_DEF,["#ffffff","White","#ffffff"],["#f5e3b8","Cream","#f5e3b8"],["#c9933a","Gold","#c9933a"]];
+  const TXC_DAY = [TXC_DEF,["#111111","Black","#111111"],["#c9933a","Gold","#c9933a"]];
+  const TXC_OK = TXC_NIGHT.concat(TXC_DAY).map(function(o){ return o[0]; });
   try{
     const st = JSON.parse(localStorage.getItem("wv-bible-set") || "null");
     if(st){
@@ -2623,6 +2625,8 @@ const Bible = (() => {
       if(typeof st.lvc === "string") lvcVoice = st.lvc;
       if(TXC_OK.indexOf(st.txn) >= 0) txNight = st.txn;
       if(TXC_OK.indexOf(st.txd) >= 0) txDay = st.txd;
+      if(txNight === "#111111") txNight = "";
+      if(txDay === "#ffffff" || txDay === "#f5e3b8") txDay = "";
     }
     const ps = JSON.parse(localStorage.getItem("wv-bible-pos") || "null");
     if(ps && +ps.vi >= 0) vi = +ps.vi;
@@ -2964,9 +2968,10 @@ const Bible = (() => {
   function renderTxSwatches(){
     [["bvSwNight","night"],["bvSwDay","day"]].forEach(function(pair){
       const host = $(pair[0]); if(!host) return;
+      const list = pair[1] === "night" ? TXC_NIGHT : TXC_DAY;
       const cur = pair[1] === "night" ? txNight : txDay;
       host.innerHTML = "";
-      TXC.forEach(function(o){
+      list.forEach(function(o){
         const b = document.createElement("button");
         b.style.background = o[2];
         b.title = o[1];
@@ -2980,7 +2985,7 @@ const Bible = (() => {
       });
       const nm = document.createElement("span");
       nm.className = "bv-swname";
-      nm.textContent = TXC.filter(function(o){ return o[0] === cur; })[0][1];
+      nm.textContent = list.filter(function(o){ return o[0] === cur; })[0][1];
       host.appendChild(nm);
     });
   }
