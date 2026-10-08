@@ -125,6 +125,20 @@ function stepBook(d){
 // ---- Listen: LibriVox-style shelf, on-device speech, books keep adding ----
 var synth = ('speechSynthesis' in window) ? window.speechSynthesis : null;
 var L = {book:-1, chunks:[], ci:0, playing:false, rate:1, tok:0};
+var wakeLock = null;
+function lockScreen(){
+  try{
+    if('wakeLock' in navigator && navigator.wakeLock.request){
+      navigator.wakeLock.request('screen').then(function(l){ wakeLock = l; }).catch(function(){});
+    }
+  }catch(e){}
+}
+function unlockScreen(){
+  try{ if(wakeLock){ wakeLock.release(); wakeLock = null; } }catch(e){}
+}
+document.addEventListener('visibilitychange', function(){
+  if(document.visibilityState === 'visible' && L.playing) lockScreen();
+});
 function keepAwake(){
   try{
     if(L.ac) return;
@@ -190,15 +204,16 @@ function startListen(bi, ci){
   try{ synth.cancel(); }catch(e){}
   L.book = bi; L.chunks = buildChunks(bi); L.ci = ci || 0; L.playing = true;
   if(cur !== bi) openBook(bi);
+  lockScreen();
   speakChunk();
 }
 function listenToggle(){
   if(!synth){ alert('Sorry, this device cannot read aloud.'); return; }
-  if(L.playing){ L.playing = false; L.tok++; try{ synth.cancel(); }catch(e){} updateListenUI(); return; }
+  if(L.playing){ L.playing = false; L.tok++; try{ synth.cancel(); }catch(e){} unlockScreen(); updateListenUI(); return; }
   var bi = (cur >= 0) ? cur : 0, ci = 0;
   var s = loadListen();
   if(typeof s.book === 'number' && s.book >= 0 && s.book < BOOKS.length){ bi = s.book; ci = s.ci || 0; }
-  if(L.book === bi && L.chunks.length && L.ci < L.chunks.length){ L.playing = true; speakChunk(); return; }
+  if(L.book === bi && L.chunks.length && L.ci < L.chunks.length){ L.playing = true; lockScreen(); speakChunk(); return; }
   startListen(bi, ci);
 }
 function listenAll(){
@@ -209,12 +224,13 @@ function listenAll(){
 function listenStop(){
   L.playing = false; L.tok++;
   try{ if(synth) synth.cancel(); }catch(e){}
+  unlockScreen();
   L.ci = 0;
   document.getElementById('listenbar').style.display = 'none';
   updateListenUI();
 }
 function cycleRate(){
-  var rs = [1, 1.25, 1.5, 1.75, 0.75];
+  var rs = [1, 1.25, 1.5, 1.75, 2, 2.5, 3, 0.75];
   L.rate = rs[(rs.indexOf(L.rate) + 1) % rs.length];
   document.getElementById('lrate').textContent = L.rate + 'x';
   if(L.playing){ L.tok++; try{ synth.cancel(); }catch(e){} speakChunk(); }
