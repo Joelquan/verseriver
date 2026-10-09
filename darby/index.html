@@ -251,7 +251,7 @@ function buildChunksFrom(blocks){
     var parts = bl[1].match(/[^.!?;]+[.!?;]+|[^.!?;]*$/g) || [bl[1]];
     var buf = '';
     parts.forEach(function(p){
-      if((buf + p).length > 240){ out.push({t: buf, sec: sec}); buf = p; }
+      if((buf + p).length > 180){ out.push({t: buf, sec: sec}); buf = p; }
       else buf += p;
     });
     if(buf.trim()) out.push({t: buf, sec: sec});
@@ -317,21 +317,68 @@ function speakChunk(){
     listenStop(); return;
   }
   var c = L.chunks[L.ci];
-  var u = new SpeechSynthesisUtterance(c.t);
+  var want = null;
+  try{ want = localStorage.getItem('shelf-voice'); }catch(e){}
+  if(!want || want === 'online'){ speakOnline(c.t, my); }
+  else { speakDevice(c.t, want, my); }
+  updateListenUI();
+}
+// ---- Online voice: the same providers as the verse wall reader ----
+var TTS = {au:null, gen:0, cache:{}, ncached:0};
+function ttsAudio(){
+  if(!TTS.au){ TTS.au = new Audio(); TTS.au.preload = 'auto'; }
+  return TTS.au;
+}
+function gtUrl(t){
+  return 'https://translate.google.com/translate_tts?ie=UTF-8&q=' + encodeURIComponent(t) + '&tl=en&client=tw-ob';
+}
+function seUrl(t){
+  return 'https://api.streamelements.com/kappa/v2/speech?voice=Amy&text=' + encodeURIComponent(t);
+}
+function speakOnline(text, my){
+  var au = ttsAudio();
+  var gen = ++TTS.gen;
+  function playProv(p){
+    if(my !== L.tok || !L.playing || gen !== TTS.gen) return;
+    var key = p + '|' + text;
+    var url = TTS.cache[key];
+    if(!url){
+      url = (p === 0) ? gtUrl(text) : seUrl(text);
+      if(TTS.ncached > 600){ TTS.cache = {}; TTS.ncached = 0; }
+      TTS.cache[key] = url; TTS.ncached++;
+    }
+    au.onerror = function(){
+      if(my !== L.tok || !L.playing || gen !== TTS.gen) return;
+      if(p === 0){ playProv(1); }
+      else { speakDevice(text, null, my); }
+    };
+    au.onended = function(){
+      if(my !== L.tok || !L.playing || gen !== TTS.gen) return;
+      L.ci++; saveListen(); speakChunk(); updateListenUI();
+    };
+    try{
+      au.src = url;
+      au.playbackRate = L.rate;
+      var pr = au.play();
+      if(pr && pr.catch) pr.catch(function(){ au.onerror(); });
+    }catch(e){ au.onerror(); }
+  }
+  playProv(0);
+}
+function speakDevice(text, want, my){
+  if(!synth){ L.ci++; speakChunk(); return; }
+  var u = new SpeechSynthesisUtterance(text);
   u.rate = L.rate;
   try{
-    var want = null;
-    try{ want = localStorage.getItem('shelf-voice'); }catch(e){}
     var vs = synth.getVoices();
     var v = null;
-    if(want) v = vs.filter(function(x){ return x.name === want; })[0];
+    if(want && want !== 'online') v = vs.filter(function(x){ return x.name === want; })[0];
     if(!v) v = vs.filter(function(x){ return x.lang && x.lang.toLowerCase().indexOf('en') === 0; })[0];
     if(v) u.voice = v;
   }catch(e){}
   u.onend = function(){ if(my !== L.tok) return; L.ci++; saveListen(); speakChunk(); updateListenUI(); };
   u.onerror = function(){ if(my !== L.tok) return; L.ci++; speakChunk(); };
   try{ synth.speak(u); }catch(e){ L.ci++; speakChunk(); }
-  updateListenUI();
 }
 function startListen(bi, ci, end){
   var b = BOOKS[bi];
@@ -339,11 +386,14 @@ function startListen(bi, ci, end){
   startTTS(bi, ci, end);
 }
 function startTTS(bi, ci, end){
-  if(!synth){ alert('Sorry, this device cannot read aloud.'); return; }
+  var want = null;
+  try{ want = localStorage.getItem('shelf-voice'); }catch(e){}
+  var online = !want || want === 'online';
+  if(!synth && !online){ alert('Sorry, this device cannot read aloud.'); return; }
   keepAwake(); lockScreen();
   L.tok++;
   var my = L.tok;
-  try{ synth.cancel(); }catch(e){}
+  stopTTSNow();
   try{ audioEl().pause(); }catch(e){}
   L.mode = 'tts';
   L.book = bi; L.ci = ci || 0;
@@ -361,7 +411,7 @@ function listenToggle(){
   if(L.playing){
     L.playing = false; L.tok++;
     if(L.mode === 'audio'){ try{ audioEl().pause(); }catch(e){} }
-    else { try{ synth.cancel(); }catch(e){} }
+    else { stopTTSNow(); }
     unlockScreen(); saveListen(); updateListenUI(); return;
   }
   var bi = (cur >= 0) ? cur : 0;
@@ -379,7 +429,9 @@ function listenToggle(){
     if(part >= b.audio.length) part = 0;
     startAudio(bi, part, time, BOOKS.length); return;
   }
-  if(!synth){ alert('Sorry, this device cannot read aloud.'); return; }
+  var want2 = null;
+  try{ want2 = localStorage.getItem('shelf-voice'); }catch(e){}
+  if(!synth && want2 && want2 !== 'online'){ alert('Sorry, this device cannot read aloud.'); return; }
   var ci = s.ci || 0;
   if(L.mode !== 'audio' && L.book === bi && L.chunks.length && L.ci < L.chunks.length){
     L.playing = true; L.mode = 'tts'; lockScreen(); speakChunk(); return;
@@ -405,7 +457,7 @@ function listenVein(vi){
 }
 function listenStop(){
   L.playing = false; L.tok++;
-  try{ if(synth) synth.cancel(); }catch(e){}
+  stopTTSNow();
   try{ if(AU.el) AU.el.pause(); }catch(e){}
   unlockScreen();
   L.ci = 0;
@@ -417,16 +469,21 @@ function cycleRate(){
   L.rate = rs[(rs.indexOf(L.rate) + 1) % rs.length];
   document.getElementById('lrate').textContent = L.rate + 'x';
   if(L.mode === 'audio'){ try{ audioEl().playbackRate = L.rate; }catch(e){} return; }
-  if(L.playing){ L.tok++; try{ synth.cancel(); }catch(e){} speakChunk(); }
+  try{ if(TTS.au) TTS.au.playbackRate = L.rate; }catch(e){}
+  if(L.playing){ L.tok++; stopTTSNow(); speakChunk(); }
 }
 function populateVoices(){
-  if(!synth) return;
   var sel = document.getElementById('lvoice');
-  var vs = synth.getVoices().filter(function(x){ return x.lang && x.lang.toLowerCase().indexOf('en') === 0; });
-  if(!vs.length) return;
+  sel.innerHTML = '';
+  var o0 = document.createElement('option');
+  o0.value = 'online'; o0.textContent = 'Online voice (recommended)';
+  sel.appendChild(o0);
   var want = null;
   try{ want = localStorage.getItem('shelf-voice'); }catch(e){}
-  sel.innerHTML = '';
+  if(!want){ try{ localStorage.setItem('shelf-voice', 'online'); }catch(e){} want = 'online'; }
+  if(want === 'online') o0.selected = true;
+  if(!synth) return;
+  var vs = synth.getVoices().filter(function(x){ return x.lang && x.lang.toLowerCase().indexOf('en') === 0; });
   vs.forEach(function(v){
     var o = document.createElement('option');
     o.value = v.name; o.textContent = v.name;
@@ -437,7 +494,11 @@ function populateVoices(){
 function setVoice(){
   var sel = document.getElementById('lvoice');
   try{ localStorage.setItem('shelf-voice', sel.value); }catch(e){}
-  if(L.playing){ L.tok++; try{ synth.cancel(); }catch(e){} speakChunk(); }
+  if(L.playing){ L.tok++; stopTTSNow(); speakChunk(); }
+}
+function stopTTSNow(){
+  try{ if(synth) synth.cancel(); }catch(e){}
+  try{ if(TTS.au) TTS.au.pause(); }catch(e){}
 }
 if(synth){
   populateVoices();
