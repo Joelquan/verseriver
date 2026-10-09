@@ -46,6 +46,8 @@ p.body{font-size:17px;line-height:1.75;margin:0 0 14px;text-align:left;}
 .wrow .wt{font-size:16px;flex:1;}
 .wrow .wm{color:var(--muted);font-size:12px;font-style:italic;white-space:nowrap;}
 .backlink{background:none;border:none;color:var(--gold);font-size:15px;cursor:pointer;font-family:inherit;padding:0;margin-bottom:14px;}
+.voicerow{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:14px;font-size:14px;color:var(--muted);}
+.voicerow select{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px;font-family:inherit;max-width:70vw;}
 @media print{header,.shelf,#listenbar,.bar,.pdnote{display:none !important;}#reader{display:block !important;}}
 </style></head>
 <body>
@@ -54,6 +56,7 @@ p.body{font-size:17px;line-height:1.75;margin:0 0 14px;text-align:left;}
   <h1>The Listening Shelf</h1>
   <div class="tag">The old saints, read aloud. 9,608,280 words, 148 books.</div>
   <div><button class="gbtn" onclick="listenAll()">&#9654; Listen to the whole shelf</button></div>
+  <div class="voicerow"><span>Voice</span><select id="hvoice" onchange="setVoice(this)"></select></div>
 </header>
 <div id="view-veins" class="shelf"></div>
 <div id="view-vauthors" class="shelf" style="display:none"></div>
@@ -74,7 +77,7 @@ p.body{font-size:17px;line-height:1.75;margin:0 0 14px;text-align:left;}
 <div id="listenbar" style="display:none">
   <button id="lplay" onclick="listenToggle()">&#10074;&#10074;</button>
   <div id="llabel"></div>
-  <select id="lvoice" onchange="setVoice()" title="Voice"></select>
+  <select id="lvoice" onchange="setVoice(this)" title="Voice"></select>
   <button id="lrate" onclick="cycleRate()">1x</button>
   <button onclick="listenStop()">&#9632;</button>
 </div>
@@ -472,28 +475,38 @@ function cycleRate(){
   try{ if(TTS.au) TTS.au.playbackRate = L.rate; }catch(e){}
   if(L.playing){ L.tok++; stopTTSNow(); speakChunk(); }
 }
+function voiceOptions(){
+  var opts = [{v:'online', t:'Online voice (recommended)'}];
+  if(synth){
+    synth.getVoices().filter(function(x){ return x.lang && x.lang.toLowerCase().indexOf('en') === 0; })
+      .forEach(function(v){ opts.push({v:v.name, t:v.name}); });
+  }
+  return opts;
+}
 function populateVoices(){
-  var sel = document.getElementById('lvoice');
-  sel.innerHTML = '';
-  var o0 = document.createElement('option');
-  o0.value = 'online'; o0.textContent = 'Online voice (recommended)';
-  sel.appendChild(o0);
   var want = null;
   try{ want = localStorage.getItem('shelf-voice'); }catch(e){}
   if(!want){ try{ localStorage.setItem('shelf-voice', 'online'); }catch(e){} want = 'online'; }
-  if(want === 'online') o0.selected = true;
-  if(!synth) return;
-  var vs = synth.getVoices().filter(function(x){ return x.lang && x.lang.toLowerCase().indexOf('en') === 0; });
-  vs.forEach(function(v){
-    var o = document.createElement('option');
-    o.value = v.name; o.textContent = v.name;
-    if(v.name === want) o.selected = true;
-    sel.appendChild(o);
+  var opts = voiceOptions();
+  ['lvoice','hvoice'].forEach(function(id){
+    var sel = document.getElementById(id);
+    if(!sel) return;
+    sel.innerHTML = '';
+    opts.forEach(function(o){
+      var el = document.createElement('option');
+      el.value = o.v; el.textContent = o.t;
+      if(o.v === want) el.selected = true;
+      sel.appendChild(el);
+    });
   });
 }
-function setVoice(){
-  var sel = document.getElementById('lvoice');
-  try{ localStorage.setItem('shelf-voice', sel.value); }catch(e){}
+function setVoice(src){
+  var val = src ? src.value : document.getElementById('lvoice').value;
+  try{ localStorage.setItem('shelf-voice', val); }catch(e){}
+  ['lvoice','hvoice'].forEach(function(id){
+    var sel = document.getElementById(id);
+    if(sel) sel.value = val;
+  });
   if(L.playing){ L.tok++; stopTTSNow(); speakChunk(); }
 }
 function stopTTSNow(){
