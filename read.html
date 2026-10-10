@@ -41,6 +41,8 @@ h2.sec{font-family:Cinzel,serif;font-size:1rem;letter-spacing:.24em;color:#f0d48
 .bub .nm{font-family:Cinzel,serif;font-size:.72rem;letter-spacing:.12em;color:#f0d489;margin-bottom:4px}
 .bub .tx{font-size:1.08rem;line-height:1.5;color:rgba(253,246,227,.92)}
 .bub .src{font-size:.85rem;color:rgba(240,212,137,.6);margin-top:6px;font-style:italic}
+.bub .rm{margin-top:6px}
+.bub .rm a{color:#f0d489;font-size:.85rem;letter-spacing:.06em;text-decoration:underline;text-underline-offset:3px}
 .decl{background:rgba(214,178,94,.08);border-left:3px solid #d6b25e;padding:8px 14px;margin:0 0 8px;font-size:1.15rem;line-height:1.45;color:#fdf6e3}
 .decl b{color:#f0d489}
 .prayer{background:rgba(245,227,184,.05);border:1px solid rgba(214,178,94,.2);border-radius:12px;padding:12px 16px;font-size:1.12rem;line-height:1.55;font-style:italic;color:rgba(253,246,227,.92)}
@@ -103,11 +105,14 @@ function render(day){
   document.getElementById("dimg").src = "read-images/day-" + pad(day) + ".webp";
   document.getElementById("verse").textContent = "\u201C" + d.text + "\u201D";
   document.getElementById("vref").textContent = d.ref + " (KJV)";
+  var WL = {"John Nelson Darby":"https://www.stempublishing.com/authors/darby/","Andrew Murray":"https://ccel.org/ccel/murray","Watchman Nee":"https://www.ministrybooks.org/","T. Austin-Sparks":"https://www.austin-sparks.net/"};
   var ch = "";
   d.witnesses.forEach(function(w){
     ch += '<div class="cmt"><div class="ava">' + esc(initials(w.short === "Sparks" ? "Austin Sparks" : w.name)) + '</div>'
       + '<div class="bub"><div class="nm">' + esc(w.name) + '</div><div class="tx">' + esc(w.comment) + '</div>'
-      + '<div class="src">' + esc(w.source) + '</div></div></div>';
+      + '<div class="src">' + esc(w.source) + '</div>'
+      + (WL[w.name] ? '<div class="rm"><a href="' + WL[w.name] + '" target="_blank" rel="noopener">Read more</a></div>' : '')
+      + '</div></div>';
   });
   document.getElementById("comments").innerHTML = ch;
   var dh = "";
