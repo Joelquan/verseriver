@@ -171,7 +171,7 @@ $('dlgClose').addEventListener('click',()=>$('dlg').close());
 $('muslimToggle').addEventListener('click',e=>{muslimOnly=!muslimOnly;e.currentTarget.classList.toggle('on',muslimOnly);apply();});
 $('verifiedToggle').addEventListener('click',e=>{verifiedOnly=!verifiedOnly;e.currentTarget.classList.toggle('on',verifiedOnly);apply();});
 
-fetch('stories.json').then(r=>r.json()).then(data=>{
+fetch('/salvation-stories/stories.json').then(r=>r.json()).then(data=>{
   STORIES=data;
   stats(); featured();
   [...new Set(STORIES.map(s=>s.region).filter(Boolean))].sort().forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;$('region').appendChild(o);});
