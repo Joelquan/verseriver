@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salvation Stories, Every Tribe and Tongue, Verse River by KnowHoly</title>
+<meta name="description" content="380 real, documented salvation stories from 227 tribes, 184 languages, and 134 countries. Each story documents how a person came to believe in the Lord Jesus, with sources attached. A KnowHoly collection hosted on Verse River.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Mulish:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --deep:#0b1120; --navy:#0f1e35; --blue:#1a3a5c; --gold:#c9a84c; --gold-light:#e8c97a;
+    --water:#4a9ebb; --white:#f5f0e8; --muted:rgba(245,240,232,.55); --card:#111c30;
+    --line:rgba(201,168,76,.18);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--deep);color:var(--white);font-family:'Mulish',sans-serif;font-weight:300;line-height:1.65}
+  a{color:var(--gold-light)}
+  nav{padding:18px 28px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(11,17,32,.94);backdrop-filter:blur(10px);z-index:50}
+  .brand{font-family:'Playfair Display',serif;font-size:20px;letter-spacing:.04em;color:var(--white);text-decoration:none}
+  .brand span{color:var(--gold)}
+  .navright{font-size:13px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+  header.hero{max-width:980px;margin:0 auto;padding:56px 24px 10px;text-align:center}
+  header.hero .kicker{color:var(--gold);letter-spacing:.22em;text-transform:uppercase;font-size:12px;font-weight:700}
+  header.hero h1{font-family:'Playfair Display',serif;font-weight:700;font-size:clamp(34px,6vw,54px);line-height:1.15;margin:14px 0 12px}
+  header.hero p{color:var(--muted);max-width:720px;margin:0 auto;font-size:17px}
+  .stats{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin:30px auto 6px;max-width:900px;padding:0 20px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 22px;text-align:center;min-width:130px}
+  .stat b{display:block;font-family:'Playfair Display',serif;font-size:28px;color:var(--gold-light);font-weight:700}
+  .stat span{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  section.wrap{max-width:1100px;margin:0 auto;padding:24px 20px}
+  .featured{background:linear-gradient(160deg,var(--navy),var(--blue));border:1px solid var(--line);border-radius:16px;padding:28px}
+  .featured .label{color:var(--gold);letter-spacing:.2em;text-transform:uppercase;font-size:12px;font-weight:700}
+  .featured h2{font-family:'Playfair Display',serif;font-size:30px;margin:8px 0 4px}
+  .meta{color:var(--muted);font-size:14px}
+  .featured p{margin-top:12px;font-size:16px}
+  .controls{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:12px;margin:26px 0 6px}
+  @media(max-width:760px){.controls{grid-template-columns:1fr}}
+  .controls input,.controls select{background:var(--card);border:1px solid var(--line);color:var(--white);border-radius:10px;padding:13px 14px;font-family:'Mulish',sans-serif;font-size:15px;width:100%}
+  .toggles{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 4px}
+  .toggle{border:1px solid var(--line);background:var(--card);color:var(--white);border-radius:999px;padding:9px 16px;font-size:14px;cursor:pointer;font-family:'Mulish',sans-serif}
+  .toggle.on{background:var(--gold);color:#141005;font-weight:700;border-color:var(--gold)}
+  .countline{color:var(--muted);font-size:14px;margin:14px 0}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;cursor:pointer;display:flex;flex-direction:column;gap:8px}
+  .card:hover{border-color:var(--gold)}
+  .card h3{font-family:'Playfair Display',serif;font-size:21px;line-height:1.25}
+  .card .meta{font-size:13px}
+  .card p{font-size:14.5px;color:rgba(245,240,232,.82);display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
+  .chip{font-size:11.5px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--gold-light)}
+  .badge{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:6px;padding:3px 8px;align-self:flex-start}
+  .badge.verified{background:rgba(74,158,107,.18);color:#8fd0a8;border:1px solid rgba(74,158,107,.4)}
+  .badge.flagged{background:rgba(201,120,76,.15);color:#e8a97a;border:1px solid rgba(201,120,76,.4)}
+  dialog{background:var(--navy);color:var(--white);border:1px solid var(--gold);border-radius:16px;max-width:720px;width:92vw;padding:30px;max-height:86vh;overflow:auto}
+  dialog::backdrop{background:rgba(0,0,0,.7)}
+  dialog h2{font-family:'Playfair Display',serif;font-size:28px;margin-bottom:4px}
+  dialog p{margin-top:12px;font-size:16px}
+  dialog .sources{margin-top:18px;border-top:1px solid var(--line);padding-top:14px;font-size:13.5px;color:var(--muted);word-break:break-word}
+  dialog .sources li{margin:5px 0 5px 18px}
+  .closebtn{margin-top:20px;background:var(--gold);color:#141005;border:none;border-radius:10px;padding:11px 20px;font-weight:700;cursor:pointer;font-family:'Mulish',sans-serif}
+  footer{border-top:1px solid var(--line);margin-top:40px;padding:28px 20px 44px;text-align:center;color:var(--muted);font-size:14px}
+  footer .rules{max-width:760px;margin:0 auto 14px}
+  #keepalive{position:fixed;left:-10px;top:-10px;width:4px;height:4px;opacity:.01;animation:ka 1.2s infinite}
+  @keyframes ka{0%{transform:translateX(0)}100%{transform:translateX(2px)}}
+</style>
+</head>
+<body>
+<div id="keepalive"></div>
+<nav>
+  <a class="brand" href="/">Verse <span>River</span></a>
+  <div class="navright">A KnowHoly Collection</div>
+</nav>
+
+<header class="hero">
+  <div class="kicker">Every Tribe and Tongue</div>
+  <h1>Salvation Stories</h1>
+  <p>Real, documented stories of how people came to believe in the Lord Jesus. Every story records the actual conversion, with its sources attached, from peoples and languages across the earth.</p>
+</header>
+
+<div class="stats" id="stats"></div>
+
+<section class="wrap">
+  <div class="featured" id="featured"></div>
+
+  <div class="controls">
+    <input id="q" type="search" placeholder="Search by name, tribe, language, country, or word in the story">
+    <select id="region"><option value="">All regions</option></select>
+    <select id="theme"><option value="">All themes</option></select>
+  </div>
+  <div class="toggles">
+    <button class="toggle" id="muslimToggle" type="button">Muslim background believers</button>
+    <button class="toggle" id="verifiedToggle" type="button">Verified only</button>
+  </div>
+  <div class="countline" id="countline"></div>
+  <div class="grid" id="grid"></div>
+</section>
+
+<footer>
+  <p class="rules">How this collection is built: each story must document the actual conversion, how, when, and under what circumstances the person came to believe. Stories of persecution or later Christian work alone do not qualify. Testimonies that have been credibly challenged are excluded, and records that are uncertain or sensitive are flagged in place. Where the record is thin, the gap is left empty.</p>
+  <p>Salvation Stories is a KnowHoly collection, hosted on <a href="/">Verse River</a>. Sources are listed inside each story.</p>
+</footer>
+
+<dialog id="dlg">
+  <div id="dlgBody"></div>
+  <button class="closebtn" id="dlgClose" type="button">Close</button>
+</dialog>
+
+<script>
+let STORIES=[], muslimOnly=false, verifiedOnly=false;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const isMuslim=s=>(s.themes||[]).some(t=>t.toLowerCase().includes('muslim'));
+
+function stats(){
+  const tribes=new Set(STORIES.map(s=>s.tribe).filter(Boolean));
+  const langs=new Set(STORIES.map(s=>s.language).filter(Boolean));
+  const countries=new Set(STORIES.map(s=>s.country).filter(Boolean));
+  $('stats').innerHTML=[
+    [STORIES.length,'Stories'],[tribes.size,'Tribes'],[langs.size,'Languages'],[countries.size,'Countries']
+  ].map(x=>'<div class="stat"><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('');
+}
+function metaLine(s){
+  return [s.tribe,s.language,s.country,s.era].filter(Boolean).map(esc).join(' · ');
+}
+function badge(s){
+  return s.verified==1
+    ? '<span class="badge verified">Documented</span>'
+    : '<span class="badge flagged">Flagged, verify before citing</span>';
+}
+function card(s){
+  return '<article class="card" data-id="'+s.id+'">'+badge(s)+'<h3>'+esc(s.name)+'</h3><div class="meta">'+metaLine(s)+'</div><p>'+esc(s.summary)+'</p><div class="chips">'+(s.themes||[]).slice(0,4).map(t=>'<span class="chip">'+esc(t)+'</span>').join('')+'</div></article>';
+}
+function featured(){
+  const now=new Date();
+  const start=new Date(now.getFullYear(),0,0);
+  const day=Math.floor((now-start)/86400000);
+  const s=STORIES[day%STORIES.length];
+  $('featured').innerHTML='<div class="label">Story of the Day</div><h2>'+esc(s.name)+'</h2><div class="meta">'+metaLine(s)+'</div><p>'+esc(s.summary)+'</p><div class="chips" style="margin-top:14px">'+(s.themes||[]).map(t=>'<span class="chip">'+esc(t)+'</span>').join('')+'</div><p style="margin-top:14px"><a href="#" id="featOpen">Read the full story and sources</a></p>';
+  $('featOpen').addEventListener('click',e=>{e.preventDefault();openStory(s.id);});
+}
+function apply(){
+  const q=$('q').value.trim().toLowerCase();
+  const region=$('region').value, theme=$('theme').value;
+  const list=STORIES.filter(s=>{
+    if(region&&s.region!==region)return false;
+    if(theme&&!(s.themes||[]).includes(theme))return false;
+    if(muslimOnly&&!isMuslim(s))return false;
+    if(verifiedOnly&&s.verified!=1)return false;
+    if(q){
+      const hay=[s.name,s.tribe,s.language,s.country,s.region,s.summary,(s.themes||[]).join(' ')].join(' ').toLowerCase();
+      if(!hay.includes(q))return false;
+    }
+    return true;
+  });
+  $('countline').textContent='Showing '+list.length+' of '+STORIES.length+' stories';
+  $('grid').innerHTML=list.map(card).join('')||'<p style="color:var(--muted)">No stories match. Clear the search or a filter and try again.</p>';
+  document.querySelectorAll('.card').forEach(c=>c.addEventListener('click',()=>openStory(+c.dataset.id)));
+}
+function openStory(id){
+  const s=STORIES.find(x=>x.id===id); if(!s)return;
+  const src=(s.sources||[]).map(x=>{
+    const t=esc(x);
+    return /^https?:\/\//.test(x)?'<li><a href="'+t+'" target="_blank" rel="noopener">'+t+'</a></li>':'<li>'+t+'</li>';
+  }).join('');
+  $('dlgBody').innerHTML=badge(s)+'<h2 style="margin-top:10px">'+esc(s.name)+'</h2><div class="meta">'+metaLine(s)+(s.region?' · '+esc(s.region):'')+'</div><p>'+esc(s.summary)+'</p><div class="chips" style="margin-top:14px">'+(s.themes||[]).map(t=>'<span class="chip">'+esc(t)+'</span>').join('')+'</div><div class="sources"><b style="color:var(--gold-light)">Sources</b><ul>'+src+'</ul></div>';
+  $('dlg').showModal();
+}
+$('dlgClose').addEventListener('click',()=>$('dlg').close());
+['q','region','theme'].forEach(id=>{$(id).addEventListener('input',apply);$(id).addEventListener('change',apply);});
+$('muslimToggle').addEventListener('click',e=>{muslimOnly=!muslimOnly;e.currentTarget.classList.toggle('on',muslimOnly);apply();});
+$('verifiedToggle').addEventListener('click',e=>{verifiedOnly=!verifiedOnly;e.currentTarget.classList.toggle('on',verifiedOnly);apply();});
+
+fetch('stories.json').then(r=>r.json()).then(data=>{
+  STORIES=data;
+  stats(); featured();
+  [...new Set(STORIES.map(s=>s.region).filter(Boolean))].sort().forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;$('region').appendChild(o);});
+  [...new Set(STORIES.flatMap(s=>s.themes||[]))].sort().forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;$('theme').appendChild(o);});
+  apply();
+}).catch(()=>{$('countline').textContent='The stories could not be loaded. Please try again.';});
+</script>
+</body>
+</html>
