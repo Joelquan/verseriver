@@ -89,10 +89,17 @@ function initials(name){
   var p = name.replace(/^T\. /,"").split(" ");
   return (p[0][0] + (p[1] ? p[1][0] : "")).toUpperCase();
 }
+var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+function dateLabel(day){
+  var d = new Date(2025, 0, day);
+  var n = d.getDate();
+  var sfx = (n % 10 === 1 && n % 100 !== 11) ? "st" : (n % 10 === 2 && n % 100 !== 12) ? "nd" : (n % 10 === 3 && n % 100 !== 13) ? "rd" : "th";
+  return MONTHS[d.getMonth()] + " " + n + sfx;
+}
 function render(day){
   var d = DEVOTIONALS[day - 1];
-  document.getElementById("topTitle").textContent = "DAY " + day + " OF 365";
-  document.getElementById("dayline").textContent = "DAY " + day;
+  document.getElementById("topTitle").textContent = dateLabel(day).toUpperCase();
+  document.getElementById("dayline").textContent = dateLabel(day).toUpperCase();
   document.getElementById("dimg").src = "read-images/day-" + pad(day) + ".webp";
   document.getElementById("verse").textContent = "\u201C" + d.text + "\u201D";
   document.getElementById("vref").textContent = d.ref + " (KJV)";
