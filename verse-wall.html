@@ -141,6 +141,7 @@ body{font-family:'Tenor Sans',sans-serif;color:#f5e3b8;min-height:100vh;}
 .bv-chap{padding:16px 22px 8px;}
 .bv-chap h2{font-family:'Cinzel',serif;font-weight:600;font-size:22px;letter-spacing:3px;color:#f5e3b8;text-align:center;margin:6px 0 4px;}
 .bv-trname{text-align:center;font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:rgba(255,255,255,.42);letter-spacing:1px;margin-bottom:16px;}
+.bv-copy{text-align:center;font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;color:rgba(255,255,255,.42);margin:26px 12px 6px;line-height:1.5;}
 .bv-sech{text-align:center;font-family:'Cinzel',serif;font-size:12.5px;font-weight:600;letter-spacing:2.5px;color:#c9933a;margin:1.7em 0 .9em;text-transform:uppercase;}
 .bv-p{font-family:'Cormorant Garamond',serif;font-size:19px;line-height:1.85;color:rgba(245,227,184,.93);margin:0 0 .85em;}
 .bv-vn{font-family:'Tenor Sans',sans-serif;font-size:10px;color:#c9933a;vertical-align:super;margin-right:7px;letter-spacing:.5px;}
@@ -2338,8 +2339,12 @@ const Games = (() => {
 
 /* ---------------- Bible reader (Bible tab + header entry) ---------------- */
 const Bible = (() => {
-  const CODES = [["kjv","KJV"],["web","WEB"],["asv","ASV"],["bbe","BBE"]];
-  const TRNAMES = {kjv:"King James Version", web:"World English Bible", asv:"American Standard Version", bbe:"Bible in Basic English"};
+  const CODES = [["kjv","KJV"],["nkjv","NKJV"],["web","WEB"],["asv","ASV"],["bbe","BBE"]];
+  const TRNAMES = {kjv:"King James Version", nkjv:"New King James Version", web:"World English Bible", asv:"American Standard Version", bbe:"Bible in Basic English"};
+  const BB_API = "https://audio.verseriver.com/bb";
+  const USFM66 = ["GEN","EXO","LEV","NUM","DEU","JOS","JDG","RUT","1SA","2SA","1KI","2KI","1CH","2CH","EZR","NEH","EST","JOB","PSA","PRO","ECC","SNG","ISA","JER","LAM","EZK","DAN","HOS","JOL","AMO","OBA","JON","MIC","NAM","HAB","ZEP","HAG","ZEC","MAL","MAT","MRK","LUK","JHN","ACT","ROM","1CO","2CO","GAL","EPH","PHP","COL","1TH","2TH","1TI","2TI","TIT","PHM","HEB","JAS","1PE","2PE","1JN","2JN","3JN","JUD","REV"];
+  const CHAP66 = [50,40,27,36,34,24,21,4,31,24,22,25,29,36,10,13,10,42,150,31,12,8,66,52,5,48,12,14,3,9,1,4,7,3,3,3,2,14,4,28,16,24,21,28,16,16,13,6,6,4,4,5,3,6,4,3,1,13,5,5,3,5,1,1,1,22];
+  const NKJV_COPY = "The Holy Bible, New King James Version® © 1982 by Thomas Nelson, Inc. All Rights Reserved";
   const BOOKS66 = ["Genesis","Exodus","Leviticus","Numbers","Deuteronomy","Joshua","Judges","Ruth","1 Samuel","2 Samuel","1 Kings","2 Kings","1 Chronicles","2 Chronicles","Ezra","Nehemiah","Esther","Job","Psalms","Proverbs","Ecclesiastes","Song of Solomon","Isaiah","Jeremiah","Lamentations","Ezekiel","Daniel","Hosea","Joel","Amos","Obadiah","Jonah","Micah","Nahum","Habakkuk","Zephaniah","Haggai","Zechariah","Malachi","Matthew","Mark","Luke","John","Acts","Romans","1 Corinthians","2 Corinthians","Galatians","Ephesians","Philippians","Colossians","1 Thessalonians","2 Thessalonians","1 Timothy","2 Timothy","Titus","Philemon","Hebrews","James","1 Peter","2 Peter","1 John","2 John","3 John","Jude","Revelation"];
   const ALIAS = {"psalm":"Psalms"};
   const cache = {};
@@ -2366,8 +2371,57 @@ const Bible = (() => {
     if(i < 0) return null;
     return {bi:i, ci:+m[2]-1, vi:+m[3]-1};
   }
+  const nkjvPending = {};
+  function nkjvSkeleton(){
+    return {books: BOOKS66.map((n, i) => ({n:n, c:Array.from({length:CHAP66[i]}, () => null)}))};
+  }
+  async function fetchNkjvChap(b, c, paint, top){
+    const d = cache.nkjv; if(!d) return false;
+    if(Array.isArray(d.books[b].c[c])) return true;
+    const k = b + "|" + c;
+    if(nkjvPending[k]) return nkjvPending[k];
+    nkjvPending[k] = (async () => {
+      try{
+        const r = await fetch(BB_API + "/text/nkjv/" + USFM66[b] + "/" + (c + 1));
+        if(!r.ok) throw new Error("http");
+        const j = await r.json();
+        const rows = j.data || [];
+        const verses = [];
+        rows.forEach(row => {
+          const s = parseInt(row.verse_start, 10), e = parseInt(row.verse_end || row.verse_start, 10);
+          const t = String(row.verse_text || "").replace(/¶\s*/g, "").trim();
+          if(!t) return;
+          for(let v = s; v <= e; v++){ verses[v - 1] = (verses[v - 1] ? verses[v - 1] + " " : "") + t; }
+        });
+        for(let i = 0; i < verses.length; i++) if(verses[i] == null) verses[i] = "";
+        if(!verses.length) throw new Error("empty");
+        d.books[b].c[c] = verses;
+        delete nkjvPending[k];
+        if(top){
+          const near = [[b, c - 1], [b, c + 1]];
+          if(c === 0 && b > 0) near.push([b - 1, CHAP66[b - 1] - 1]);
+          if(c === CHAP66[b] - 1 && b < 65) near.push([b + 1, 0]);
+          near.forEach(pr => {
+            const pb = pr[0], pc = pr[1];
+            if(pb >= 0 && pb < 66 && pc >= 0 && pc < CHAP66[pb] && !Array.isArray(d.books[pb].c[pc])) fetchNkjvChap(pb, pc, false, false);
+          });
+        }
+        return true;
+      }catch(_){
+        delete nkjvPending[k];
+        if(paint) $("bvChap").innerHTML = '<p class="bv-p" style="text-align:center">The text could not be loaded. Please check your connection and try again.</p>';
+        return false;
+      }
+    })();
+    return nkjvPending[k];
+  }
   async function ensure(){
     if(!HD){ try{ const hr = await fetch("bible-data/headings.json"); HD = hr.ok ? await hr.json() : {}; }catch(_){ HD = {}; } }
+    if(code === "nkjv"){
+      if(!cache.nkjv) cache.nkjv = nkjvSkeleton();
+      if(!Array.isArray(cache.nkjv.books[bi].c[ci])) $("bvChap").innerHTML = '<p class="bv-p" style="text-align:center;color:rgba(255,255,255,.5)">Loading the Scriptures...</p>';
+      return fetchNkjvChap(bi, ci, true, true);
+    }
     if(cache[code]) return true;
     $("bvChap").innerHTML = '<p class="bv-p" style="text-align:center;color:rgba(255,255,255,.5)">Loading the Scriptures...</p>';
     try{
@@ -2419,6 +2473,12 @@ const Bible = (() => {
     flowHide();
     clamp();
     const names = bookNames();
+    if(code === "nkjv" && !Array.isArray(d.books[bi].c[ci])){
+      $("bvChap").innerHTML = '<p class="bv-p" style="text-align:center;color:rgba(255,255,255,.5)">Loading the Scriptures...</p>';
+      const b0 = bi, c0 = ci;
+      fetchNkjvChap(bi, ci, true, true).then(ok => { if(ok && code === "nkjv" && bi === b0 && ci === c0) renderChap(); });
+      return;
+    }
     const verses = d.books[bi].c[ci];
     if(hlVerse >= verses.length) hlVerse = verses.length - 1;
     const locRef = names[bi] + " " + (ci + 1);
@@ -2431,6 +2491,7 @@ const Bible = (() => {
       while(chH && hhi < chH.length && chH[hhi][0] === i+1){ h += '<div class="bv-sech">' + esc(chH[hhi][1]) + "</div>"; hhi++; }
       h += '<p class="bv-p' + hlClass(i) + (isBmIdx(i) ? " bv-bm" : "") + '" data-vi="' + i + '"' + (i === hlVerse ? ' id="bvHl"' : "") + '><span class="bv-vn">' + (i+1) + "</span>" + esc(verses[i]) + "</p>";
     }
+    if(code === "nkjv") h += '<div class="bv-copy">' + esc(NKJV_COPY) + "</div>";
     $("bvChap").innerHTML = h;
     closeCtog();
     $("bvFoot").style.display = "";
@@ -2688,7 +2749,7 @@ const Bible = (() => {
     const d = cache[code]; if(!d) return {bi:0, ci:0, vi:0};
     const b = Math.max(0, Math.min(65, b_));
     const c = Math.max(0, Math.min(d.books[b].c.length - 1, c_));
-    const vs = d.books[b].c[c];
+    const vs = d.books[b].c[c] || [];
     let v = Math.max(0, v_);
     while(v < vs.length && !vs[v]) v++;
     if(v >= vs.length){ v = 0; while(v < vs.length && !vs[v]) v++; }
@@ -2699,22 +2760,22 @@ const Bible = (() => {
     let b = p.bi, c = p.ci, v = p.vi;
     if(dir > 0){
       let nv = v + 1;
-      const vs = d.books[b].c[c];
+      const vs = d.books[b].c[c] || [];
       while(nv < vs.length && !vs[nv]) nv++;
       if(nv < vs.length) return {bi:b, ci:c, vi:nv};
       let nb = b, nc = c + 1;
       if(nc >= d.books[nb].c.length){ nb++; if(nb > 65) nb = 0; nc = 0; }
-      const nvs = d.books[nb].c[nc];
+      const nvs = d.books[nb].c[nc] || [];
       let nvi = 0; while(nvi < nvs.length && !nvs[nvi]) nvi++;
       return {bi:nb, ci:nc, vi:nvi};
     }
     let nv = v - 1;
-    const vs = d.books[b].c[c];
+    const vs = d.books[b].c[c] || [];
     while(nv >= 0 && !vs[nv]) nv--;
     if(nv >= 0) return {bi:b, ci:c, vi:nv};
     let nb = b, nc = c - 1;
     if(nc < 0){ nb--; if(nb < 0) nb = 65; nc = d.books[nb].c.length - 1; }
-    const nvs = d.books[nb].c[nc];
+    const nvs = d.books[nb].c[nc] || [];
     let nvi = nvs.length - 1; while(nvi >= 0 && !nvs[nvi]) nvi--;
     return {bi:nb, ci:nc, vi:nvi};
   }
@@ -2777,6 +2838,11 @@ const Bible = (() => {
     const k = (slides[idx].dataset.k || "").split("|");
     if(k.length === 3){ bi = +k[0]; ci = +k[1]; vi = +k[2]; }
     savePos();
+    if(code === "nkjv" && cache.nkjv && !Array.isArray(cache.nkjv.books[bi].c[ci])){
+      const b0 = bi, c0 = ci;
+      fetchNkjvChap(bi, ci, false, true).then(ok => { if(ok && code === "nkjv" && flow === "flow" && bi === b0 && ci === c0){ flowBuild(); flowSyncBm(); flowArmTimer(); } });
+      return;
+    }
     flowBuild();
     flowSyncBm();
     flowArmTimer();
@@ -2850,6 +2916,11 @@ const Bible = (() => {
   }
   function renderFlow(){
     const d = cache[code]; if(!d){ flowHide(); return; }
+    if(code === "nkjv" && !Array.isArray(d.books[bi].c[ci])){
+      const b0 = bi, c0 = ci;
+      fetchNkjvChap(bi, ci, false, true).then(ok => { if(ok && code === "nkjv" && flow === "flow" && bi === b0 && ci === c0) renderFlow(); });
+      return;
+    }
     const cur = nzVerse(bi, ci, vi);
     bi = cur.bi; ci = cur.ci; vi = cur.vi;
     const fl = $("bvFlow");
@@ -3078,9 +3149,9 @@ const Bible = (() => {
     const d = cache[code]; if(!d) return false;
     if(sCode === code && sIdx) return true;
     sIdx = [];
-    d.books.forEach((b, bii) => b.c.forEach((ch, cii) => ch.forEach((v, vii) => {
+    d.books.forEach((b, bii) => b.c.forEach((ch, cii) => { if(!ch) return; ch.forEach((v, vii) => {
       if(v) sIdx.push({bi:bii, ci:cii, vi:vii, t:v});
-    })));
+    }); }));
     sCode = code;
     return true;
   }
@@ -3368,7 +3439,7 @@ const Bible = (() => {
      speech last. */
   const SE_VOICE = "Amy";
   const speakCache = new Map();
-  const LS = {playing:false, vi:0, chunks:[], qi:0, au:null, prov:-1, gen:0, spk:false};
+  const LS = {playing:false, vi:0, chunks:[], qi:0, au:null, prov:-1, gen:0, spk:false, narr:false, ts:null};
   let lastChapKey = "";
   function speakClean(s){ return String(s || "").replace(/¶/g, " ").replace(/\s+/g, " ").trim(); }
   function splitChunks(text, maxLen){
@@ -3403,7 +3474,9 @@ const Bible = (() => {
   function listenStop(){
     LS.playing = false;
     LS.spk = false;
-    try{ if(LS.au){ LS.au.onended = null; LS.au.onerror = null; LS.au.pause(); LS.au.removeAttribute("src"); LS.au.load(); } }catch(_){}
+    LS.narr = false;
+    LS.ts = null;
+    try{ if(LS.au){ LS.au.onended = null; LS.au.onerror = null; LS.au.ontimeupdate = null; LS.au.pause(); LS.au.removeAttribute("src"); LS.au.load(); } }catch(_){}
     try{ if("speechSynthesis" in window) speechSynthesis.cancel(); }catch(_){}
     clearSpeak();
     listenPaint();
@@ -3473,11 +3546,63 @@ const Bible = (() => {
     if(!LS.chunks.length){ playVerse(i + 1); return; }
     playChunk();
   }
-  function listenStart(){
+  function narrTick(){
+    if(!LS.playing || !LS.narr || !LS.au) return;
+    if(LS.au.playbackRate !== lspRate) LS.au.playbackRate = lspRate;
+    if(!LS.ts || !LS.ts.length) return;
+    const t = LS.au.currentTime;
+    let v = 0;
+    for(let i = 0; i < LS.ts.length; i++){ if(LS.ts[i].t <= t) v = LS.ts[i].v; else break; }
+    const idx = v - 1;
+    if(idx < 0 || idx === LS.vi) return;
+    LS.vi = idx;
+    clearSpeak();
+    const el = document.querySelector('#bvChap p[data-vi="' + idx + '"]');
+    if(el){
+      el.classList.add("bv-speak");
+      try{ el.scrollIntoView({block:"center", behavior:"smooth"}); }catch(_){}
+    }
+  }
+  async function narrStart(){
+    const tr = code, b = bi, c = ci;
+    try{
+      const rs = await Promise.all([
+        fetch(BB_API + "/audio/" + tr + "/" + USFM66[b] + "/" + (c + 1)),
+        fetch(BB_API + "/ts/" + tr + "/" + USFM66[b] + "/" + (c + 1))
+      ]);
+      if(!rs[0].ok) return false;
+      const ja = await rs[0].json();
+      const files = (ja.data || []).filter(x => x.path);
+      if(!files.length) return false;
+      const ts = rs[1].ok ? ((await rs[1].json()).data || []) : [];
+      if(code !== tr || bi !== b || ci !== c || flow === "flow") return false;
+      listenStop();
+      LS.playing = true;
+      LS.narr = true;
+      LS.spk = false;
+      LS.vi = -1;
+      LS.ts = ts.map(x => ({v:parseInt(x.verse_start, 10), t:parseFloat(x.timestamp) || 0})).filter(x => x.v >= 1);
+      if(!LS.au){ LS.au = new Audio(); LS.au.preload = "auto"; }
+      const au = LS.au;
+      au.ontimeupdate = narrTick;
+      au.onerror = () => { if(LS.playing && LS.narr) listenFail(); };
+      au.onended = () => { if(LS.playing && LS.narr) listenStop(); };
+      au.src = files[0].path;
+      au.playbackRate = lspRate;
+      listenPaint();
+      const pr = au.play();
+      if(pr && pr.catch) pr.catch(() => { if(LS.playing && LS.narr) listenFail(); });
+      return true;
+    }catch(_){ return false; }
+  }
+  async function listenStart(){
     const d = cache[code];
     if(!d || flow === "flow") return;
     const verses = d.books[bi].c[ci];
     if(!verses || !verses.length) return;
+    if(!lvcVoice && (code === "kjv" || (code === "nkjv" && bi >= 39))){
+      if(await narrStart()) return;
+    }
     listenStop();
     LS.playing = true;
     if(!LS.au){ LS.au = new Audio(); LS.au.preload = "auto"; }
