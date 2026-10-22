@@ -464,30 +464,27 @@ body.flowNav .wv-drawer{z-index:67;}
 @media (min-width:600px){.vs-cube{width:195px;height:195px;}.vs-card{max-width:420px;}}
 
 
-/* ---------------- Voices tab ---------------- */
-.wv-voices{max-width:640px;margin:0 auto;padding:12px;}
-.vc-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:124px;gap:8px;grid-auto-flow:dense;}
-.vc-tile{position:relative;perspective:700px;cursor:pointer;min-height:0;min-width:0;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none;}
-.vc-t{grid-row:span 2;}
-.vc-w{grid-column:span 2;}
-.vc-l{grid-column:span 2;grid-row:span 2;}
-.vc-inner{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .85s cubic-bezier(.45,.05,.25,1);}
-.vc-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:14px;overflow:hidden;padding:12px 13px;display:flex;flex-direction:column;justify-content:flex-start;background:linear-gradient(160deg,#0a2147,#052659 58%,#021024);border:1px solid rgba(201,147,58,.20);box-shadow:0 4px 18px rgba(0,0,0,.4);}
-.vc-ax-y .vc-back{transform:rotateY(180deg);}
-.vc-ax-x .vc-back{transform:rotateX(180deg);}
-.vc-q{font-family:'Cormorant Garamond',Georgia,serif;font-size:17.5px;line-height:1.34;color:#ece4cd;overflow:hidden;max-height:calc(100% - 34px);}
-.vc-n{margin-top:auto;padding-top:8px;font-family:'Cinzel',serif;font-size:10.5px;letter-spacing:.15em;color:#e8c876;text-transform:uppercase;}
-.vc-load{padding:44px 20px;text-align:center;color:#cfe0f4;font-family:'Cormorant Garamond',Georgia,serif;font-size:19px;}
-.vc-overlay{position:fixed;inset:0;background:rgba(2,8,20,.85);display:flex;align-items:center;justify-content:center;z-index:300;padding:18px;}
-.vc-sheet{position:relative;width:100%;max-width:560px;max-height:86vh;overflow:auto;background:linear-gradient(165deg,#0a2147,#021024);border:1px solid rgba(201,147,58,.38);border-radius:18px;padding:34px 26px 28px;text-align:center;box-shadow:0 18px 60px rgba(0,0,0,.6);}
-.vc-x{position:absolute;top:6px;right:12px;background:none;border:none;color:#e8c876;font-size:28px;line-height:1;cursor:pointer;padding:6px;}
-.vc-big-q{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(22px,5.6vw,30px);line-height:1.45;color:#f2ecd9;}
-.vc-big-n{margin-top:17px;font-family:'Cinzel',serif;font-size:14px;letter-spacing:.16em;color:#e8c876;text-transform:uppercase;}
-.vc-big-s{margin-top:5px;font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:16.5px;color:#9db4d4;}
-.vc-btns{margin-top:23px;display:flex;gap:10px;justify-content:center;}
-.vc-btn{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.14em;color:#e8c876;background:rgba(201,147,58,.10);border:1px solid rgba(201,147,58,.55);border-radius:999px;padding:11px 26px;cursor:pointer;}
+/* ---------------- Voices tab: one quote at a time, swipe ---------------- */
+.wv-voices{max-width:640px;margin:0 auto;height:72vh;}
+.vc-feed{height:100%;overflow-y:auto;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-width:none;outline:none;}
+.vc-feed::-webkit-scrollbar{display:none;}
+.vc-slide{height:100%;scroll-snap-align:start;scroll-snap-stop:always;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:34px 26px 26px;box-sizing:border-box;border-radius:0 0 18px 18px;overflow:hidden;}
+.vc-slide::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 60% at 50% 0%,rgba(201,147,58,.13),rgba(201,147,58,0) 60%);pointer-events:none;}
+.vc-s0{background:linear-gradient(170deg,#0a2147,#052659 55%,#021024);}
+.vc-s1{background:linear-gradient(170deg,#123058,#0a2147 55%,#021024);}
+.vc-s2{background:linear-gradient(170deg,#0d2a52,#052659 60%,#010a1a);}
+.vc-s3{background:linear-gradient(170deg,#14355f,#0d2a52 55%,#021024);}
+.vc-bigq{font-family:'Cormorant Garamond',Georgia,serif;line-height:1.42;color:#f2ecd9;max-width:34ch;}
+.vc-f0{font-size:31px;} .vc-f1{font-size:26px;} .vc-f2{font-size:22px;} .vc-f3{font-size:19px;}
+.vc-name{margin-top:22px;font-family:'Cinzel',serif;font-size:14px;letter-spacing:.16em;color:#e8c876;text-transform:uppercase;}
+.vc-src{margin-top:6px;font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:16.5px;color:#9db4d4;max-width:40ch;}
+.vc-actions{margin-top:26px;display:flex;gap:10px;}
+.vc-btn{font-family:'Cinzel',serif;font-size:12.5px;letter-spacing:.14em;color:#e8c876;background:rgba(201,147,58,.10);border:1px solid rgba(201,147,58,.55);border-radius:999px;padding:10px 24px;cursor:pointer;}
 .vc-btn:active{background:rgba(201,147,58,.25);}
-.vc-done{min-height:19px;margin-top:11px;font-size:13px;color:#9db4d4;font-family:'Tenor Sans',sans-serif;}
+.vc-note{min-height:18px;margin-top:12px;font-size:12.5px;color:#9db4d4;font-family:'Tenor Sans',sans-serif;}
+.vc-hint{position:absolute;left:0;right:0;bottom:14px;font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:.22em;color:rgba(232,200,118,.75);text-transform:uppercase;animation:vcHint 1.8s ease-in-out infinite;}
+@keyframes vcHint{0%,100%{transform:translateY(0);opacity:.55}50%{transform:translateY(-5px);opacity:1}}
+.vc-load{padding:44px 20px;text-align:center;color:#cfe0f4;font-family:'Cormorant Garamond',Georgia,serif;font-size:19px;}
 </style>
 </head>
 <body>
@@ -1544,98 +1541,64 @@ function setView(v){
 }
 
 
-/* ---------------- Voices tab: quotes from the servants of God ---------------- */
+/* ---------------- Voices tab: quotes from the servants of God, one at a time ---------------- */
 const Voices = (() => {
-  let quotes = null, built = false, tiles = [];
+  let quotes = null, built = false, order = [], pos = 0, feed = null;
   const pane = () => document.getElementById("voicespane");
   const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;");
-  const rndQuote = () => quotes[Math.floor(Math.random() * quotes.length)];
-  function trimQ(text, max){
-    if(text.length <= max) return text;
-    let cut = text.slice(0, max);
-    const sp = cut.lastIndexOf(" ");
-    if(sp > max * 0.55) cut = cut.slice(0, sp);
-    return cut.replace(/[\s,;:.]+$/, "") + "\u2026";
+  function shuffleIdx(){
+    const idx = quotes.map((_, i) => i);
+    for(let i = idx.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); const t = idx[i]; idx[i] = idx[j]; idx[j] = t; }
+    return idx;
   }
-  function setFace(face, q, budget){
-    face._q = q;
-    face.innerHTML = '<div class="vc-q">' + esc(trimQ(q.q, budget || 95)) + '</div><div class="vc-n">' + esc(q.a) + '</div>';
-    const qEl = face.firstChild;
-    let guard = 0, txt = qEl.textContent;
-    while(qEl.scrollHeight > qEl.clientHeight + 1 && txt.length > 12 && guard < 14){
-      guard++;
-      txt = trimQ(txt.replace(/\u2026$/, ""), Math.max(10, Math.floor(txt.length * 0.8)));
-      qEl.textContent = txt;
-    }
+  function nextQuote(){
+    if(pos >= order.length){ order = shuffleIdx(); pos = 0; }
+    return quotes[order[pos++]];
   }
-  const ov = document.createElement("div");
-  ov.className = "vc-overlay"; ov.style.display = "none";
-  ov.innerHTML = '<div class="vc-sheet"><button class="vc-x" aria-label="Close">&#10005;</button>'
-    + '<div class="vc-big-q"></div><div class="vc-big-n"></div><div class="vc-big-s"></div>'
-    + '<div class="vc-btns"><button class="vc-btn" id="vcShare">SHARE</button><button class="vc-btn" id="vcCopy">COPY</button></div>'
-    + '<div class="vc-done"></div></div>';
-  document.body.appendChild(ov);
-  const doneEl = ov.querySelector(".vc-done");
-  let curQ = null, doneTimer = null;
-  function note(msg){ doneEl.textContent = msg; clearTimeout(doneTimer); doneTimer = setTimeout(() => { doneEl.textContent = ""; }, 2200); }
-  function shareText(q){ return '\u201C' + q.q + '\u201D\n' + q.n + (q.s ? ', ' + q.s : ''); }
-  function copyQuote(){
-    if(!curQ) return;
-    const txt = shareText(curQ);
-    const done = () => note("Copied.");
-    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done).catch(() => fallbackCopy(txt, done)); }
-    else fallbackCopy(txt, done);
-  }
-  function fallbackCopy(txt, done){
-    const ta = document.createElement("textarea");
-    ta.value = txt; ta.style.position = "fixed"; ta.style.opacity = "0";
-    document.body.appendChild(ta); ta.select();
-    try{ document.execCommand("copy"); done(); }catch(_){ note("Copy did not work on this device."); }
-    ta.remove();
-  }
-  ov.querySelector("#vcCopy").addEventListener("click", copyQuote);
-  ov.querySelector("#vcShare").addEventListener("click", () => {
-    if(!curQ) return;
-    const txt = shareText(curQ);
-    if(navigator.share){ navigator.share({ title: "Voices, Verse Wall", text: txt }).catch(() => {}); }
-    else copyQuote();
-  });
-  ov.querySelector(".vc-x").addEventListener("click", () => { ov.style.display = "none"; });
-  ov.addEventListener("click", e => { if(e.target === ov) ov.style.display = "none"; });
-  function openBig(q){
-    curQ = q;
-    ov.querySelector(".vc-big-q").textContent = q.q;
-    ov.querySelector(".vc-big-n").textContent = q.n;
-    ov.querySelector(".vc-big-s").textContent = q.s || "";
-    doneEl.textContent = "";
-    ov.style.display = "flex";
-  }
-  function makeTile(){
+  function shareText(q){ return "\u201C" + q.q + "\u201D\n" + q.n + (q.s ? ", " + q.s : ""); }
+  function fontClass(q){ const n = q.q.length; return n <= 140 ? "vc-f0" : n <= 260 ? "vc-f1" : n <= 420 ? "vc-f2" : "vc-f3"; }
+  let slideNo = 0;
+  function makeSlide(first){
+    const q = nextQuote();
     const el = document.createElement("div");
-    const r = Math.random();
-    el.className = "vc-tile" + (r < 0.62 ? "" : r < 0.80 ? " vc-t" : r < 0.93 ? " vc-w" : " vc-l");
-    const axis = Math.random() < 0.5 ? "y" : "x";
-    el.innerHTML = '<div class="vc-inner vc-ax-' + axis + '"><div class="vc-face vc-front"></div><div class="vc-face vc-back"></div></div>';
-    const budget = el.classList.contains("vc-l") ? 260 : el.classList.contains("vc-t") ? 210 : el.classList.contains("vc-w") ? 135 : 80;
-    const t = { el, inner: el.firstChild, front: el.querySelector(".vc-front"), back: el.querySelector(".vc-back"), flipped: false, axis, busy: false, budget };
-    t.init = () => { setFace(t.front, rndQuote(), budget); setFace(t.back, rndQuote(), budget); };
-    el.addEventListener("click", () => { const vis = t.flipped ? t.back : t.front; if(vis._q) openBig(vis._q); });
-    return t;
+    el.className = "vc-slide vc-s" + (slideNo++ % 4);
+    el.innerHTML = '<div class="vc-bigq ' + fontClass(q) + '">' + esc(q.q) + '</div>'
+      + '<div class="vc-name">' + esc(q.n) + '</div>'
+      + (q.s ? '<div class="vc-src">' + esc(q.s) + '</div>' : '')
+      + '<div class="vc-actions"><button class="vc-btn vc-share">SHARE</button><button class="vc-btn vc-copy">COPY</button></div>'
+      + '<div class="vc-note"></div>'
+      + (first ? '<div class="vc-hint">Swipe up</div>' : '');
+    const note = el.querySelector(".vc-note");
+    let noteTimer = null;
+    const say = m => { note.textContent = m; clearTimeout(noteTimer); noteTimer = setTimeout(() => { note.textContent = ""; }, 2200); };
+    const doCopy = () => {
+      const txt = shareText(q);
+      const done = () => say("Copied.");
+      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done).catch(() => fallback()); }
+      else fallback();
+      function fallback(){
+        const ta = document.createElement("textarea");
+        ta.value = txt; ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta); ta.select();
+        try{ document.execCommand("copy"); done(); }catch(_){ say("Copy did not work on this device."); }
+        ta.remove();
+      }
+    };
+    el.querySelector(".vc-copy").addEventListener("click", doCopy);
+    el.querySelector(".vc-share").addEventListener("click", () => {
+      const txt = shareText(q);
+      if(navigator.share){ navigator.share({ title: "Voices, Verse Wall", text: txt }).catch(() => {}); }
+      else doCopy();
+    });
+    return el;
   }
-  function flipSome(){
-    if(view !== "voices" || document.hidden) return;
-    if(typeof pausedAll !== "undefined" && pausedAll) return;
-    const n = 2 + Math.floor(Math.random() * 3);
-    for(let i = 0; i < n; i++){
-      const t = tiles[Math.floor(Math.random() * tiles.length)];
-      if(!t || t.busy) continue;
-      t.busy = true;
-      const hidden = t.flipped ? t.front : t.back;
-      setFace(hidden, rndQuote(), t.budget);
-      t.flipped = !t.flipped;
-      t.inner.style.transform = t.flipped ? (t.axis === "y" ? "rotateY(180deg)" : "rotateX(180deg)") : "";
-      setTimeout(() => { t.busy = false; }, 900);
-    }
+  function appendSlides(n){ for(let i = 0; i < n; i++) feed.appendChild(makeSlide(feed.children.length === 0)); }
+  function sizePane(){
+    const p = pane(); if(!p) return;
+    p.style.height = "";
+    const r = p.getBoundingClientRect();
+    const h = Math.max(320, Math.floor(window.innerHeight - r.top - 6));
+    p.style.height = h + "px";
   }
   async function build(){
     if(built) return; built = true;
@@ -1649,14 +1612,22 @@ const Voices = (() => {
       p.innerHTML = '<div class="vc-load">The voices could not be loaded. Please check your connection and try again.</div>';
       built = false; return;
     }
+    order = shuffleIdx(); pos = 0; slideNo = 0;
     p.innerHTML = "";
-    const grid = document.createElement("div"); grid.className = "vc-grid"; p.appendChild(grid);
-    tiles = [];
-    for(let i = 0; i < 42; i++){ const t = makeTile(); tiles.push(t); grid.appendChild(t.el); t.init(); }
-    if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => { tiles.forEach(t => { if(t.front._q) setFace(t.front, t.front._q, t.budget); if(t.back._q) setFace(t.back, t.back._q, t.budget); }); });
-    setInterval(flipSome, 2600);
+    feed = document.createElement("div");
+    feed.className = "vc-feed"; feed.tabIndex = 0;
+    p.appendChild(feed);
+    sizePane();
+    appendSlides(5);
+    feed.addEventListener("scroll", () => {
+      if(feed.scrollTop + feed.clientHeight * 2.2 > feed.scrollHeight) appendSlides(5);
+    }, { passive: true });
+    window.addEventListener("resize", sizePane);
   }
-  function open(){ build(); }
+  function open(){
+    build();
+    if(feed){ sizePane(); feed.focus({ preventScroll: true }); }
+  }
   return { open };
 })();
 
