@@ -1588,7 +1588,7 @@ const Voices = (() => {
     t = t.replace(/\b[\w-]+(\.[\w-]+)*\.(com|net|org|me|io|online|co|uk)\b(\/\S*)?/g, " ");
     t = t.replace(/\bquoted at\b/gi, " ");
     t = t.replace(/\s*,\s*,/g, ",").replace(/\(\s*\)/g, "").replace(/\s{2,}/g, " ").replace(/\s+,/g, ",").trim();
-    t = t.replace(/[,\s]+$/, "").replace(/^[,\s]+/, "");
+    t = t.replace(/[,\s;:\u2013-]+$/, "").replace(/^[,\s;:\u2013-]+/, "");
     return t;
   }
   function wrapLines(ctx, text, maxW){
