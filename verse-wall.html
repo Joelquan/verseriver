@@ -1051,7 +1051,7 @@ function renderShareImage(c){
   x.globalAlpha = 0.9;
   x.font = "300 36px 'Josefin Sans', sans-serif";
   x.fillStyle = "#c9933a";
-  x.fillText("Verse Wall", W / 2, H - 92);
+  x.fillText("verseriver.com", W / 2, H - 92);
   x.globalAlpha = 1;
   try { x.letterSpacing = "0px"; } catch (e) {}
   return new Promise(res => cv.toBlob(b => res(new File([b], "verse.png", { type: "image/png" })), "image/png"));
@@ -1187,7 +1187,7 @@ function renderWallVerseImage(v, skin){
   x.globalAlpha = 0.9;
   x.font = "300 36px 'Josefin Sans', sans-serif";
   x.fillStyle = acc;
-  x.fillText("Verse Wall", W / 2, H - 92);
+  x.fillText("verseriver.com", W / 2, H - 92);
   x.globalAlpha = 1;
   try { x.letterSpacing = "0px"; } catch (e) {}
   return new Promise(res => cv.toBlob(b => res(new File([b], "verse.png", { type: "image/png" })), "image/png"));
@@ -1652,7 +1652,7 @@ const Voices = (() => {
       try{ ctx.letterSpacing = "10px"; }catch(_){}
       ctx.font = "600 30px 'Cinzel', serif";
       ctx.fillStyle = "#e8c876";
-      ctx.fillText("VERSE WALL", W / 2, H - 92);
+      ctx.fillText("VERSERIVER.COM", W / 2, H - 92);
       const blob = await new Promise(r => cv.toBlob(r, "image/png"));
       if(!blob) throw new Error("no blob");
       const file = new File([blob], "verse-wall-quote.png", { type: "image/png" });
