@@ -1580,11 +1580,12 @@ const Voices = (() => {
   }
   function shareText(q){ return "\u201C" + q.q + "\u201D\n" + q.n + (q.s ? ", " + q.s : ""); }
   function fontClass(q){ const n = q.q.length; return n <= 140 ? "vc-f0" : n <= 260 ? "vc-f1" : n <= 420 ? "vc-f2" : "vc-f3"; }
+  const SKIN_ORDER = [0,12,5,18,2,21,8,15,23,4,10,19,1,13,7,20,3,16,11,22,6,14,9,17];
   let slideNo = 0;
   function makeSlide(first){
     const q = nextQuote();
     const el = document.createElement("div");
-    el.className = "vc-slide vc-s" + (slideNo++ % 24);
+    el.className = "vc-slide vc-s" + SKIN_ORDER[(slideNo++) % 24];
     el.innerHTML = '<div class="vc-bigq ' + fontClass(q) + '">' + esc(q.q) + '</div>'
       + '<div class="vc-name">' + esc(q.n) + '</div>'
       + (q.s ? '<div class="vc-src">' + esc(q.s) + '</div>' : '')
