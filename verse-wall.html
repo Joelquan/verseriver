@@ -462,6 +462,32 @@ body.flowNav .wv-drawer{z-index:67;}
 .vs-statrow b{color:#e8c876;}
 @media (min-width:600px){.vs-cube{width:195px;height:195px;}.vs-card{max-width:420px;}}
 
+
+/* ---------------- Voices tab ---------------- */
+.wv-voices{max-width:640px;margin:0 auto;padding:12px;}
+.vc-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:124px;gap:8px;grid-auto-flow:dense;}
+.vc-tile{position:relative;perspective:700px;cursor:pointer;min-height:0;min-width:0;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none;}
+.vc-t{grid-row:span 2;}
+.vc-w{grid-column:span 2;}
+.vc-l{grid-column:span 2;grid-row:span 2;}
+.vc-inner{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .85s cubic-bezier(.45,.05,.25,1);}
+.vc-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:14px;overflow:hidden;padding:12px 13px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(160deg,#0a2147,#052659 58%,#021024);border:1px solid rgba(201,147,58,.20);box-shadow:0 4px 18px rgba(0,0,0,.4);}
+.vc-ax-y .vc-back{transform:rotateY(180deg);}
+.vc-ax-x .vc-back{transform:rotateX(180deg);}
+.vc-q{font-family:'Cormorant Garamond',Georgia,serif;font-size:17.5px;line-height:1.34;color:#ece4cd;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;}
+.vc-t .vc-q,.vc-l .vc-q{-webkit-line-clamp:12;}
+.vc-n{margin-top:8px;font-family:'Cinzel',serif;font-size:10.5px;letter-spacing:.15em;color:#e8c876;text-transform:uppercase;}
+.vc-load{padding:44px 20px;text-align:center;color:#cfe0f4;font-family:'Cormorant Garamond',Georgia,serif;font-size:19px;}
+.vc-overlay{position:fixed;inset:0;background:rgba(2,8,20,.85);display:flex;align-items:center;justify-content:center;z-index:300;padding:18px;}
+.vc-sheet{position:relative;width:100%;max-width:560px;max-height:86vh;overflow:auto;background:linear-gradient(165deg,#0a2147,#021024);border:1px solid rgba(201,147,58,.38);border-radius:18px;padding:34px 26px 28px;text-align:center;box-shadow:0 18px 60px rgba(0,0,0,.6);}
+.vc-x{position:absolute;top:6px;right:12px;background:none;border:none;color:#e8c876;font-size:28px;line-height:1;cursor:pointer;padding:6px;}
+.vc-big-q{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(22px,5.6vw,30px);line-height:1.45;color:#f2ecd9;}
+.vc-big-n{margin-top:17px;font-family:'Cinzel',serif;font-size:14px;letter-spacing:.16em;color:#e8c876;text-transform:uppercase;}
+.vc-big-s{margin-top:5px;font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:16.5px;color:#9db4d4;}
+.vc-btns{margin-top:23px;display:flex;gap:10px;justify-content:center;}
+.vc-btn{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.14em;color:#e8c876;background:rgba(201,147,58,.10);border:1px solid rgba(201,147,58,.55);border-radius:999px;padding:11px 26px;cursor:pointer;}
+.vc-btn:active{background:rgba(201,147,58,.25);}
+.vc-done{min-height:19px;margin-top:11px;font-size:13px;color:#9db4d4;font-family:'Tenor Sans',sans-serif;}
 </style>
 </head>
 <body>
@@ -479,7 +505,7 @@ body.flowNav .wv-drawer{z-index:67;}
     <button data-view="bible">Bible</button>
     <button data-view="mosaic" class="on">Mosaic</button>
     <button data-view="river">River</button>
-    <button data-view="games">Games</button>
+    <button data-view="voices">Voices</button>     <button data-view="games">Games</button>
   </div>
 </div>
 </div>
@@ -511,6 +537,7 @@ body.flowNav .wv-drawer{z-index:67;}
   </div>
 </div>
 <div class="wv-games" id="gamespane" style="display:none"></div>
+<div class="wv-voices" id="voicespane" style="display:none"></div>
 <div class="bv-pick" id="bvPick">
   <button class="bv-pickclose" id="bvPickClose">&#10005;</button>
   <div id="bvPickBody"></div>
@@ -1455,13 +1482,14 @@ function setView(v){
   if(view === v) return;
   view = v;
   document.querySelectorAll("#viewbar button").forEach(b => b.classList.toggle("on", b.dataset.view === v));
-  const mosaic = document.getElementById("mosaic"), rv = document.getElementById("river"), bp = document.getElementById("biblepane"), gp = document.getElementById("gamespane");
+  const mosaic = document.getElementById("mosaic"), rv = document.getElementById("river"), bp = document.getElementById("biblepane"), gp = document.getElementById("gamespane"), vp = document.getElementById("voicespane");
   const sub = document.getElementById("filterSub");
   if(v === "river"){
     if(window._wvSubSaved){ sub.textContent = window._wvSubSaved; window._wvSubSaved = null; }
     mosaic.style.display = "none";
     bp.style.display = "none";
     gp.style.display = "none";
+    vp.style.display = "none";
     rv.style.display = "block";
     window.scrollTo(0, 0);
     buildRiver();
@@ -1474,6 +1502,7 @@ function setView(v){
     rv.innerHTML = "";
     mosaic.style.display = "none";
     gp.style.display = "none";
+    vp.style.display = "none";
     bp.style.display = "";
     window.scrollTo(0, 0);
     Bible.open();
@@ -1485,9 +1514,22 @@ function setView(v){
     rv.innerHTML = "";
     mosaic.style.display = "none";
     bp.style.display = "none";
+    vp.style.display = "none";
     gp.style.display = "";
     window.scrollTo(0, 0);
     Games.open();
+  } else if(v === "voices"){
+    if(!window._wvSubSaved) window._wvSubSaved = sub.textContent;
+    sub.textContent = "Quotes from the servants of God, through all generations.";
+    stopRiver();
+    rv.style.display = "none";
+    rv.innerHTML = "";
+    mosaic.style.display = "none";
+    bp.style.display = "none";
+    gp.style.display = "none";
+    vp.style.display = "";
+    window.scrollTo(0, 0);
+    Voices.open();
   } else {
     if(window._wvSubSaved){ sub.textContent = window._wvSubSaved; window._wvSubSaved = null; }
     stopRiver();
@@ -1495,9 +1537,133 @@ function setView(v){
     rv.innerHTML = "";
     bp.style.display = "none";
     gp.style.display = "none";
+    vp.style.display = "none";
     mosaic.style.display = "";
   }
+  if(window.Amb) Amb.forView(v);
 }
+
+
+/* ---------------- Voices tab: quotes from the servants of God ---------------- */
+const Voices = (() => {
+  let quotes = null, built = false, tiles = [];
+  const pane = () => document.getElementById("voicespane");
+  const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  const rndQuote = () => quotes[Math.floor(Math.random() * quotes.length)];
+  function setFace(face, q){ face._q = q; face.innerHTML = '<div class="vc-q">' + esc(q.q) + '</div><div class="vc-n">' + esc(q.a) + '</div>'; }
+  const ov = document.createElement("div");
+  ov.className = "vc-overlay"; ov.style.display = "none";
+  ov.innerHTML = '<div class="vc-sheet"><button class="vc-x" aria-label="Close">&#10005;</button>'
+    + '<div class="vc-big-q"></div><div class="vc-big-n"></div><div class="vc-big-s"></div>'
+    + '<div class="vc-btns"><button class="vc-btn" id="vcShare">SHARE</button><button class="vc-btn" id="vcCopy">COPY</button></div>'
+    + '<div class="vc-done"></div></div>';
+  document.body.appendChild(ov);
+  const doneEl = ov.querySelector(".vc-done");
+  let curQ = null, doneTimer = null;
+  function note(msg){ doneEl.textContent = msg; clearTimeout(doneTimer); doneTimer = setTimeout(() => { doneEl.textContent = ""; }, 2200); }
+  function shareText(q){ return '\u201C' + q.q + '\u201D\n' + q.n + (q.s ? ', ' + q.s : ''); }
+  function copyQuote(){
+    if(!curQ) return;
+    const txt = shareText(curQ);
+    const done = () => note("Copied.");
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done).catch(() => fallbackCopy(txt, done)); }
+    else fallbackCopy(txt, done);
+  }
+  function fallbackCopy(txt, done){
+    const ta = document.createElement("textarea");
+    ta.value = txt; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand("copy"); done(); }catch(_){ note("Copy did not work on this device."); }
+    ta.remove();
+  }
+  ov.querySelector("#vcCopy").addEventListener("click", copyQuote);
+  ov.querySelector("#vcShare").addEventListener("click", () => {
+    if(!curQ) return;
+    const txt = shareText(curQ);
+    if(navigator.share){ navigator.share({ title: "Voices, Verse Wall", text: txt }).catch(() => {}); }
+    else copyQuote();
+  });
+  ov.querySelector(".vc-x").addEventListener("click", () => { ov.style.display = "none"; });
+  ov.addEventListener("click", e => { if(e.target === ov) ov.style.display = "none"; });
+  function openBig(q){
+    curQ = q;
+    ov.querySelector(".vc-big-q").textContent = q.q;
+    ov.querySelector(".vc-big-n").textContent = q.n;
+    ov.querySelector(".vc-big-s").textContent = q.s || "";
+    doneEl.textContent = "";
+    ov.style.display = "flex";
+  }
+  function makeTile(){
+    const el = document.createElement("div");
+    const r = Math.random();
+    el.className = "vc-tile" + (r < 0.62 ? "" : r < 0.80 ? " vc-t" : r < 0.93 ? " vc-w" : " vc-l");
+    const axis = Math.random() < 0.5 ? "y" : "x";
+    el.innerHTML = '<div class="vc-inner vc-ax-' + axis + '"><div class="vc-face vc-front"></div><div class="vc-face vc-back"></div></div>';
+    const t = { el, inner: el.firstChild, front: el.querySelector(".vc-front"), back: el.querySelector(".vc-back"), flipped: false, axis, busy: false };
+    setFace(t.front, rndQuote());
+    setFace(t.back, rndQuote());
+    el.addEventListener("click", () => { const vis = t.flipped ? t.back : t.front; if(vis._q) openBig(vis._q); });
+    return t;
+  }
+  function flipSome(){
+    if(view !== "voices" || document.hidden) return;
+    if(typeof pausedAll !== "undefined" && pausedAll) return;
+    const n = 2 + Math.floor(Math.random() * 3);
+    for(let i = 0; i < n; i++){
+      const t = tiles[Math.floor(Math.random() * tiles.length)];
+      if(!t || t.busy) continue;
+      t.busy = true;
+      const hidden = t.flipped ? t.front : t.back;
+      setFace(hidden, rndQuote());
+      t.flipped = !t.flipped;
+      t.inner.style.transform = t.flipped ? (t.axis === "y" ? "rotateY(180deg)" : "rotateX(180deg)") : "";
+      setTimeout(() => { t.busy = false; }, 900);
+    }
+  }
+  async function build(){
+    if(built) return; built = true;
+    const p = pane();
+    p.innerHTML = '<div class="vc-load">Loading the voices...</div>';
+    try{
+      const res = await fetch("voices-quotes.json");
+      if(!res.ok) throw new Error("bad");
+      quotes = await res.json();
+    }catch(e){
+      p.innerHTML = '<div class="vc-load">The voices could not be loaded. Please check your connection and try again.</div>';
+      built = false; return;
+    }
+    p.innerHTML = "";
+    const grid = document.createElement("div"); grid.className = "vc-grid"; p.appendChild(grid);
+    tiles = [];
+    for(let i = 0; i < 42; i++){ const t = makeTile(); tiles.push(t); grid.appendChild(t.el); }
+    setInterval(flipSome, 2600);
+  }
+  function open(){ build(); }
+  return { open };
+})();
+
+/* ---------------- Region ambience: a hymn and the river, looping ---------------- */
+const Amb = (() => {
+  const TRACKS = { mosaic: ["audio/hymn-loop.mp3", 0.5], voices: ["audio/hymn-loop.mp3", 0.5], river: ["audio/river-loop.mp3", 0.9] };
+  const au = new Audio(); au.loop = true; au.preload = "auto";
+  let want = null;
+  function start(){
+    if(!want) return;
+    const tr = TRACKS[want]; if(!tr) return;
+    if(!au.src || au.src.indexOf(tr[0]) === -1) au.src = tr[0];
+    au.volume = tr[1];
+    const pr = au.play(); if(pr && pr.catch) pr.catch(() => {});
+  }
+  function forView(v){
+    want = TRACKS[v] ? v : null;
+    if(want) start(); else au.pause();
+  }
+  document.addEventListener("pointerdown", () => { if(want) start(); });
+  document.addEventListener("visibilitychange", () => { if(document.hidden) au.pause(); else if(want) start(); });
+  return { forView };
+})();
+window.Amb = Amb;
+Amb.forView(view);
 
 /* ---------------- KJV local cache (IndexedDB) ----------------
    First need: read from IndexedDB under a versioned key; on miss, fetch
