@@ -1579,6 +1579,99 @@ const Voices = (() => {
   function shareText(q){ return "\u201C" + q.q + "\u201D\n" + q.n + (q.s ? ", " + q.s : ""); }
   function fontClass(q){ const n = q.q.length; return n <= 140 ? "vc-f0" : n <= 260 ? "vc-f1" : n <= 420 ? "vc-f2" : "vc-f3"; }
   const SKIN_ORDER = [10,3,17,6,21,1,14,8,19,12,5,23,15,7,20,2,13,9,22,4,16,11,18,0];
+
+  function cleanSrc(src){
+    if(!src) return "";
+    let t = " " + String(src) + " ";
+    t = t.replace(/https?:\/\/\S+/g, " ");
+    t = t.replace(/\([^)]*(\.com|\.net|\.org|\.me|\.online|\.io|www\.)[^)]*\)/g, " ");
+    t = t.replace(/\b[\w-]+(\.[\w-]+)*\.(com|net|org|me|io|online|co|uk)\b(\/\S*)?/g, " ");
+    t = t.replace(/\bquoted at\b/gi, " ");
+    t = t.replace(/\s*,\s*,/g, ",").replace(/\(\s*\)/g, "").replace(/\s{2,}/g, " ").replace(/\s+,/g, ",").trim();
+    t = t.replace(/[,\s]+$/, "").replace(/^[,\s]+/, "");
+    return t;
+  }
+  function wrapLines(ctx, text, maxW){
+    const words = String(text).split(/\s+/);
+    const lines = []; let cur = "";
+    for(const w of words){
+      const test = cur ? cur + " " + w : w;
+      if(ctx.measureText(test).width > maxW && cur){ lines.push(cur); cur = w; } else cur = test;
+    }
+    if(cur) lines.push(cur);
+    return lines;
+  }
+  async function sharePicture(el, q, say){
+    try{
+      if(document.fonts && document.fonts.ready) await document.fonts.ready;
+      const cs = getComputedStyle(el);
+      const gv = n => cs.getPropertyValue(n).trim();
+      const b1 = gv("--b1") || "#0a2147", b2 = gv("--b2") || "#052659", b3 = gv("--b3") || "#021024";
+      const gl = gv("--gl") || "rgba(201,147,58,.13)", nc = gv("--nc") || "#e8c876";
+      const gp = (gv("--gp") || "50% 0%").split(/\s+/);
+      const W = 1080, H = 1350;
+      const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+      const ctx = cv.getContext("2d");
+      const grad = ctx.createLinearGradient(0, 0, 0, H);
+      grad.addColorStop(0, b1); grad.addColorStop(0.55, b2); grad.addColorStop(1, b3);
+      ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+      const gx = W * (parseFloat(gp[0]) / 100 || 0), gy = H * (parseFloat(gp[1]) / 100 || 0);
+      const rg = ctx.createRadialGradient(gx, gy, 0, gx, gy, W * 0.95);
+      rg.addColorStop(0, gl); rg.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = rg; ctx.fillRect(0, 0, W, H);
+      ctx.strokeStyle = "rgba(201,147,58,.35)"; ctx.lineWidth = 2;
+      ctx.strokeRect(38, 38, W - 76, H - 76);
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      let fs = 66;
+      let lines = [];
+      while(fs > 38){
+        ctx.font = "500 " + fs + "px 'Cormorant Garamond', Georgia, serif";
+        lines = wrapLines(ctx, q.q, W - 220);
+        if(lines.length * fs * 1.34 <= 720) break;
+        fs -= 3;
+      }
+      ctx.fillStyle = "#f5efdd";
+      const lh = fs * 1.34;
+      let y = H * 0.44 - (lines.length * lh) / 2 + lh / 2;
+      for(const ln of lines){ ctx.fillText(ln, W / 2, y); y += lh; }
+      let ny = y + 44;
+      ctx.fillStyle = "rgba(201,147,58,.8)"; ctx.fillRect(W / 2 - 34, ny - 26, 68, 2);
+      try{ ctx.letterSpacing = "7px"; }catch(_){}
+      ctx.font = "600 35px 'Cinzel', serif";
+      ctx.fillStyle = nc;
+      ctx.fillText(String(q.n).toUpperCase(), W / 2, ny + 14);
+      const src = cleanSrc(q.s);
+      if(src && src !== q.n){
+        try{ ctx.letterSpacing = "0px"; }catch(_){}
+        ctx.font = "italic 400 31px 'Cormorant Garamond', Georgia, serif";
+        ctx.fillStyle = "rgba(215,226,243,.85)";
+        const slines = wrapLines(ctx, src, W - 260);
+        let sy = ny + 66;
+        for(const ln of slines.slice(0, 3)){ ctx.fillText(ln, W / 2, sy); sy += 40; }
+      }
+      try{ ctx.letterSpacing = "10px"; }catch(_){}
+      ctx.font = "600 30px 'Cinzel', serif";
+      ctx.fillStyle = "#e8c876";
+      ctx.fillText("VERSE WALL", W / 2, H - 92);
+      const blob = await new Promise(r => cv.toBlob(r, "image/png"));
+      if(!blob) throw new Error("no blob");
+      const file = new File([blob], "verse-wall-quote.png", { type: "image/png" });
+      if(navigator.canShare && navigator.canShare({ files: [file] })){
+        await navigator.share({ files: [file], title: "Verse Wall" });
+      } else if(navigator.share){
+        await navigator.share({ title: "Verse Wall", text: shareText(q) });
+      } else {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob); a.download = "verse-wall-quote.png";
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+        say("Picture saved. Share it from your photos.");
+      }
+    }catch(e){
+      if(e && e.name === "AbortError") return;
+      say("Sharing did not work on this device.");
+    }
+  }
   let slideNo = 0;
   function makeSlide(first){
     const q = nextQuote();
@@ -1607,11 +1700,7 @@ const Voices = (() => {
       }
     };
     el.querySelector(".vc-copy").addEventListener("click", doCopy);
-    el.querySelector(".vc-share").addEventListener("click", () => {
-      const txt = shareText(q);
-      if(navigator.share){ navigator.share({ title: "Voices, Verse Wall", text: txt }).catch(() => {}); }
-      else doCopy();
-    });
+    el.querySelector(".vc-share").addEventListener("click", () => { sharePicture(el, q, say); });
     return el;
   }
   function appendSlides(n){ for(let i = 0; i < n; i++) feed.appendChild(makeSlide(feed.children.length === 0)); }
