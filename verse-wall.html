@@ -2024,12 +2024,20 @@ const Games = (() => {
       + GAME_CATS.map(c => '<button data-cat="' + c.id + '">' + c.name + ' \u00B7 ' + c.ids.length + '</button>').join("")
       + '</div>';
     host.querySelectorAll("[data-cat]").forEach(b => b.addEventListener("click", () => {
-      const cat = GAME_CATS.find(c => c.id === b.dataset.cat);
-      host.innerHTML = '<button class="wv-dr-back" id="drCatBack">&#8592; Games</button>'
-        + '<div class="wv-dr-sub">' + cat.name + '</div>';
-      listInto(host, true, cat.ids);
-      document.getElementById("drCatBack").addEventListener("click", () => openList(host));
+      closeDrawer();
+      if(view !== "games") setView("games");
+      openCat(b.dataset.cat);
     }));
+  }
+
+  function openCat(cid){
+    const cat = GAME_CATS.find(c => c.id === cid);
+    if(!cat) return;
+    const gp = $("gamespane");
+    gp.innerHTML = '<div class="gm-head"><div class="gm-title">' + cat.name.toUpperCase() + '</div>'
+      + '<div class="gm-sub">Sharpen your sword. Play and learn.</div></div>';
+    listInto(gp, false, cat.ids);
+    window.scrollTo(0, 0);
   }
 
   async function start(id){
@@ -2657,7 +2665,7 @@ const Games = (() => {
     sort:vsDoSort, open:!!$("vsGame")
   };
 
-  return {open, stopSort, openList};
+  return {open, stopSort, openList, openCat};
 })();
 
 
