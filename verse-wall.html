@@ -28,7 +28,7 @@ body{font-family:'Tenor Sans',sans-serif;color:#f5e3b8;min-height:100vh;}
 @keyframes wv-blur-in{from{opacity:0;filter:blur(12px)}to{opacity:1;filter:blur(0px)}}
 @keyframes wv-blur-out{from{opacity:1;filter:blur(0px)}to{opacity:0;filter:blur(12px)}}
 
-.wv-top{position:sticky;top:0;z-index:10;background:#0e0e0e;}
+.wv-top{position:sticky;top:0;z-index:42;background:#0e0e0e;}
 .wv-head{display:flex;align-items:center;justify-content:space-between;
  padding:14px 16px 10px;
  border-bottom:.5px solid rgba(201,147,58,.14);}
@@ -55,7 +55,7 @@ body{font-family:'Tenor Sans',sans-serif;color:#f5e3b8;min-height:100vh;}
 .rv-card .wv-body{box-sizing:border-box;}
 .rv-card .wv-body{position:relative;inset:auto;}
 .wv-scrim.open{opacity:1;pointer-events:auto;}
-.wv-drawer{position:fixed;top:0;left:0;bottom:0;width:284px;max-width:84vw;background:#101013;
+#drawer .bv-row{flex-wrap:wrap;} #drawer .bv-seg{max-width:100%;} #drawer .bv-seg button{padding:9px 7px;letter-spacing:1px;} .wv-drawer{position:fixed;top:0;left:0;bottom:0;width:284px;max-width:84vw;background:#101013;
  border-right:.5px solid rgba(201,147,58,.25);z-index:41;transform:translateX(-105%);transition:transform .32s ease;
  overflow-y:auto;padding:20px 16px 34px;-webkit-overflow-scrolling:touch;}
 .wv-drawer.open{transform:translateX(0);}
@@ -3967,6 +3967,8 @@ function showPanel(name){
   if(name === "river") document.getElementById("drFilterHostR").appendChild(fb);
   fb.style.display = (name === "mosaic" || name === "river") ? "" : "none";
   if(name === "river") document.querySelectorAll("#drRiverDir button").forEach(b => b.classList.toggle("on", b.dataset.d === flowDir));
+  const topEl = document.querySelector(".wv-top");
+  if(topEl) document.getElementById("drawer").style.paddingTop = (topEl.offsetHeight + 10) + "px";
   if(name === "games") Games.openList(document.getElementById("drGamesList"));
   document.dispatchEvent(new CustomEvent("wv-panel", { detail: name }));
 }
