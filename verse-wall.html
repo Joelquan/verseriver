@@ -585,6 +585,7 @@ body.flowNav .wv-drawer{z-index:67;}
       <button data-nav="bible">Bible</button>
       <button data-nav="mosaic">Mosaic</button>
       <button data-nav="river">River</button>
+      <button data-nav="voices">Voices</button>
       <button data-nav="games">Games</button>
     </div>
   </div>
@@ -621,6 +622,11 @@ body.flowNav .wv-drawer{z-index:67;}
       <button data-d="down">Down</button>
     </div>
     <div id="drFilterHostR"></div>
+  </div>
+  <div class="dr-panel" id="drVoices" style="display:none">
+    <button class="wv-dr-back" data-back>&#8592; Menu</button>
+    <div class="wv-dr-title">VOICES</div>
+    <div id="drVoicesList"></div>
   </div>
   <div class="dr-panel" id="drGames" style="display:none">
     <button class="wv-dr-back" data-back>&#8592; Menu</button>
@@ -1599,11 +1605,32 @@ function setView(v){
 
 /* ---------------- Voices tab: quotes from the servants of God, one at a time ---------------- */
 const Voices = (() => {
-  let quotes = null, built = false, order = [], pos = 0, feed = null;
+  let quotes = null, built = false, order = [], pos = 0, feed = null, eraId = "all", quotesPromise = null;
+  const VOICE_ERAS = [
+    { id: "early", name: "Early Church", names: ["Perpetua", "Felicity"] },
+    { id: "medieval", name: "Medieval", names: ["Bede", "Anselm of Canterbury", "Bernard of Clairvaux", "Hildegard of Bingen", "Thomas Aquinas", "Meister Eckhart", "Catherine of Siena", "Julian of Norwich", "John Wycliffe", "Jan Hus", "Thomas \u00e0 Kempis", "Joan of Arc", "Catherine of Genoa", "Teresa of \u00c1vila", "John of the Cross"] },
+    { id: "s1600", name: "The 1600s", names: ["Richard Baxter", "John Owen", "Brother Lawrence", "Madame Guyon"] },
+    { id: "s1700", name: "The 1700s", names: ["Isaac Watts", "Jonathan Edwards", "Daniel Rowland", "George Whitefield", "John Wesley", "Charles Wesley", "John Newton", "David Brainerd", "Charles Simeon", "William Carey", "Francis Asbury"] },
+    { id: "s1800", name: "The 1800s", names: ["Charles Finney", "John Nelson Darby", "Andrew Murray", "C. H. Spurgeon", "E. M. Bounds", "D. L. Moody", "Hannah Whitall Smith", "Hudson Taylor", "A. B. Simpson", "R. A. Torrey"] },
+    { id: "s1900", name: "The 1900s", names: ["T. Austin-Sparks", "William J. Seymour", "Smith Wigglesworth", "Oswald Chambers", "Watchman Nee", "A. W. Tozer"] }
+  ];
+  function ensureQuotes(){
+    if(quotes) return Promise.resolve(quotes);
+    if(!quotesPromise) quotesPromise = fetch("voices-quotes.json").then(r => { if(!r.ok) throw new Error("bad"); return r.json(); }).then(q => { quotes = q; return q; }).catch(e => { quotesPromise = null; throw e; });
+    return quotesPromise;
+  }
+  function poolIdx(){
+    if(eraId === "all") return quotes.map((_, i) => i);
+    const era = VOICE_ERAS.find(e => e.id === eraId);
+    const set = new Set(era ? era.names : []);
+    const idx = [];
+    quotes.forEach((q, i) => { if(set.has(q.n)) idx.push(i); });
+    return idx;
+  }
   const pane = () => document.getElementById("voicespane");
   const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;");
   function shuffleIdx(){
-    const idx = quotes.map((_, i) => i);
+    const idx = poolIdx();
     for(let i = idx.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); const t = idx[i]; idx[i] = idx[j]; idx[j] = t; }
     return idx;
   }
@@ -1751,9 +1778,7 @@ const Voices = (() => {
     const p = pane();
     p.innerHTML = '<div class="vc-load">Loading the voices...</div>';
     try{
-      const res = await fetch("voices-quotes.json");
-      if(!res.ok) throw new Error("bad");
-      quotes = await res.json();
+      await ensureQuotes();
     }catch(e){
       p.innerHTML = '<div class="vc-load">The voices could not be loaded. Please check your connection and try again.</div>';
       built = false; return;
@@ -1774,7 +1799,32 @@ const Voices = (() => {
     build();
     if(feed){ sizePane(); feed.focus({ preventScroll: true }); }
   }
-  return { open };
+  function setEra(id){
+    eraId = id || "all";
+    if(quotes && feed){
+      order = shuffleIdx(); pos = 0; slideNo = 0;
+      feed.innerHTML = ""; feed.scrollTop = 0;
+      appendSlides(5);
+    }
+  }
+  async function openList(host){
+    host.innerHTML = '<div class="vc-load">Loading the voices...</div>';
+    try{ await ensureQuotes(); }catch(e){ host.innerHTML = '<div class="vc-load">The voices could not be loaded.</div>'; return; }
+    const eraOf = {};
+    VOICE_ERAS.forEach(e => e.names.forEach(n => { eraOf[n] = e.id; }));
+    const counts = { all: quotes.length };
+    quotes.forEach(q => { const k = eraOf[q.n]; if(k) counts[k] = (counts[k] || 0) + 1; });
+    const cats = [{ id: "all", name: "All Voices" }].concat(VOICE_ERAS);
+    host.innerHTML = '<div class="wv-dr-modes">'
+      + cats.map(c => '<button data-era="' + c.id + '">' + c.name + ' \u00B7 ' + (counts[c.id] || 0) + '</button>').join("")
+      + '</div>';
+    host.querySelectorAll("[data-era]").forEach(b => b.addEventListener("click", () => {
+      setEra(b.dataset.era);
+      closeDrawer();
+      if(view !== "voices") setView("voices"); else open();
+    }));
+  }
+  return { open, openList, setEra };
 })();
 
 /* ---------------- Region ambience: a hymn and the river, looping ---------------- */
@@ -4002,7 +4052,7 @@ noteActivity();
 
 renderDrawer();
 applyFilter(false);
-const DR_PANELS = { home: "drHome", bible: "drBible", mosaic: "drMosaic", river: "drRiver", games: "drGames" };
+const DR_PANELS = { home: "drHome", bible: "drBible", mosaic: "drMosaic", river: "drRiver", voices: "drVoices", games: "drGames" };
 function showPanel(name){
   Object.keys(DR_PANELS).forEach(k => { document.getElementById(DR_PANELS[k]).style.display = (k === name) ? "" : "none"; });
   const fb = document.getElementById("drFilterBlock");
@@ -4010,6 +4060,7 @@ function showPanel(name){
   if(name === "river") document.getElementById("drFilterHostR").appendChild(fb);
   fb.style.display = (name === "mosaic" || name === "river") ? "" : "none";
   if(name === "river") document.querySelectorAll("#drRiverDir button").forEach(b => b.classList.toggle("on", b.dataset.d === flowDir));
+  if(name === "voices") Voices.openList(document.getElementById("drVoicesList"));
   if(name === "games") Games.openList(document.getElementById("drGamesList"));
   document.dispatchEvent(new CustomEvent("wv-panel", { detail: name }));
 }
