@@ -2685,7 +2685,15 @@ const Bible = (() => {
   async function ensure(){
     if(!HD){ try{ const hr = await fetch("bible-data/headings.json"); HD = hr.ok ? await hr.json() : {}; }catch(_){ HD = {}; } }
     if(code === "nkjv"){
-      if(!cache.nkjv) cache.nkjv = nkjvSkeleton();
+      if(!cache.nkjv){
+        try{
+          const r = await fetch("bible-data/nkjv.json");
+          if(!r.ok) throw new Error("http");
+          const d = await r.json();
+          if(!d.books || d.books.length !== 66) throw new Error("shape");
+          cache.nkjv = d;
+        }catch(_){ cache.nkjv = nkjvSkeleton(); }
+      }
       if(!Array.isArray(cache.nkjv.books[bi].c[ci])) $("bvChap").innerHTML = '<p class="bv-p" style="text-align:center;color:rgba(255,255,255,.5)">Loading the Scriptures...</p>';
       return fetchNkjvChap(bi, ci, true, true);
     }

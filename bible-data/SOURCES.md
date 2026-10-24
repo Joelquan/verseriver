@@ -1,8 +1,9 @@
 # Bible Data Sources
 
 Four complete public domain English Bible translations, built 2026-10-06
-for the Verse Wall Bible reader. Output files: `kjv.json`, `web.json`,
-`asv.json`, `bbe.json`, each in the format
+for the Verse Wall Bible reader; a fifth, the NKJV (Thomas Nelson,
+(C) 1982, not public domain), was added 2026-10-24. Output files:
+`kjv.json`, `web.json`, `asv.json`, `bbe.json`, `nkjv.json`, each in the format
 `{"translation":"KJV","books":[{"n":"Genesis","c":[["verse 1", ...], ...]}]}`.
 
 ## KJV (King James Version)
@@ -54,6 +55,23 @@ for the Verse Wall Bible reader. Output files: `kjv.json`, `web.json`,
 - Verification: chapter by chapter verse counts match the KJV exactly
   (same versification, 1,189 chapters); the 16 empty verses are exactly
   the verses this translation omits (same set as the ASV).
+
+## NKJV (New King James Version)
+
+- Source: Bible Brain API (Digital Bible Platform), text filesets served
+  under this project's own API key through its server proxy, downloaded
+  chapter by chapter 2026-10-24 to build `nkjv.json` so the reader works
+  offline like the other translations.
+- License: The Holy Bible, New King James Version (R) (C) 1982 by
+  Thomas Nelson, Inc. All rights reserved. NOT public domain. The reader
+  shows this copyright line at the end of every NKJV chapter, exactly as
+  it did when the text was fetched per chapter.
+- Verification: 66 books, 1,189 chapters, 31,102 verses; chapter by
+  chapter verse counts match the KJV versification with zero
+  differences; no empty chapters. Verses were converted with the same
+  rules the reader applied live (paragraph marks stripped, multi-verse
+  rows merged in order), so the text reads exactly as the live fetch
+  rendered it.
 
 ## Build notes
 
