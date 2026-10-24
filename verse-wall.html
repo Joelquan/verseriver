@@ -579,33 +579,54 @@ body.flowNav .wv-drawer{z-index:67;}
 <div class="bv-toast" id="bvToast"></div>
 <div class="wv-scrim" id="scrim"></div>
 <aside class="wv-drawer" id="drawer">
-  <div id="drMain">
-  <div class="wv-dr-title">SCRIPTURE</div>
-  <div class="wv-dr-modes" id="drModes">
-    <button data-mode="all">All Scripture</button>
-    <button data-mode="ot">Old Testament</button>
-    <button data-mode="nt">New Testament</button>
-  </div>
-  <button class="wv-dr-bible" id="drBible">Bible</button>
-  <div class="wv-dr-sub">Subjects</div>
-  <div class="wv-dr-books" id="drSubj"></div>
-  <div class="wv-dr-sub">Old Testament</div>
-  <div class="wv-dr-books" id="drOt"></div>
-  <div class="wv-dr-sub">New Testament</div>
-  <div class="wv-dr-books" id="drNt"></div>
-  </div>
-  <div id="drSet" class="wv-dr-set" style="display:none">
-    <button class="wv-dr-back" id="drSetBack">&#8592; Menu</button>
-    <div id="drSetBody"></div>
-  </div>
-  <div id="drSrch" class="wv-dr-set" style="display:none">
-    <button class="wv-dr-back" id="drSrchBack">&#8592; Menu</button>
-    <div class="wv-dr-sub">Search the Scriptures</div>
-    <div class="bv-search">
-      <input id="drSrchInp" type="search" placeholder="Type what you are looking for" aria-label="Search the Bible" autocomplete="off">
-      <button id="drSrchClear" aria-label="Clear search">&#10005;</button>
+  <div class="dr-panel" id="drBible">
+    <div class="wv-dr-title">BIBLE</div>
+    <div id="drBibleMain">
+      <button class="wv-dr-bible" id="drSearchBtn">Search the Scriptures</button>
+      <div id="drSetBody"></div>
     </div>
-    <div class="bv-sres" id="drSrchRes"></div>
+    <div id="drSrch" class="wv-dr-set" style="display:none">
+      <button class="wv-dr-back" id="drSrchBack">&#8592; Bible</button>
+      <div class="wv-dr-sub">Search the Scriptures</div>
+      <div class="bv-search">
+        <input id="drSrchInp" type="search" placeholder="Type what you are looking for" aria-label="Search the Bible" autocomplete="off">
+        <button id="drSrchClear" aria-label="Clear search">&#10005;</button>
+      </div>
+      <div class="bv-sres" id="drSrchRes"></div>
+    </div>
+  </div>
+  <div class="dr-panel" id="drMosaic" style="display:none">
+    <div class="wv-dr-title">MOSAIC</div>
+    <button class="wv-dr-bible" id="drStillBtn">Still / Resume</button>
+    <div id="drFilterHostM"></div>
+  </div>
+  <div class="dr-panel" id="drRiver" style="display:none">
+    <div class="wv-dr-title">RIVER</div>
+    <div class="wv-dr-sub">Flow direction</div>
+    <div class="wv-dr-modes" id="drRiverDir">
+      <button data-d="up">Up</button>
+      <button data-d="mix">Mixed</button>
+      <button data-d="down">Down</button>
+    </div>
+    <div id="drFilterHostR"></div>
+  </div>
+  <div class="dr-panel" id="drGames" style="display:none">
+    <div class="wv-dr-title">GAMES</div>
+    <div id="drGamesList"></div>
+  </div>
+  <div id="drFilterBlock" style="display:none">
+    <div class="wv-dr-sub">Scripture</div>
+    <div class="wv-dr-modes" id="drModes">
+      <button data-mode="all">All Scripture</button>
+      <button data-mode="ot">Old Testament</button>
+      <button data-mode="nt">New Testament</button>
+    </div>
+    <div class="wv-dr-sub">Subjects</div>
+    <div class="wv-dr-books" id="drSubj"></div>
+    <div class="wv-dr-sub">Old Testament</div>
+    <div class="wv-dr-books" id="drOt"></div>
+    <div class="wv-dr-sub">New Testament</div>
+    <div class="wv-dr-books" id="drNt"></div>
   </div>
 </aside>
 <div class="wv-overlay" id="overlay">
@@ -1957,8 +1978,7 @@ const Games = (() => {
     return null;
   }
 
-  function open(){
-    const gp = $("gamespane");
+  function listInto(host, fromDrawer){
     const cards = GAMES.map(g => {
       const s = skin(g.skin), b = getBest(g.id);
       const bestLine = g.id === "sort" ? "BEST SCORE " + b : "BEST " + b + " OF " + (g.nq || 50);
@@ -1969,11 +1989,19 @@ const Games = (() => {
         + '<span class="gm-best">'+bestLine+'</span>'
         + '</div></button>';
     }).join("");
+    host.insertAdjacentHTML("beforeend", cards);
+    host.querySelectorAll(".gm-card").forEach(c => c.addEventListener("click", () => { if(fromDrawer) closeDrawer(); start(c.dataset.g); }));
+  }
+
+  function open(){
+    const gp = $("gamespane");
     gp.innerHTML = '<div class="gm-head"><div class="gm-title">GAMES</div>'
-      + '<div class="gm-sub">Sharpen your sword. Play and learn.</div></div>' + cards;
-    gp.querySelectorAll(".gm-card").forEach(c => c.addEventListener("click", () => start(c.dataset.g)));
+      + '<div class="gm-sub">Sharpen your sword. Play and learn.</div></div>';
+    listInto(gp, false);
     window.scrollTo(0,0);
   }
+
+  function openList(host){ host.innerHTML = ""; listInto(host, true); }
 
   async function start(id){
     if(id === "sort"){ startSort(); return; }
@@ -2600,7 +2628,7 @@ const Games = (() => {
     sort:vsDoSort, open:!!$("vsGame")
   };
 
-  return {open, stopSort};
+  return {open, stopSort, openList};
 })();
 
 
@@ -2884,30 +2912,21 @@ const Bible = (() => {
   $("bvNext").addEventListener("click", () => step(1));
   $("bvPrevTop").addEventListener("click", () => step(-1));
   $("bvNextTop").addEventListener("click", () => step(1));
-  function openDrSettings(){
-    document.getElementById("drMain").style.display = "none";
-    document.getElementById("drSrch").style.display = "none";
-    document.getElementById("drSet").style.display = "block";
-    renderMenu(document.getElementById("drSetBody"));
-  }
-  function closeDrSettings(){
-    document.getElementById("drSet").style.display = "none";
-    document.getElementById("drMain").style.display = "";
-  }
   function openDrSearch(){
-    document.getElementById("drMain").style.display = "none";
-    document.getElementById("drSet").style.display = "none";
+    document.getElementById("drBibleMain").style.display = "none";
     document.getElementById("drSrch").style.display = "block";
     const inp = document.getElementById("drSrchInp");
     if(inp) inp.focus();
   }
   function closeDrSearch(){
     document.getElementById("drSrch").style.display = "none";
-    document.getElementById("drMain").style.display = "";
+    document.getElementById("drBibleMain").style.display = "";
   }
-  document.getElementById("drBible").addEventListener("click", openDrSettings);
-  $("drSetBack").addEventListener("click", closeDrSettings);
-  $("bvSearchBtn").addEventListener("click", () => { openDrawer(); openDrSearch(); });
+  document.getElementById("drSearchBtn").addEventListener("click", openDrSearch);
+  document.addEventListener("wv-panel", e => {
+    if(e.detail === "bible"){ closeDrSearch(); renderMenu(document.getElementById("drSetBody")); }
+  });
+  $("bvSearchBtn").addEventListener("click", () => { showPanel("bible"); openDrawer(); openDrSearch(); });
   $("bvListenBtn").addEventListener("click", listenToggle);
   try{
     if("speechSynthesis" in window){
@@ -2923,7 +2942,7 @@ const Bible = (() => {
   $("drSrchClear").addEventListener("click", () => clearSearch($("drSrchInp"), $("drSrchRes")));
   new MutationObserver(() => {
     if(!document.getElementById("drawer").classList.contains("open")){
-      closeDrSettings(); closeDrSearch();
+      closeDrSearch();
       if(document.body.classList.contains("flowNav")){
         document.body.classList.remove("flowNav");
         if(flowNavWasPlaying && flow === "flow"){ flowPlaying = true; flowSyncPlayBtn(); flowArmTimer(); }
@@ -3006,7 +3025,7 @@ const Bible = (() => {
         bi = cur.bi; ci = cur.ci; vi = cur.vi;
       }
       flow = f; saveSet();
-      closeDrSettings(); closeDrawer();
+      closeDrSearch(); closeDrawer();
       renderFlow();
     }else{
       flow = f; saveSet();
@@ -3221,7 +3240,7 @@ const Bible = (() => {
     lastVi = {bi:bi_, ci:ci_, vi: vi_ >= 0 ? vi_ : 0};
     if(flow === "flow"){ vi = vi_ >= 0 ? vi_ : 0; }
     else hlVerse = vi_ >= 0 ? vi_ : -1;
-    closeDrSettings(); closeDrSearch(); closeDrawer();
+    closeDrSearch(); closeDrawer();
     clearSearch($("drSrchInp"), $("drSrchRes"));
     if(await ensure()){ clamp(); renderChap(); }
   }
@@ -3466,7 +3485,6 @@ const Bible = (() => {
     if(!box) return;
     box.classList.remove("open"); box.innerHTML = "";
   }
-  $("drSetBack").addEventListener("click", closeDrSettings);
   $("bvChap").addEventListener("click", e => {
     if(swiped){ swiped = false; return; }
     const p = e.target && e.target.closest ? e.target.closest("p[data-vi]") : null;
@@ -3520,7 +3538,7 @@ const Bible = (() => {
     flowNavWasPlaying = flowPlaying;
     if(flowPlaying){ flowPlaying = false; flowSyncPlayBtn(); flowArmTimer(); }
     document.body.classList.add("flowNav");
-    openDrawer();
+    showPanel("bible"); openDrawer();
   });
   /* double-tap the reel toggles all flow controls (nav icon + edge stack) */
   let dblDownX = 0, dblDownY = 0, dblDownT = 0, dblLastT = 0, dblLastX = 0, dblLastY = 0;
@@ -3941,13 +3959,35 @@ noteActivity();
 
 renderDrawer();
 applyFilter(false);
-document.querySelectorAll("#viewbar button").forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));
+const DR_PANELS = { bible: "drBible", mosaic: "drMosaic", river: "drRiver", games: "drGames" };
+function showPanel(name){
+  Object.keys(DR_PANELS).forEach(k => { document.getElementById(DR_PANELS[k]).style.display = (k === name) ? "" : "none"; });
+  const fb = document.getElementById("drFilterBlock");
+  if(name === "mosaic") document.getElementById("drFilterHostM").appendChild(fb);
+  if(name === "river") document.getElementById("drFilterHostR").appendChild(fb);
+  fb.style.display = (name === "mosaic" || name === "river") ? "" : "none";
+  if(name === "river") document.querySelectorAll("#drRiverDir button").forEach(b => b.classList.toggle("on", b.dataset.d === flowDir));
+  if(name === "games") Games.openList(document.getElementById("drGamesList"));
+  document.dispatchEvent(new CustomEvent("wv-panel", { detail: name }));
+}
+document.querySelectorAll("#viewbar button").forEach(b => b.addEventListener("click", () => {
+  const v = b.dataset.view;
+  if(v === view && DR_PANELS[v] && document.getElementById("drawer").classList.contains("open")){ closeDrawer(); return; }
+  setView(v);
+  if(DR_PANELS[v]){ showPanel(v); openDrawer(); } else closeDrawer();
+}));
+document.querySelectorAll("#drRiverDir button").forEach(b => b.addEventListener("click", () => {
+  flowDir = b.dataset.d;
+  document.querySelectorAll("#drRiverDir button").forEach(x => x.classList.toggle("on", x === b));
+  if(view === "river"){ buildRiver(); startRiver(); }
+}));
+document.getElementById("drStillBtn").addEventListener("click", () => document.getElementById("stillBtn").click());
 let rvResizeT = null;
 window.addEventListener("resize", () => {
   if(rvResizeT) clearTimeout(rvResizeT);
   rvResizeT = setTimeout(() => { if(view === "river"){ buildRiver(); startRiver(); } }, 300);
 });
-document.getElementById("menuBtn").addEventListener("click", openDrawer);
+document.getElementById("menuBtn").addEventListener("click", () => { if(DR_PANELS[view]){ showPanel(view); openDrawer(); } });
 document.getElementById("scrim").addEventListener("click", closeDrawer);
 if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => { cards.forEach(fitText); relayoutRiver(); });
 window.__wall = { cards, tick, setVerse, fitText, verseRest,
