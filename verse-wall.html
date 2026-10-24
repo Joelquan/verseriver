@@ -579,7 +579,18 @@ body.flowNav .wv-drawer{z-index:67;}
 <div class="bv-toast" id="bvToast"></div>
 <div class="wv-scrim" id="scrim"></div>
 <aside class="wv-drawer" id="drawer">
-  <div class="dr-panel" id="drBible">
+  <div class="dr-panel" id="drHome">
+    <div class="wv-dr-title">MENU</div>
+    <div class="wv-dr-modes" id="drNavBtns">
+      <button data-nav="bible">Bible</button>
+      <button data-nav="mosaic">Mosaic</button>
+      <button data-nav="river">River</button>
+      <button data-nav="voices">Voices</button>
+      <button data-nav="games">Games</button>
+    </div>
+  </div>
+  <div class="dr-panel" id="drBible" style="display:none">
+    <button class="wv-dr-back" data-back>&#8592; Menu</button>
     <div class="wv-dr-title">BIBLE</div>
     <div id="drBibleMain">
       <button class="wv-dr-bible" id="drSearchBtn">Search the Scriptures</button>
@@ -596,11 +607,13 @@ body.flowNav .wv-drawer{z-index:67;}
     </div>
   </div>
   <div class="dr-panel" id="drMosaic" style="display:none">
+    <button class="wv-dr-back" data-back>&#8592; Menu</button>
     <div class="wv-dr-title">MOSAIC</div>
     <button class="wv-dr-bible" id="drStillBtn">Still / Resume</button>
     <div id="drFilterHostM"></div>
   </div>
   <div class="dr-panel" id="drRiver" style="display:none">
+    <button class="wv-dr-back" data-back>&#8592; Menu</button>
     <div class="wv-dr-title">RIVER</div>
     <div class="wv-dr-sub">Flow direction</div>
     <div class="wv-dr-modes" id="drRiverDir">
@@ -611,6 +624,7 @@ body.flowNav .wv-drawer{z-index:67;}
     <div id="drFilterHostR"></div>
   </div>
   <div class="dr-panel" id="drGames" style="display:none">
+    <button class="wv-dr-back" data-back>&#8592; Menu</button>
     <div class="wv-dr-title">GAMES</div>
     <div id="drGamesList"></div>
   </div>
@@ -3959,7 +3973,7 @@ noteActivity();
 
 renderDrawer();
 applyFilter(false);
-const DR_PANELS = { bible: "drBible", mosaic: "drMosaic", river: "drRiver", games: "drGames" };
+const DR_PANELS = { home: "drHome", bible: "drBible", mosaic: "drMosaic", river: "drRiver", games: "drGames" };
 function showPanel(name){
   Object.keys(DR_PANELS).forEach(k => { document.getElementById(DR_PANELS[k]).style.display = (k === name) ? "" : "none"; });
   const fb = document.getElementById("drFilterBlock");
@@ -3982,7 +3996,13 @@ window.addEventListener("resize", () => {
   if(rvResizeT) clearTimeout(rvResizeT);
   rvResizeT = setTimeout(() => { if(view === "river"){ buildRiver(); startRiver(); } }, 300);
 });
-document.getElementById("menuBtn").addEventListener("click", () => { if(DR_PANELS[view]){ showPanel(view); openDrawer(); } });
+document.getElementById("menuBtn").addEventListener("click", () => { showPanel("home"); openDrawer(); });
+document.querySelectorAll("#drNavBtns button").forEach(b => b.addEventListener("click", () => {
+  const n = b.dataset.nav;
+  if(n === "voices"){ closeDrawer(); setView("voices"); return; }
+  showPanel(n);
+}));
+document.querySelectorAll("[data-back]").forEach(b => b.addEventListener("click", () => showPanel("home")));
 document.getElementById("scrim").addEventListener("click", closeDrawer);
 if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => { cards.forEach(fitText); relayoutRiver(); });
 window.__wall = { cards, tick, setVerse, fitText, verseRest,
