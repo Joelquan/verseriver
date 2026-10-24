@@ -3970,12 +3970,7 @@ function showPanel(name){
   if(name === "games") Games.openList(document.getElementById("drGamesList"));
   document.dispatchEvent(new CustomEvent("wv-panel", { detail: name }));
 }
-document.querySelectorAll("#viewbar button").forEach(b => b.addEventListener("click", () => {
-  const v = b.dataset.view;
-  if(v === view && DR_PANELS[v] && document.getElementById("drawer").classList.contains("open")){ closeDrawer(); return; }
-  setView(v);
-  if(DR_PANELS[v]){ showPanel(v); openDrawer(); } else closeDrawer();
-}));
+document.querySelectorAll("#viewbar button").forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));
 document.querySelectorAll("#drRiverDir button").forEach(b => b.addEventListener("click", () => {
   flowDir = b.dataset.d;
   document.querySelectorAll("#drRiverDir button").forEach(x => x.classList.toggle("on", x === b));
