@@ -2016,19 +2016,21 @@ const Games = (() => {
     const gp = $("gamespane");
     gp.innerHTML = '<div class="gm-head"><div class="gm-title">GAMES</div>'
       + '<div class="gm-sub">Sharpen your sword. Play and learn.</div></div>';
-    listInto(gp, false);
+    catButtons(gp, cid => openCat(cid));
     window.scrollTo(0,0);
   }
 
+  function catButtons(host, onPick){
+    const wrap = document.createElement("div");
+    wrap.className = "wv-dr-modes";
+    wrap.innerHTML = GAME_CATS.map(c => '<button data-cat="' + c.id + '">' + c.name + ' \u00B7 ' + c.ids.length + '</button>').join("");
+    host.appendChild(wrap);
+    wrap.querySelectorAll("[data-cat]").forEach(b => b.addEventListener("click", () => onPick(b.dataset.cat)));
+  }
+
   function openList(host){
-    host.innerHTML = '<div class="wv-dr-modes">'
-      + GAME_CATS.map(c => '<button data-cat="' + c.id + '">' + c.name + ' \u00B7 ' + c.ids.length + '</button>').join("")
-      + '</div>';
-    host.querySelectorAll("[data-cat]").forEach(b => b.addEventListener("click", () => {
-      closeDrawer();
-      if(view !== "games") setView("games");
-      openCat(b.dataset.cat);
-    }));
+    host.innerHTML = "";
+    catButtons(host, cid => { closeDrawer(); if(view !== "games") setView("games"); openCat(cid); });
   }
 
   function openCat(cid){
@@ -2036,8 +2038,10 @@ const Games = (() => {
     if(!cat) return;
     const gp = $("gamespane");
     gp.innerHTML = '<div class="gm-head"><div class="gm-title">' + cat.name.toUpperCase() + '</div>'
-      + '<div class="gm-sub">Sharpen your sword. Play and learn.</div></div>';
+      + '<div class="gm-sub">Sharpen your sword. Play and learn.</div></div>'
+      + '<button class="gm-back" id="gmCatBack" style="margin-bottom:12px">&#8592; Categories</button>';
     listInto(gp, false, cat.ids);
+    $("gmCatBack").addEventListener("click", open);
     window.scrollTo(0, 0);
   }
 
