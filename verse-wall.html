@@ -568,7 +568,7 @@ body.flowNav .wv-drawer{z-index:67;}
     <div class="bv-act-row">
       <button id="bvActBm">Bookmark</button>
       <button id="bvActCopy">Copy verse</button>
-      <button id="bvActClose">Close</button>
+      <button id="bvActShare">Share</button>
     </div>
   </div>
 </div>
@@ -1059,7 +1059,7 @@ function renderShareImage(c){
 function openVerse(c){
   heldCard = c; c.held = true;
   clearTimeout(c.timer); c.timer = null;
-  const v = WALL_VERSES[c.vi];
+  const v = c.verse || WALL_VERSES[c.vi];
   let dayMode = false;
   try{ dayMode = !!((JSON.parse(localStorage.getItem("wv-bible-set") || "null") || {}).day); }catch(_){}
   overlay.classList.toggle("day", dayMode);
@@ -1079,7 +1079,7 @@ function openVerse(c){
 }
 function closeVerse(){
   overlay.classList.remove("open");
-  if(heldCard){ const c = heldCard; heldCard = null; c.held = false; tick(c); }
+  if(heldCard){ const c = heldCard; heldCard = null; c.held = false; if(c.cardEl) tick(c); }
 }
 document.getElementById("ovClose").addEventListener("click", closeVerse);
 const sharePrev = document.getElementById("sharePrev");
@@ -1194,11 +1194,12 @@ function renderWallVerseImage(v, skin){
 }
 document.getElementById("ovOptText").addEventListener("click", async () => {
   const c = heldCard; closeOvSheet();
-  if(!c || !WALL_VERSES[c.vi]) return;
-  const v = WALL_VERSES[c.vi];
-  const text = "\u201C" + v.t + "\u201D\n" + v.r + " (KJV)";
+  const v = c && (c.verse || WALL_VERSES[c.vi]);
+  if(!v) return;
+  const tag = (c && c.tag) || "KJV";
+  const text = "\u201C" + v.t + "\u201D\n" + v.r + " (" + tag + ")";
   if(navigator.share){
-    try { await navigator.share({ title: v.r + " (KJV)", text }); return; }
+    try { await navigator.share({ title: v.r + " (" + tag + ")", text }); return; }
     catch(e){ if(e && e.name === "AbortError") return; }
   }
   try{
@@ -1215,11 +1216,11 @@ document.getElementById("ovOptText").addEventListener("click", async () => {
 });
 document.getElementById("ovOptPic").addEventListener("click", async () => {
   const c = heldCard; closeOvSheet();
-  if(!c || !WALL_VERSES[c.vi]) return;
-  const v = WALL_VERSES[c.vi];
+  const v = c && (c.verse || WALL_VERSES[c.vi]);
+  if(!v) return;
   const file = await renderWallVerseImage(v, c && c.skin);
   if(!file) return;
-  const data = { files: [file], title: v.r + " (KJV)" };
+  const data = { files: [file], title: v.r + " (" + ((c && c.tag) || "KJV") + ")" };
   if(navigator.share){
     try {
       if(!navigator.canShare || navigator.canShare(data)){ await navigator.share(data); return; }
@@ -3463,7 +3464,13 @@ const Bible = (() => {
     const p = e.target && e.target.closest ? e.target.closest("p[data-vi]") : null;
     if(p && p.dataset.vi !== undefined) openAct(bi, ci, +p.dataset.vi);
   });
-  $("bvActClose").addEventListener("click", () => $("bvAct").classList.remove("open"));
+  $("bvActShare").addEventListener("click", () => {
+    if(!actCtx) return;
+    const ref = bookNames()[actCtx.bi] + " " + (actCtx.ci + 1) + ":" + (actCtx.vi + 1);
+    const v = {t: actCtx.text, r: ref};
+    $("bvAct").classList.remove("open");
+    openVerse({verse: v, tag: (actCtx.code || "kjv").toUpperCase(), vi: -1, held: false, pinned: false, type: pickType(), skin: OV_FALLBACK_SKIN});
+  });
   $("bvAct").addEventListener("click", e => { if(e.target === $("bvAct")) $("bvAct").classList.remove("open"); });
   $("bvActBm").addEventListener("click", toggleBm);
   $("bvActCopy").addEventListener("click", copyVerse);
