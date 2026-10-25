@@ -2067,7 +2067,7 @@ const Games = (() => {
     const gp = $("gamespane");
     gp.innerHTML = '<div class="gm-head"><div class="gm-title">GAMES</div>'
       + '<div class="gm-sub">Sharpen your sword. Play and learn.</div></div>';
-    catButtons(gp, cid => openCat(cid));
+    listInto(gp, false);
     window.scrollTo(0,0);
   }
 
@@ -2081,7 +2081,7 @@ const Games = (() => {
 
   function openList(host){
     host.innerHTML = "";
-    catButtons(host, cid => { closeDrawer(); if(view !== "games") setView("games"); openCat(cid); });
+    catButtons(host, cid => { closeDrawer(); if(view !== "games") setView("games"); if(cid === "all") open(); else openCat(cid); });
   }
 
   function openCat(cid){
@@ -2090,7 +2090,7 @@ const Games = (() => {
     const gp = $("gamespane");
     gp.innerHTML = '<div class="gm-head"><div class="gm-title">' + cat.name.toUpperCase() + '</div>'
       + '<div class="gm-sub">Sharpen your sword. Play and learn.</div></div>'
-      + '<button class="gm-back" id="gmCatBack" style="margin-bottom:12px">&#8592; Categories</button>';
+      + '<button class="gm-back" id="gmCatBack" style="margin-bottom:12px">&#8592; All Games</button>';
     listInto(gp, false, cat.ids);
     $("gmCatBack").addEventListener("click", open);
     window.scrollTo(0, 0);
