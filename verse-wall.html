@@ -1607,12 +1607,13 @@ function setView(v){
 const Voices = (() => {
   let quotes = null, built = false, order = [], pos = 0, feed = null, eraId = "all", quotesPromise = null;
   const VOICE_ERAS = [
-    { id: "early", name: "Early Church", names: ["Perpetua", "Felicity"] },
+    { id: "early", name: "Early Church", names: ["Perpetua", "Felicity", "Ignatius of Antioch", "Polycarp of Smyrna", "Justin Martyr", "Irenaeus of Lyons", "Clement of Alexandria", "Tertullian", "Cyprian of Carthage", "Origen", "Athanasius of Alexandria", "Basil the Great", "Gregory of Nazianzus", "Gregory of Nyssa", "Macrina the Younger", "Ephrem the Syrian", "John Chrysostom", "Ambrose of Milan", "Jerome", "Augustine of Hippo", "Monica of Hippo", "Benedict of Nursia", "Patrick of Ireland", "Columba of Iona"] },
     { id: "medieval", name: "Medieval", names: ["Bede", "Anselm of Canterbury", "Bernard of Clairvaux", "Hildegard of Bingen", "Thomas Aquinas", "Meister Eckhart", "Catherine of Siena", "Julian of Norwich", "John Wycliffe", "Jan Hus", "Thomas \u00e0 Kempis", "Joan of Arc", "Catherine of Genoa", "Teresa of \u00c1vila", "John of the Cross"] },
-    { id: "s1600", name: "The 1600s", names: ["Richard Baxter", "John Owen", "Brother Lawrence", "Madame Guyon"] },
+    { id: "s1500", name: "The 1500s", names: ["Martin Luther", "Huldrych Zwingli", "Thomas Cranmer", "William Tyndale", "Menno Simons", "Philip Melanchthon", "John Calvin", "John Knox"] },
+    { id: "s1600", name: "The 1600s", names: ["Jacobus Arminius", "William Ames", "George Herbert", "Richard Baxter", "John Owen", "Brother Lawrence", "Madame Guyon", "George Fox", "John Bunyan"] },
     { id: "s1700", name: "The 1700s", names: ["Isaac Watts", "Jonathan Edwards", "Daniel Rowland", "George Whitefield", "John Wesley", "Charles Wesley", "John Newton", "David Brainerd", "Charles Simeon", "William Carey", "Francis Asbury"] },
-    { id: "s1800", name: "The 1800s", names: ["Charles Finney", "John Nelson Darby", "Andrew Murray", "C. H. Spurgeon", "E. M. Bounds", "D. L. Moody", "Hannah Whitall Smith", "Hudson Taylor", "A. B. Simpson", "R. A. Torrey"] },
-    { id: "s1900", name: "The 1900s", names: ["T. Austin-Sparks", "William J. Seymour", "Smith Wigglesworth", "Oswald Chambers", "Watchman Nee", "A. W. Tozer"] }
+    { id: "s1800", name: "The 1800s", names: ["Charles Finney", "John Nelson Darby", "Andrew Murray", "C. H. Spurgeon", "E. M. Bounds", "D. L. Moody", "Hannah Whitall Smith", "Hudson Taylor", "A. B. Simpson", "R. A. Torrey", "Adoniram Judson", "Ann Hasseltine Judson", "George Müller", "David Livingstone", "Phoebe Palmer", "Fanny Crosby", "William Booth", "Catherine Booth", "Frances Ridley Havergal", "George MacDonald", "Ira D. Sankey", "Samuel Ajayi Crowther", "Pandita Ramabai"] },
+    { id: "s1900", name: "The 1900s", names: ["T. Austin-Sparks", "William J. Seymour", "Smith Wigglesworth", "Oswald Chambers", "Watchman Nee", "A. W. Tozer", "Amy Carmichael"] }
   ];
   function ensureQuotes(){
     if(quotes) return Promise.resolve(quotes);
