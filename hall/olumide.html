@@ -164,6 +164,7 @@ document.getElementById('topBtn').addEventListener('click', () => {
 openTeacher(0);
 </script>
 
+
 <style>
 .listenBtn{display:inline-block;margin:14px 0 4px;padding:9px 22px;border:1px solid #c9a227;
 background:rgba(0,0,0,.25);color:#e8c766;font-family:Cinzel,serif;font-size:13px;
@@ -174,9 +175,30 @@ letter-spacing:.18em;text-transform:uppercase;cursor:pointer;border-radius:999px
 (function(){
   var BASE = 'https://audio.readchrist.com/hall/olumide/';
   var player = new Audio();
-  var currentBtn = null;
-  function resetBtn(){ if(currentBtn){ currentBtn.textContent = '\u25B6 Listen'; currentBtn.classList.remove('playing'); currentBtn = null; } }
-  player.addEventListener('ended', resetBtn);
+  var btns = [];
+  var current = 0; // 1-based teaching number now loaded, 0 = none
+  function pad(n){ return ('00' + n).slice(-3); }
+  function label(b, playing){
+    b.textContent = playing ? '\u275A\u275A Pause' : '\u25B6 Listen';
+    b.classList.toggle('playing', !!playing);
+  }
+  function setCurrent(n){
+    btns.forEach(function(b, i){ label(b, i === n - 1 && !player.paused); });
+  }
+  function play(n){
+    current = n;
+    player.src = BASE + pad(n) + '.mp3';
+    player.play();
+    setCurrent(n);
+    var sec = btns[n - 1] && btns[n - 1].closest('section');
+    if (sec) sec.scrollIntoView({behavior: 'smooth', block: 'center'});
+  }
+  player.addEventListener('ended', function(){
+    if (current >= 1 && current < btns.length) { play(current + 1); }
+    else { current = 0; btns.forEach(function(b){ label(b, false); }); }
+  });
+  player.addEventListener('pause', function(){ setCurrent(current); });
+  player.addEventListener('play', function(){ setCurrent(current); });
   function wire(){
     var cards = document.querySelectorAll('section');
     var n = 0;
@@ -184,29 +206,24 @@ letter-spacing:.18em;text-transform:uppercase;cursor:pointer;border-radius:999px
       if (!sec.querySelector('.secLabel')) return;
       n += 1;
       if (sec.querySelector('.listenBtn')) return;
-      var num = ('00' + n).slice(-3);
+      var num = n;
       var b = document.createElement('button');
       b.className = 'listenBtn';
-      b.textContent = '\u25B6 Listen';
+      label(b, false);
       b.addEventListener('click', function(){
-        var url = BASE + num + '.mp3';
-        if (currentBtn === b && !player.paused) { player.pause(); resetBtn(); return; }
-        resetBtn();
-        player.src = url;
-        player.play();
-        currentBtn = b;
-        b.textContent = '\u275A\u275A Pause';
-        b.classList.add('playing');
+        if (current === num && !player.paused) { player.pause(); return; }
+        if (current === num && player.src) { player.play(); return; }
+        play(num);
       });
       sec.appendChild(b);
+      btns.push(b);
     });
   }
   var tries = 0;
   var iv = setInterval(function(){
     wire();
     tries += 1;
-    var done = document.querySelectorAll('.listenBtn').length >= 200;
-    if (done || tries > 40) clearInterval(iv);
+    if (btns.length >= 200 || tries > 40) clearInterval(iv);
   }, 500);
 })();
 </script>
