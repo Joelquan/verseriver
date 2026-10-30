@@ -163,5 +163,52 @@ document.getElementById('topBtn').addEventListener('click', () => {
 });
 openTeacher(0);
 </script>
+
+<style>
+.listenBtn{display:inline-block;margin:14px 0 4px;padding:9px 22px;border:1px solid #c9a227;
+background:rgba(0,0,0,.25);color:#e8c766;font-family:Cinzel,serif;font-size:13px;
+letter-spacing:.18em;text-transform:uppercase;cursor:pointer;border-radius:999px}
+.listenBtn.playing{background:#c9a227;color:#14100a}
+</style>
+<script id="hallAudioLayer">
+(function(){
+  var BASE = 'https://audio.readchrist.com/hall/olumide/';
+  var player = new Audio();
+  var currentBtn = null;
+  function resetBtn(){ if(currentBtn){ currentBtn.textContent = '\u25B6 Listen'; currentBtn.classList.remove('playing'); currentBtn = null; } }
+  player.addEventListener('ended', resetBtn);
+  function wire(){
+    var cards = document.querySelectorAll('section');
+    var n = 0;
+    cards.forEach(function(sec){
+      if (!sec.querySelector('.secLabel')) return;
+      n += 1;
+      if (sec.querySelector('.listenBtn')) return;
+      var num = ('00' + n).slice(-3);
+      var b = document.createElement('button');
+      b.className = 'listenBtn';
+      b.textContent = '\u25B6 Listen';
+      b.addEventListener('click', function(){
+        var url = BASE + num + '.mp3';
+        if (currentBtn === b && !player.paused) { player.pause(); resetBtn(); return; }
+        resetBtn();
+        player.src = url;
+        player.play();
+        currentBtn = b;
+        b.textContent = '\u275A\u275A Pause';
+        b.classList.add('playing');
+      });
+      sec.appendChild(b);
+    });
+  }
+  var tries = 0;
+  var iv = setInterval(function(){
+    wire();
+    tries += 1;
+    var done = document.querySelectorAll('.listenBtn').length >= 200;
+    if (done || tries > 40) clearInterval(iv);
+  }, 500);
+})();
+</script>
 </body>
 </html>
