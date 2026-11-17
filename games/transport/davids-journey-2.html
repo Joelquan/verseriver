@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>David's Journey II — The Long Road to the Throne</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#161310; --panel:#221d16; --panel2:#2b2519;
+    --gold:#C9A84C; --gold-dim:#8a7434; --parch:#e8dcc0;
+    --danger:#b0483a; --green:#7d8a50;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;background:var(--ink);color:var(--parch);font-family:'Cormorant Garamond',serif;overflow:hidden}
+  #app{display:flex;flex-direction:column;height:100%;max-width:900px;margin:0 auto}
+  header{padding:10px 14px 6px;display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--gold-dim)}
+  header h1{font-family:'Cinzel',serif;font-size:14px;letter-spacing:.18em;color:var(--gold);font-weight:700}
+  header .lvl{font-size:14px;opacity:.85;font-style:italic}
+  #hud{display:flex;gap:14px;align-items:center;padding:7px 14px;font-size:15px;background:var(--panel);border-bottom:1px solid #3a3122}
+  .stat{display:flex;gap:6px;align-items:center}
+  .stat b{color:var(--gold);font-family:'Cinzel',serif;font-size:13px;letter-spacing:.06em}
+  #timerbar{flex:1;height:8px;background:#0d0b08;border:1px solid var(--gold-dim);border-radius:4px;overflow:hidden}
+  #timerfill{height:100%;background:var(--gold);width:100%;transition:width .2s linear}
+  #timerfill.low{background:var(--danger)}
+  #stage{position:relative;flex:1;min-height:0}
+  canvas{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair}
+  #cluebar{position:absolute;left:50%;transform:translateX(-50%);bottom:12px;max-width:88%;background:rgba(22,19,16,.92);border:1px solid var(--gold-dim);border-radius:3px;padding:8px 16px;font-size:17px;font-style:italic;text-align:center;pointer-events:none;line-height:1.3}
+  #cluebar b{font-style:normal;color:var(--gold);font-family:'Cinzel',serif;font-size:12px;letter-spacing:.14em;display:block;margin-bottom:2px}
+  .screen{position:absolute;inset:0;background:rgba(16,13,10,.95);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:26px;z-index:10;overflow-y:auto}
+  .screen h2{font-family:'Cinzel',serif;color:var(--gold);font-size:23px;letter-spacing:.14em;margin-bottom:10px}
+  .screen p{font-size:19px;max-width:470px;line-height:1.45;margin-bottom:8px}
+  .screen .verse{font-style:italic;color:var(--gold);opacity:.9;margin:14px 0 4px;max-width:430px}
+  .screen .ref{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.18em;opacity:.75;margin-bottom:14px}
+  button{font-family:'Cinzel',serif;letter-spacing:.16em;font-size:14px;padding:12px 30px;margin-top:14px;background:none;border:1px solid var(--gold);color:var(--gold);border-radius:2px;cursor:pointer}
+  button:active{background:var(--gold);color:var(--ink)}
+  .fail h2{color:var(--danger)}
+  .small{font-size:14px !important;opacity:.65}
+
+  /* quiz gate */
+  #quizscreen .qhud{display:flex;justify-content:space-between;width:100%;max-width:480px;margin-bottom:10px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.14em;color:var(--gold);opacity:.85}
+  #quizscreen .qstrikes span{display:inline-block;width:9px;height:9px;border:1px solid var(--gold-dim);border-radius:50%;margin-left:4px;vertical-align:middle}
+  #quizscreen .qstrikes span.x{background:var(--danger);border-color:var(--danger)}
+  .qtext{font-size:20px;line-height:1.4;max-width:480px;margin-bottom:16px}
+  .qopts{display:flex;flex-direction:column;gap:9px;width:100%;max-width:480px}
+  .qopt{background:var(--panel2);border:1px solid var(--gold-dim);border-radius:3px;padding:11px 16px;font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--parch);text-align:left;cursor:pointer}
+  .qopt:active{border-color:var(--gold)}
+  .qopt.correct{border-color:var(--green);background:rgba(125,138,80,.2)}
+  .qopt.wrong{border-color:var(--danger);background:rgba(176,72,58,.2)}
+  .hintlink{background:none;border:none;color:var(--gold);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;text-decoration:underline;cursor:pointer;margin-top:12px;padding:0}
+  #passagemodal{position:absolute;inset:0;background:rgba(10,8,6,.92);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:40;padding:26px}
+  #passagemodal .pm-card{background:var(--panel2);border:1px solid var(--gold);border-radius:4px;padding:20px 24px;max-width:460px}
+  #passagemodal .pm-ref{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.16em;color:var(--gold);margin-bottom:8px}
+  #passagemodal .pm-text{font-style:italic;font-size:17px;line-height:1.5;color:var(--parch)}
+  #passagemodal button{margin-top:16px}
+
+  /* training UI */
+  #trainui{position:absolute;inset:0;background:rgba(16,13,10,.92);display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:8;overflow-y:auto}
+  #trainui h2{font-family:'Cinzel',serif;color:var(--gold);font-size:19px;letter-spacing:.14em;margin-bottom:6px}
+  #trainui .sub{font-style:italic;opacity:.75;margin-bottom:16px;font-size:15px;text-align:center;max-width:440px}
+  .bar-row{width:100%;max-width:420px;margin-bottom:13px}
+  .bar-row .bl{display:flex;justify-content:space-between;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.12em;color:var(--gold);margin-bottom:4px}
+  .bar-track{height:10px;background:#0d0b08;border:1px solid var(--gold-dim);border-radius:5px;overflow:hidden;cursor:pointer}
+  .bar-fill{height:100%;background:var(--gold);width:0%}
+  .drillbtn{font-size:12px;padding:7px 14px;margin-top:4px}
+  #drillzone{position:absolute;inset:0;z-index:9;display:none}
+</style>
+</head>
+<body>
+<div id="app">
+  <header><h1>DAVID'S JOURNEY II</h1><div class="lvl" id="lvlname">—</div></header>
+  <div id="hud">
+    <div class="stat"><b id="stat1label">—</b><span id="stat1"></span></div>
+    <div class="stat" id="stat2wrap" style="display:none"><b id="stat2label"></b><span id="stat2"></span></div>
+    <div id="timerbar"><div id="timerfill"></div></div>
+  </div>
+  <div id="stage">
+    <canvas id="cv"></canvas>
+    <div id="cluebar" style="display:none"><b>CLUE</b><span id="cluetext"></span></div>
+    <div id="trainui"></div>
+    <div class="screen" id="screen">
+      <h2 id="sc-title">THE LONG ROAD TO THE THRONE</h2>
+      <p id="sc-body">Anointed in secret, crowned in Hebron. Eight trials between the oil and the throne.</p>
+      <p class="verse" id="sc-verse" style="display:none"></p>
+      <p class="ref" id="sc-ref" style="display:none"></p>
+      <button id="sc-btn">BEGIN</button>
+      <p class="small" id="sc-hint"></p>
+    </div>
+    <div class="screen" id="quizscreen" style="display:none"></div>
+    <div id="passagemodal">
+      <div class="pm-card">
+        <div class="pm-ref" id="pm-ref"></div>
+        <div class="pm-text" id="pm-text"></div>
+        <button id="pm-close">CLOSE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ============ CORE ============ */
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+let W=0,H=0,DPR=1;
+function resize(){DPR=Math.min(2,window.devicePixelRatio||1);
+  const r=cv.parentElement.getBoundingClientRect();
+  W=r.width;H=r.height;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);}
+window.addEventListener('resize',resize);resize();
+const $=id=>document.getElementById(id);
+const rand=(a,b)=>a+Math.random()*(b-a);
+const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const perf=()=>performance.now();
+
+let level=0,running=false,timeLeft=0,timeMax=1,particles=[],lastT=0;
+let tapCB=null,dragMode=false,dragStart=null,dragNow=null,releaseCB=null;
+
+/* carry-over state across levels */
+const camp={food:6,combat:0,discipline:0,endurance:0,stealth:0,bounty:0};
+
+/* ---- input ---- */
+function pt(e){const r=cv.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:t.clientX-r.left,y:t.clientY-r.top};}
+cv.addEventListener('pointerdown',e=>{const p=pt(e);
+  if(dragMode){dragStart=p;dragNow=p;}
+  else if(tapCB)tapCB(p);});
+cv.addEventListener('pointermove',e=>{if(dragMode&&dragStart)dragNow=pt(e);});
+cv.addEventListener('pointerup',e=>{if(dragMode&&dragStart){const p=pt(e);if(releaseCB)releaseCB(dragStart,p);dragStart=null;dragNow=null;}});
+
+/* ---- screens ---- */
+function showScreen(title,body,btn,cb,verse,ref,fail,hint){
+  const s=$('screen');s.style.display='flex';s.className='screen'+(fail?' fail':'');
+  $('sc-title').textContent=title;$('sc-body').textContent=body;
+  $('sc-verse').style.display=verse?'block':'none';$('sc-verse').textContent=verse||'';
+  $('sc-ref').style.display=ref?'block':'none';$('sc-ref').textContent=ref||'';
+  $('sc-hint').textContent=hint||'';
+  const b=$('sc-btn');b.textContent=btn;
+  b.onclick=()=>{s.style.display='none';cb();};
+}
+function setClue(t){const c=$('cluebar');if(!t){c.style.display='none';return}c.style.display='block';$('cluetext').textContent=t;}
+function setHUD(l1,v1,l2,v2){$('stat1label').textContent=l1;$('stat1').textContent=v1;
+  const w=$('stat2wrap');if(l2==null){w.style.display='none'}else{w.style.display='flex';$('stat2label').textContent=l2;$('stat2').textContent=v2;}}
+
+/* ============ DRAWING ============ */
+function drawWorld(theme){
+  ctx.fillStyle=theme==='court'?'#3a3125':theme==='night'?'#2a2820':theme==='city'?'#6b6250':'#7d7448';
+  ctx.fillRect(0,0,W,H);
+  const tw=64,th=32;
+  for(let r=-2;r<H/th*2+4;r++){for(let c=-2;c<W/tw+4;c++){
+    const x=c*tw+(r%2?tw/2:0),y=r*th/2;
+    const n=((r*7+c*13)%9);
+    let col;
+    if(theme==='court')col=n<3?'#42382a':'#3a3125';
+    else if(theme==='night')col=n<3?'#302e24':'#2a2820';
+    else if(theme==='city')col=n<3?'#746a56':'#6b6250';
+    else col=n<3?'#877e50':'#7d7448';
+    ctx.fillStyle=col;
+    ctx.beginPath();ctx.moveTo(x,y-th/2);ctx.lineTo(x+tw/2,y);ctx.lineTo(x,y+th/2);ctx.lineTo(x-tw/2,y);ctx.closePath();ctx.fill();
+  }}
+}
+function drawFigure(x,y,robe,head,s=1){
+  ctx.save();ctx.translate(x,y);
+  ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(0,11*s,9*s,3.5*s,0,0,7);ctx.fill();
+  ctx.fillStyle=robe;ctx.beginPath();ctx.moveTo(-6*s,10*s);ctx.lineTo(6*s,10*s);ctx.lineTo(4*s,-4*s);ctx.lineTo(-4*s,-4*s);ctx.closePath();ctx.fill();
+  ctx.fillStyle=head||'#d9a06b';ctx.beginPath();ctx.arc(0,-8*s,5*s,0,7);ctx.fill();
+  ctx.fillStyle='#4a3520';ctx.beginPath();ctx.arc(0,-10*s,4.5*s,Math.PI,0);ctx.fill();
+  ctx.restore();
+}
+function drawDavid(x,y){
+  drawFigure(x,y,'#b7513f');
+  ctx.save();ctx.translate(x,y);
+  ctx.fillStyle='#8a5c34';ctx.fillRect(-2,-14,2.5,26);
+  ctx.restore();
+}
+function drawSaul(x,y,rage){
+  drawFigure(x,y,rage?'#7a2f2f':'#5c5346','#c79768',1.4);
+  ctx.save();ctx.translate(x,y);
+  ctx.strokeStyle='var(--gold)';ctx.strokeStyle='#C9A84C';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(0,-17,7,Math.PI*1.1,Math.PI*1.9);ctx.stroke(); // crown arc
+  ctx.restore();
+}
+function drawEnemy(x,y,hurt){
+  drawFigure(x,y,hurt?'#8a6a4a':'#4f4436','#b58a5e',1.1);
+  ctx.save();ctx.translate(x,y);
+  ctx.strokeStyle='#8a8072';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(9,-12);ctx.lineTo(9,10);ctx.stroke(); // spear
+  ctx.restore();
+}
+function drawSpear(x,y,ang){
+  ctx.save();ctx.translate(x,y);ctx.rotate(ang);
+  ctx.strokeStyle='#a89a80';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(-14,0);ctx.lineTo(14,0);ctx.stroke();
+  ctx.fillStyle='#8a8072';ctx.beginPath();ctx.moveTo(14,0);ctx.lineTo(8,-4);ctx.lineTo(8,4);ctx.closePath();ctx.fill();
+  ctx.restore();
+}
+function drawChest(x,y){
+  ctx.save();ctx.translate(x,y);
+  ctx.fillStyle='#6b4e2a';ctx.fillRect(-9,-6,18,12);
+  ctx.fillStyle='#C9A84C';ctx.fillRect(-9,-2,18,3);
+  ctx.restore();
+}
+function pop(x,y,col='#C9A84C'){
+  for(let i=0;i<10;i++){const a=rand(0,6.283);particles.push({x,y,vx:Math.cos(a)*rand(30,110),vy:Math.sin(a)*rand(30,110)-40,life:rand(.4,.8),col});}
+}
+function tickParticles(dt){
+  particles.forEach(p=>{p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=160*dt;});
+  particles=particles.filter(p=>p.life>0);
+}
+function drawParticles(){
+  particles.forEach(p=>{ctx.globalAlpha=clamp(p.life*1.6,0,1);ctx.fillStyle=p.col;
+    ctx.beginPath();ctx.arc(p.x,p.y,2.4,0,7);ctx.fill();});
+  ctx.globalAlpha=1;
+}
+
+/* ============ LEVELS ============ */
+const LEVELS=[
+ {name:'I · Anointed in Secret',verse:'"Arise, anoint him: for this is he."',ref:'1 SAMUEL 16:12'},
+ {name:'II · Harp Before the King',verse:'"Saul was refreshed, and was well, and the evil spirit departed from him."',ref:'1 SAMUEL 16:23'},
+ {name:'III · A Bride Won, A King\'s Fear',verse:'"Saul saw and knew that the LORD was with David... and Saul became David\'s enemy continually."',ref:'1 SAMUEL 18:28-29'},
+ {name:'IV · Into the Wilderness',verse:'"Every one that was in distress... gathered themselves unto him; and he became a captain over them."',ref:'1 SAMUEL 22:2'},
+ {name:'V · Take a City to Live',verse:'"So David saved the inhabitants of Keilah."',ref:'1 SAMUEL 23:5'},
+ {name:'VI · Flight from the Great Pursuit',verse:'"Then the Philistines invaded the land... Wherefore Saul returned from pursuing after David."',ref:'1 SAMUEL 23:27-28'},
+ {name:'VII · A War Won in the Wilderness',verse:'"Blessed be the LORD my strength, which teacheth my hands to war, and my fingers to fight."',ref:'PSALM 144:1'},
+ {name:'VIII · Crowned by Wisdom',verse:'"So all the elders of Israel came to the king to Hebron... and they anointed David king over Israel."',ref:'2 SAMUEL 5:3'},
+];
+
+function startLevel(n){
+  level=n;$('lvlname').textContent=LEVELS[n].name;
+  particles=[];tapCB=null;releaseCB=null;dragMode=false;setClue('');
+  $('trainui').style.display='none';
+  const inits=[initL0,initL1,initL2,initL3,initL4,initL6,initL5,initL7];
+  inits[n]();
+  running=true;lastT=perf();
+  requestAnimationFrame(loop);
+}
+function winLevel(){
+  running=false;const L=LEVELS[level];
+  const done=level;
+  if(level<7) showScreen(L.name.split('·')[1].trim().toUpperCase()+' — COMPLETE','',
+     'CONTINUE',()=>showQuizGate(done,()=>startLevel(done+1)),L.verse,L.ref);
+  else showScreen('KING OVER ALL ISRAEL','Seven and a half years after Judah first crowned him, all the tribes came to Hebron.','PLAY AGAIN',
+     ()=>showQuizGate(done,()=>{Object.assign(camp,{food:6,combat:0,discipline:0,endurance:0,stealth:0,bounty:0});startLevel(0);}),
+     L.verse,L.ref);
+}
+function failLevel(msg){
+  running=false;
+  showScreen('THE ROAD IS LOST',msg,'TRY AGAIN',()=>startLevel(level),null,null,true,'No hints. Try again.');
+}
+
+/* ---------- L0: ANOINTED IN SECRET ---------- */
+let brothers=[],l0wrong=0;
+function initL0(){
+  brothers=[];l0wrong=0;
+  const n=8, gap=W/(n+1);
+  const davidIdx=Math.floor(rand(0,n));
+  for(let i=0;i<n;i++){
+    brothers.push({x:gap*(i+1),y:H*0.5,isDavid:i===davidIdx,revealed:false});
+  }
+  timeMax=1;timeLeft=1;
+  setHUD('SONS OF JESSE','8');
+  setClue('"The LORD seeth not as man seeth." Seven passed before Samuel — but the youngest keepeth the sheep. Find him.');
+  tapCB=p=>{
+    const hit=brothers.find(b=>dist(p,b)<26);
+    if(!hit)return;
+    if(hit.isDavid){pop(hit.x,hit.y);winLevel();}
+    else{hit.revealed=true;l0wrong++;
+      if(l0wrong>=3)failLevel('Samuel said, Neither hath the LORD chosen these. Look again for the least likely.');
+      else setClue(`Not this son. (${3-l0wrong} ${3-l0wrong===1?'chance':'chances'} left) — the chosen one stands nearest his flock.`);}
+  };
+}
+function tickL0(dt){}
+function drawL0(){
+  drawWorld();
+  brothers.forEach((b,i)=>{
+    drawFigure(b.x,b.y,b.revealed?'#3a3125':'#5c5346');
+    if(b.isDavid){ // subtle tell: a sheep beside him
+      ctx.save();ctx.translate(b.x+20,b.y+8);
+      ctx.fillStyle='#e9e4d4';ctx.beginPath();ctx.ellipse(0,0,8,5,0,0,7);ctx.fill();
+      ctx.fillStyle='#3d3428';ctx.beginPath();ctx.ellipse(7,-2,3,2.5,0,0,7);ctx.fill();
+      ctx.restore();
+    }
+  });
+  // Samuel with horn
+  drawFigure(W*0.5,H*0.22,'#7a6a4a','#c9b090',1.3);
+}
+
+/* ---------- L1: HARP BEFORE THE KING ---------- */
+let notes=[],calm=0,rage=0,l1phase=1,spears=[],davidLane=1,spearsDodged=0,telegraph=null,noteTimer=0;
+const LANES=3;
+function laneX(i){return W*(0.25+i*0.25);}
+function initL1(){
+  notes=[];calm=0;rage=0;l1phase=1;spears=[];davidLane=1;spearsDodged=0;telegraph=null;noteTimer=0;
+  timeMax=1;timeLeft=1;
+  setHUD('CALM',calm+' / 10','RAGE',rage+' / 5');
+  setClue('Play the harp — tap when a note reaches the golden circle. Fill Calm before Rage fills.');
+  tapCB=p=>{
+    if(l1phase===1){
+      // check note in target zone
+      const zone={x:W*0.18,y:H*0.5};
+      const hit=notes.find(n=>!n.done&&Math.abs(n.x-zone.x)<26);
+      if(hit){hit.done=true;calm++;pop(zone.x,zone.y);}
+      else{rage++;}
+      updateL1HUD();
+      checkL1Meters();
+    } else {
+      // dodge phase: tap a lane to move
+      const lane=p.x<W*0.375?0:p.x<W*0.625?1:2;
+      davidLane=lane;
+    }
+  };
+}
+function updateL1HUD(){
+  if(l1phase===1)setHUD('CALM',calm+' / 10','RAGE',rage+' / 5');
+  else setHUD('DODGED',spearsDodged+' / 5');
+}
+function checkL1Meters(){
+  if(rage>=5){failLevel('The rage of the king overcame the song. Begin the melody again.');return;}
+  if(calm>=10){
+    l1phase=2;notes=[];
+    setClue('The spirit departs — but the king rises, javelin in hand! Tap a lane to move. Dodge 5 spears.');
+    updateL1HUD();
+  }
+}
+function tickL1(dt){
+  if(l1phase===1){
+    noteTimer-=dt;
+    if(noteTimer<=0){noteTimer=rand(0.8,1.4)-calm*0.03;notes.push({x:W+20,y:H*0.5,done:false});}
+    const speed=140+calm*8;
+    notes.forEach(n=>{n.x-=speed*dt;});
+    notes=notes.filter(n=>{
+      if(!n.done&&n.x<W*0.10){rage++;updateL1HUD();checkL1Meters();return false;}
+      return n.x>-30&&!n.done;
+    });
+  } else {
+    // spear phase
+    if(!telegraph&&spears.length===0&&spearsDodged<5){
+      telegraph={lane:Math.floor(rand(0,3)),t:0.8};
+    }
+    if(telegraph){
+      telegraph.t-=dt;
+      if(telegraph.t<=0){
+        spears.push({lane:telegraph.lane,y:H*0.18,speed:H*1.1});
+        telegraph=null;
+      }
+    }
+    spears.forEach(s=>{s.y+=s.speed*dt;});
+    for(const s of spears){
+      if(s.y>H*0.72&&s.y<H*0.82&&s.lane===davidLane){
+        failLevel('The javelin found its mark. Begin the song again.');return;
+      }
+    }
+    const before=spears.length;
+    spears=spears.filter(s=>s.y<H+30);
+    if(spears.length<before){spearsDodged++;updateL1HUD();
+      if(spearsDodged>=5){winLevel();return;}}
+  }
+}
+function drawL1(){
+  drawWorld('court');
+  // Saul on throne
+  drawSaul(W*0.5,H*0.2,l1phase===2);
+  if(l1phase===1){
+    // harp line + target
+    ctx.strokeStyle='rgba(201,168,76,.35)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(0,H*0.5);ctx.lineTo(W,H*0.5);ctx.stroke();
+    ctx.strokeStyle='#C9A84C';ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.arc(W*0.18,H*0.5,26,0,7);ctx.stroke();
+    notes.forEach(n=>{
+      ctx.fillStyle='#C9A84C';
+      ctx.beginPath();ctx.arc(n.x,n.y,9,0,7);ctx.fill();
+      ctx.fillStyle='#161310';ctx.fillRect(n.x+6,n.y-22,2.5,22);
+    });
+    drawDavid(W*0.18,H*0.78);
+    // meters visual
+    ctx.fillStyle='rgba(125,138,80,.8)';ctx.fillRect(W*0.05,H*0.9,(W*0.35)*(calm/10),8);
+    ctx.strokeStyle='#7d8a50';ctx.strokeRect(W*0.05,H*0.9,W*0.35,8);
+    ctx.fillStyle='rgba(176,72,58,.8)';ctx.fillRect(W*0.6,H*0.9,(W*0.35)*(rage/5),8);
+    ctx.strokeStyle='#b0483a';ctx.strokeRect(W*0.6,H*0.9,W*0.35,8);
+  } else {
+    // lanes
+    for(let i=0;i<3;i++){
+      ctx.strokeStyle='rgba(201,168,76,.2)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(laneX(i),H*0.28);ctx.lineTo(laneX(i),H*0.9);ctx.stroke();
+      if(telegraph&&telegraph.lane===i){
+        ctx.fillStyle='rgba(176,72,58,'+(0.15+0.2*Math.sin(perf()*0.02))+')';
+        ctx.fillRect(laneX(i)-W*0.1,H*0.28,W*0.2,H*0.62);
+      }
+    }
+    spears.forEach(s=>drawSpear(laneX(s.lane),s.y,Math.PI/2));
+    drawDavid(laneX(davidLane),H*0.78);
+  }
+}
+
+/* ---------- L2: A BRIDE WON (combat then escort) ---------- */
+let enemies=[],captures=0,l2phase=1,forks=[],forkIndex=0;
+const ESCORT_FORKS=[
+ {clue:'The scouts warn: the ridge road is watched. Take the path where the rocks give cover.',good:'rock'},
+ {clue:'Philistine patrols hold the open ground. Pass beneath the trees.',good:'tree'},
+ {clue:'The last stretch — cross where the water runs shallow.',good:'water'},
+];
+function initL2(){
+  enemies=[];captures=0;l2phase=1;forkIndex=0;
+  timeMax=1;timeLeft=1;
+  setHUD('CAPTURED',captures+' / 8','MEN','SAFE');
+  setClue('Philistines advance! Tap those near to strike — drag back and release to sling the far ones. Capture 8. None may pass.');
+  dragMode=true;
+  releaseCB=(a,b)=>fireStone(a,b);
+  tapCB=null;
+  cv.addEventListener('pointerdown',l2tap);
+}
+function l2tap(e){
+  if(level!==2||l2phase!==1)return;
+  const p=pt(e);
+  const hit=enemies.find(en=>!en.dead&&dist(p,en)<30&&en.x<W*0.5);
+  if(hit){hit.dead=true;captures++;pop(hit.x,hit.y);updateL2HUD();}
+}
+function updateL2HUD(){setHUD('CAPTURED',captures+' / 8','MEN','SAFE');}
+let l2spawn=0;
+function tickL2(dt){
+  if(l2phase===1){
+    l2spawn-=dt;
+    if(l2spawn<=0&&enemies.filter(e=>!e.dead).length<4&&captures+enemies.filter(e=>!e.dead).length<8){
+      l2spawn=rand(1.2,2.2);
+      enemies.push({x:W+30,y:rand(H*0.3,H*0.75),speed:rand(45,75),dead:false});
+    }
+    enemies.forEach(en=>{if(!en.dead)en.x-=en.speed*dt;});
+    for(const en of enemies){
+      if(!en.dead&&en.x<W*0.12){failLevel('A Philistine broke through to your men. Hold the line.');return;}
+    }
+    tickProjectiles(dt);
+    if(captures>=8){
+      l2phase=2;forkIndex=0;dragMode=false;enemies=[];projectiles=[];
+      buildEscortFork();
+    }
+  }
+}
+function buildEscortFork(){
+  const F=ESCORT_FORKS[forkIndex];
+  const opts=['water','tree','rock'].sort(()=>Math.random()-.5).slice(0,2);
+  if(!opts.includes(F.good))opts[Math.floor(Math.random()*2)]=F.good;
+  forks=[{side:'left',x:W*0.25,y:H*0.32,type:opts[0]},{side:'right',x:W*0.75,y:H*0.32,type:opts[1]}];
+  setClue(F.clue);
+  setHUD('TROPHIES','8','FORKS',forkIndex+' / 3');
+  tapCB=p=>{
+    const pick=p.x<W/2?forks[0]:forks[1];
+    if(pick.type===F.good){
+      forkIndex++;pop(pick.x,pick.y);
+      if(forkIndex>=3){winLevel();}else buildEscortFork();
+    } else failLevel('The wrong road — an ambush scattered your company. Bring them all home.');
+  };
+}
+function drawL2(){
+  drawWorld();
+  if(l2phase===1){
+    // allies line
+    ctx.strokeStyle='rgba(201,168,76,.4)';ctx.setLineDash([6,5]);ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(W*0.12,H*0.2);ctx.lineTo(W*0.12,H*0.9);ctx.stroke();ctx.setLineDash([]);
+    for(let i=0;i<4;i++)drawFigure(W*0.06,H*(0.3+i*0.15),'#8a6a3a');
+    ctx.strokeStyle='rgba(201,168,76,.3)';ctx.setLineDash([5,5]);
+    ctx.beginPath();ctx.arc(W*0.28,H*0.55,0,0,7);ctx.stroke();ctx.setLineDash([]);
+    enemies.forEach(en=>{if(!en.dead)drawEnemy(en.x,en.y);});
+    drawDavid(W*0.28,H*0.55);
+    drawProjectiles();drawAimLine(W*0.28,H*0.55);
+    // captured banners
+    for(let i=0;i<captures;i++){ctx.fillStyle='#C9A84C';ctx.fillRect(12+i*14,H-24,8,14);}
+  } else {
+    drawWorld('night');
+    forks.forEach(f=>{
+      ctx.fillStyle='rgba(232,220,192,.06)';
+      ctx.fillRect(f.side==='left'?0:W/2,0,W/2,H);
+      if(f.type==='water'){ctx.fillStyle='#6e8590';ctx.beginPath();ctx.ellipse(f.x,f.y,50,22,0,0,7);ctx.fill();}
+      if(f.type==='tree'){ctx.fillStyle='#556b3a';ctx.beginPath();ctx.ellipse(f.x,f.y-8,18,14,0,0,7);ctx.fill();ctx.fillStyle='#5d4a2e';ctx.fillRect(f.x-3,f.y,6,14);}
+      if(f.type==='rock'){ctx.fillStyle='#8c8577';ctx.beginPath();ctx.ellipse(f.x,f.y,16,10,0,0,7);ctx.fill();}
+    });
+    ctx.strokeStyle='rgba(201,168,76,.3)';ctx.beginPath();ctx.moveTo(W/2,0);ctx.lineTo(W/2,H);ctx.stroke();
+    for(let i=0;i<4;i++)drawFigure(W*0.5+(i-1.5)*24,H*0.72,'#8a6a3a');
+    drawDavid(W*0.5,H*0.6);
+    ctx.fillStyle='rgba(232,220,192,.55)';ctx.font='italic 15px Cormorant Garamond,serif';
+    ctx.textAlign='center';ctx.fillText('tap a side to choose the road home',W/2,H*0.5);
+  }
+}
+
+/* ---------- projectiles ---------- */
+let projectiles=[];
+function fireStone(a,b){
+  const src={x:level===2?W*0.28:W*0.28,y:level===2?H*0.55:H*0.55};
+  const dx=a.x-b.x,dy=a.y-b.y;
+  const m=Math.hypot(dx,dy)||1;
+  projectiles.push({x:src.x,y:src.y-10,vx:dx/m*420,vy:dy/m*420});
+}
+function tickProjectiles(dt){
+  for(const p of projectiles){
+    p.x+=p.vx*dt;p.y+=p.vy*dt;
+    const hit=enemies.find(en=>!en.dead&&dist(p,en)<24);
+    if(hit){hit.dead=true;captures++;pop(hit.x,hit.y);p.dead=true;updateL2HUD();}
+    if(p.x<-30||p.x>W+30||p.y<-30||p.y>H+30)p.dead=true;
+  }
+  projectiles=projectiles.filter(p=>!p.dead);
+}
+function drawProjectiles(){
+  projectiles.forEach(p=>{ctx.fillStyle='#9b968a';ctx.beginPath();ctx.arc(p.x,p.y,4.5,0,7);ctx.fill();});
+}
+function drawAimLine(sx,sy){
+  if(dragMode&&dragStart&&dragNow){
+    ctx.strokeStyle='rgba(201,168,76,.8)';ctx.lineWidth=2;ctx.setLineDash([6,5]);
+    ctx.beginPath();ctx.moveTo(sx,sy-10);
+    ctx.lineTo(sx+(dragStart.x-dragNow.x)*1.6,sy-10+(dragStart.y-dragNow.y)*1.6);
+    ctx.stroke();ctx.setLineDash([]);
+  }
+}
+
+/* ---------- L3: INTO THE WILDERNESS (flee / feed / train) ---------- */
+let l3phase=1,foodItems=[],david=null,fleeForkIdx=0;
+const FLEE_FORKS=[
+ {clue:'Saul\'s army holds the high road. Slip past where the rocks hide you.',good:'rock'},
+ {clue:'Torches move through the open field. Keep to the treeline.',good:'tree'},
+];
+function initL3(){
+  l3phase=1;fleeForkIdx=0;
+  timeMax=1;timeLeft=1;
+  buildFleeFork();
+}
+function buildFleeFork(){
+  const F=FLEE_FORKS[fleeForkIdx];
+  const opts=['water','tree','rock'].sort(()=>Math.random()-.5).slice(0,2);
+  if(!opts.includes(F.good))opts[Math.floor(Math.random()*2)]=F.good;
+  forks=[{side:'left',x:W*0.25,y:H*0.32,type:opts[0]},{side:'right',x:W*0.75,y:H*0.32,type:opts[1]}];
+  setClue(F.clue);
+  setHUD('ESCAPE',fleeForkIdx+' / 2');
+  tapCB=p=>{
+    const pick=p.x<W/2?forks[0]:forks[1];
+    if(pick.type===F.good){
+      fleeForkIdx++;pop(pick.x,pick.y);
+      if(fleeForkIdx>=2){startFeedPhase();}else buildFleeFork();
+    } else failLevel('Spotted! Saul\'s men closed the road. Flee again.');
+  };
+}
+function startFeedPhase(){
+  l3phase=2;
+  foodItems=[];
+  for(let i=0;i<6;i++)foodItems.push({x:rand(W*0.12,W*0.88),y:rand(H*0.2,H*0.85),found:false});
+  camp.food=0;
+  timeMax=timeLeft=40;
+  david={x:W/2,y:H*0.8,tx:W/2,ty:H*0.8};
+  setHUD('FOOD',camp.food+' / 6','MEN','400');
+  setClue('Your men hunger. Forage what you can before the light fails — what you miss, they will feel in battle.');
+  tapCB=p=>{david.tx=p.x;david.ty=p.y;};
+}
+function startTrainPhase(){
+  l3phase=3;running=false;
+  setClue('');
+  renderTrainUI();
+}
+function renderTrainUI(){
+  const t=$('trainui');t.style.display='flex';
+  const bars=[['combat','COMBAT'],['discipline','DISCIPLINE'],['endurance','ENDURANCE'],['stealth','STEALTH']];
+  t.innerHTML=`<h2>TRAIN YOUR MEN</h2>
+    <div class="sub">Four hundred came to you in distress and debt. No clock runs here — drill them as long as you choose, then march. How they fight is how you lead them.</div>
+    ${bars.map(([k,label])=>`
+      <div class="bar-row">
+        <div class="bl"><span>${label}</span><span id="bv-${k}">${camp[k]}%</span></div>
+        <div class="bar-track"><div class="bar-fill" id="bf-${k}" style="width:${camp[k]}%"></div></div>
+        <button class="drillbtn" data-k="${k}">DRILL</button>
+      </div>`).join('')}
+    <button id="marchbtn">MARCH TO KEILAH</button>`;
+  t.querySelectorAll('.drillbtn').forEach(b=>{
+    b.onclick=()=>runDrill(b.dataset.k);
+  });
+  $('marchbtn').onclick=()=>{t.style.display='none';winLevel();};
+}
+function runDrill(k){
+  // simple reaction drill: tap the moving mark 5 times
+  const t=$('trainui');
+  let hits=0;
+  t.innerHTML=`<h2>${k.toUpperCase()} DRILL</h2>
+    <div class="sub">Tap the mark 5 times as it moves. Each completed drill raises the bar.</div>
+    <div style="position:relative;width:100%;max-width:420px;height:220px;background:var(--panel2);border:1px solid var(--gold-dim);border-radius:4px" id="drillbox">
+      <div id="mark" style="position:absolute;width:34px;height:34px;border:2px solid var(--gold);border-radius:50%;background:rgba(201,168,76,.25);cursor:pointer"></div>
+    </div>
+    <p class="small" id="drillcount">0 / 5</p>`;
+  const box=t.querySelector('#drillbox'),mark=t.querySelector('#mark');
+  function place(){
+    mark.style.left=rand(4,box.clientWidth-40)+'px';
+    mark.style.top=rand(4,box.clientHeight-40)+'px';
+  }
+  place();
+  mark.onclick=()=>{
+    hits++;t.querySelector('#drillcount').textContent=hits+' / 5';
+    if(hits>=5){camp[k]=clamp(camp[k]+20,0,100);renderTrainUI();}
+    else place();
+  };
+}
+function tickL3(dt){
+  if(l3phase===2){
+    const d=Math.hypot(david.tx-david.x,david.ty-david.y);
+    if(d>3){const a=Math.atan2(david.ty-david.y,david.tx-david.x);
+      david.x+=Math.cos(a)*Math.min(170*dt,d);david.y+=Math.sin(a)*Math.min(170*dt,d);}
+    foodItems.forEach(f=>{if(!f.found&&dist(f,david)<26){f.found=true;camp.food++;pop(f.x,f.y);setHUD('FOOD',camp.food+' / 6','MEN','400');}});
+    if(camp.food>=6){startTrainPhase();return;}
+    timeLeft-=dt;
+    if(timeLeft<=0){startTrainPhase();return;} // soft: no fail, shortfall carries
+  }
+}
+function drawL3(){
+  if(l3phase===1){
+    drawWorld('night');
+    forks.forEach(f=>{
+      ctx.fillStyle='rgba(232,220,192,.06)';
+      ctx.fillRect(f.side==='left'?0:W/2,0,W/2,H);
+      if(f.type==='water'){ctx.fillStyle='#6e8590';ctx.beginPath();ctx.ellipse(f.x,f.y,50,22,0,0,7);ctx.fill();}
+      if(f.type==='tree'){ctx.fillStyle='#556b3a';ctx.beginPath();ctx.ellipse(f.x,f.y-8,18,14,0,0,7);ctx.fill();ctx.fillStyle='#5d4a2e';ctx.fillRect(f.x-3,f.y,6,14);}
+      if(f.type==='rock'){ctx.fillStyle='#8c8577';ctx.beginPath();ctx.ellipse(f.x,f.y,16,10,0,0,7);ctx.fill();}
+    });
+    ctx.strokeStyle='rgba(201,168,76,.3)';ctx.beginPath();ctx.moveTo(W/2,0);ctx.lineTo(W/2,H);ctx.stroke();
+    drawDavid(W*0.5,H*0.65);
+    // pursuit hint
+    for(let i=0;i<3;i++)drawEnemy(W*(0.35+i*0.15),H*0.92);
+    ctx.fillStyle='rgba(232,220,192,.55)';ctx.font='italic 15px Cormorant Garamond,serif';
+    ctx.textAlign='center';ctx.fillText('tap a side to slip away',W/2,H*0.52);
+  } else if(l3phase===2){
+    drawWorld();
+    foodItems.forEach(f=>{
+      if(f.found)return;
+      const d=dist(f,david);
+      if(d<150){ctx.globalAlpha=clamp(1-(d-40)/100,0.25,1);
+        ctx.fillStyle='#b5a145';ctx.beginPath();ctx.ellipse(f.x,f.y,9,6,0,0,7);ctx.fill();
+        ctx.globalAlpha=1;}
+    });
+    drawDavid(david.x,david.y);
+    for(let i=0;i<5;i++)drawFigure(david.x+Math.cos(i/5*6.283)*36,david.y+Math.sin(i/5*6.283)*22+6,'#8a6a3a',null,0.8);
+  } else {
+    drawWorld('night');
+  }
+}
+
+/* ---------- L4: TAKE A CITY (KEILAH) ---------- */
+let gates=[],l4phase=1,l4judgment=false;
+function initL4(){
+  l4phase=1;l4judgment=false;
+  const baseTime=16+camp.discipline*0.12+(camp.stealth*0.04);
+  gates=[
+    {x:W*0.2,y:H*0.32,hp:100,timer:baseTime,label:'WEST GATE'},
+    {x:W*0.5,y:H*0.22,hp:100,timer:baseTime+4,label:'NORTH GATE'},
+    {x:W*0.8,y:H*0.32,hp:100,timer:baseTime+8,label:'EAST GATE'},
+  ];
+  timeMax=1;timeLeft=1;
+  setHUD('GATES','0 / 3','PHASE','ASSAULT');
+  setClue('Keilah is besieged. Tap a gate to press the attack there — your men fight as well as you trained and fed them. Break all three before the timers fall.');
+  tapCB=p=>{
+    const g=gates.find(g=>g.hp>0&&dist(p,g)<44);
+    if(g){
+      const foodPenalty=(6-camp.food)*1.2;
+      g.hp-=Math.max(4,14+camp.combat*0.12-foodPenalty);
+      pop(g.x,g.y,'#b0483a');
+      if(g.hp<=0){pop(g.x,g.y);
+        const done=gates.filter(x=>x.hp<=0).length;
+        setHUD('GATES',done+' / 3','PHASE',l4phase===1?'ASSAULT':'DEFEND');
+        if(l4phase===1&&done>=3)startDefend();
+        else if(l4phase===2&&done>=3)startJudgment();
+      }
+    }
+  };
+}
+function startDefend(){
+  l4phase=2;
+  const baseTime=13+camp.discipline*0.1;
+  gates=[
+    {x:W*0.2,y:H*0.32,hp:100,timer:baseTime,label:'WEST WALL'},
+    {x:W*0.5,y:H*0.22,hp:100,timer:baseTime+3,label:'NORTH WALL'},
+    {x:W*0.8,y:H*0.32,hp:100,timer:baseTime+6,label:'EAST WALL'},
+  ];
+  setHUD('WALLS','0 / 3','PHASE','DEFEND');
+  setClue('The city is yours — now hold it! Counter-attack strikes the walls. Tap to repel each assault before its timer falls.');
+}
+function startJudgment(){
+  l4phase=3;running=false;
+  showScreen('WORD REACHES THE CITY','Saul has heard that you are in Keilah, and marches to trap you within its gates. David enquired of the LORD: "Will the men of Keilah deliver me into his hand?" And the LORD said, "They will deliver thee up."','DEPART INTO THE WILDERNESS',
+    ()=>{winLevel();},
+    '"Then David and his men, which were about six hundred, arose and departed out of Keilah."','1 SAMUEL 23:13');
+}
+function tickL4(dt){
+  if(l4phase===3)return;
+  for(const g of gates){
+    if(g.hp>0){
+      g.timer-=dt;
+      if(g.timer<=0){
+        failLevel(l4phase===1?'The assault stalled and the moment was lost. Lead them again.':'A wall fell to the counter-attack. Hold every wall.');
+        return;
+      }
+    }
+  }
+}
+function drawL4(){
+  drawWorld('city');
+  // city block
+  ctx.fillStyle='#57503f';ctx.fillRect(W*0.14,H*0.16,W*0.72,H*0.3);
+  ctx.strokeStyle='#3a3125';ctx.strokeRect(W*0.14,H*0.16,W*0.72,H*0.3);
+  gates.forEach(g=>{
+    const broken=g.hp<=0;
+    ctx.fillStyle=broken?'#7d8a50':'#4f4436';
+    ctx.fillRect(g.x-26,g.y-20,52,40);
+    ctx.strokeStyle=broken?'#7d8a50':'#C9A84C';ctx.strokeRect(g.x-26,g.y-20,52,40);
+    if(!broken){
+      // hp bar + timer
+      ctx.fillStyle='#b0483a';ctx.fillRect(g.x-26,g.y-32,52*(g.hp/100),6);
+      ctx.strokeStyle='#8a7434';ctx.strokeRect(g.x-26,g.y-32,52,6);
+      ctx.fillStyle=g.timer<5?'#e88373':'#e8dcc0';
+      ctx.font='13px Cinzel,serif';ctx.textAlign='center';
+      ctx.fillText(Math.ceil(g.timer),g.x,g.y+6);
+    }
+  });
+  // men
+  for(let i=0;i<6;i++)drawFigure(W*(0.2+i*0.12),H*0.7,'#8a6a3a',null,0.9);
+  drawDavid(W*0.5,H*0.82);
+}
+
+/* ---------- L5: A WAR WON ---------- */
+let l5kills=0,l5spawn=0;
+function initL5(){
+  enemies=[];projectiles=[];l5kills=0;l5spawn=0;
+  timeMax=1;timeLeft=1;
+  setHUD('DEFEATED',l5kills+' / 10','BOUNTY','0');
+  setClue('Raiders strike your camp! Tap the near, sling the far. Defeat all ten — each one falls with spoil.');
+  dragMode=true;
+  releaseCB=(a,b)=>fireStone(a,b);
+  cv.addEventListener('pointerdown',l5tap);
+}
+function l5tap(e){
+  if(level!==6)return;
+  const p=pt(e);
+  const foodPenalty=(6-camp.food)>2; // very underfed = need precision
+  const reach=foodPenalty?26:34;
+  const hit=enemies.find(en=>!en.dead&&dist(p,en)<reach&&en.x<W*0.55);
+  if(hit){hit.dead=true;l5kills++;camp.bounty++;pop(hit.x,hit.y);
+    setHUD('DEFEATED',l5kills+' / 10','BOUNTY',camp.bounty);}
+}
+function tickL5(dt){
+  l5spawn-=dt;
+  const alive=enemies.filter(e=>!e.dead).length;
+  if(l5spawn<=0&&alive<5&&l5kills+alive<10){
+    l5spawn=rand(0.9,1.7);
+    enemies.push({x:W+30,y:rand(H*0.25,H*0.8),speed:rand(55,90)+(6-camp.food)*4,dead:false});
+  }
+  enemies.forEach(en=>{if(!en.dead)en.x-=en.speed*dt;});
+  for(const en of enemies){
+    if(!en.dead&&en.x<W*0.1){failLevel('The raiders reached the camp. Rally and fight again.');return;}
+  }
+  // projectiles vs enemies (reuse but count kills)
+  for(const p of projectiles){
+    p.x+=p.vx*dt;p.y+=p.vy*dt;
+    const hit=enemies.find(en=>!en.dead&&dist(p,en)<24);
+    if(hit){hit.dead=true;l5kills++;camp.bounty++;pop(hit.x,hit.y);p.dead=true;
+      setHUD('DEFEATED',l5kills+' / 10','BOUNTY',camp.bounty);}
+    if(p.x<-30||p.x>W+30||p.y<-30||p.y>H+30)p.dead=true;
+  }
+  projectiles=projectiles.filter(p=>!p.dead);
+  if(l5kills>=10){winLevel();return;}
+}
+function drawL5(){
+  drawWorld();
+  // camp
+  ctx.fillStyle='rgba(201,168,76,.15)';ctx.fillRect(0,0,W*0.1,H);
+  for(let i=0;i<4;i++)drawFigure(W*0.05,H*(0.3+i*0.15),'#8a6a3a');
+  enemies.forEach(en=>{if(!en.dead)drawEnemy(en.x,en.y);});
+  drawDavid(W*0.28,H*0.55);
+  drawProjectiles();drawAimLine(W*0.28,H*0.55);
+  for(let i=0;i<Math.min(camp.bounty,10);i++)drawChest(16+i*22,H-22);
+}
+
+/* ---------- L6: FLIGHT FROM THE GREAT PURSUIT ---------- */
+let hazards=[],l6time=0,l6need=28,l6lane=1,l6spawn=0;
+function initL6(){
+  hazards=[];l6time=0;l6lane=1;l6spawn=0;
+  l6need=28-(camp.endurance*0.06);
+  timeMax=1;timeLeft=1;
+  setHUD('SURVIVE',Math.ceil(l6need)+'s','MEN','600');
+  setClue('Saul\'s whole army closes in! Tap a lane to move. Dodge arrows, leap the rocks, strike the beasts — survive until word of the Philistine raid calls him away.');
+  tapCB=p=>{
+    // if tapping a beast directly, strike it
+    const beast=hazards.find(h=>h.kind==='beast'&&!h.dead&&dist(p,{x:laneX(h.lane),y:h.y})<34);
+    if(beast){beast.dead=true;pop(laneX(beast.lane),beast.y,'#5f4a38');return;}
+    const lane=p.x<W*0.375?0:p.x<W*0.625?1:2;
+    l6lane=lane;
+  };
+}
+function tickL6(dt){
+  l6time+=dt;
+  setHUD('SURVIVE',Math.max(0,Math.ceil(l6need-l6time))+'s','MEN','600');
+  if(l6time>=l6need){winLevel();return;}
+  l6spawn-=dt;
+  if(l6spawn<=0){
+    l6spawn=rand(0.8,1.5);
+    const kinds=['arrow','rock','beast'];
+    const kind=kinds[Math.floor(rand(0,3))];
+    hazards.push({kind,lane:Math.floor(rand(0,3)),y:-30,speed:kind==='arrow'?H*0.9:kind==='rock'?H*0.5:H*0.4,dead:false,warn:kind==='arrow'?0.5:0});
+  }
+  for(const h of hazards){
+    if(h.dead)continue;
+    if(h.warn>0){h.warn-=dt;continue;}
+    h.y+=h.speed*dt;
+    if(h.y>H*0.72&&h.y<H*0.84&&h.lane===l6lane){
+      failLevel(h.kind==='arrow'?'An arrow found you on the run.':h.kind==='rock'?'You stumbled on the broken ground.':'A beast of the wilderness caught the company.');
+      return;
+    }
+  }
+  hazards=hazards.filter(h=>!h.dead&&h.y<H+40);
+}
+function drawL6(){
+  drawWorld('night');
+  for(let i=0;i<3;i++){
+    ctx.strokeStyle='rgba(201,168,76,.2)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(laneX(i),H*0.1);ctx.lineTo(laneX(i),H*0.92);ctx.stroke();
+  }
+  hazards.forEach(h=>{
+    if(h.dead)return;
+    const x=laneX(h.lane);
+    if(h.warn>0){
+      ctx.fillStyle='rgba(176,72,58,'+(0.15+0.2*Math.sin(perf()*0.02))+')';
+      ctx.fillRect(x-W*0.1,H*0.1,W*0.2,H*0.82);
+      return;
+    }
+    if(h.kind==='arrow')drawSpear(x,h.y,Math.PI/2);
+    else if(h.kind==='rock'){ctx.fillStyle='#8c8577';ctx.beginPath();ctx.ellipse(x,h.y,16,11,0,0,7);ctx.fill();}
+    else drawEnemy(x,h.y);
+  });
+  drawDavid(laneX(l6lane),H*0.78);
+  for(let i=0;i<3;i++)drawFigure(laneX(l6lane)+(i-1)*22,H*0.9,'#8a6a3a',null,0.8);
+  // pursuing army silhouette at top
+  for(let i=0;i<5;i++)drawEnemy(W*(0.15+i*0.17),H*0.05);
+}
+
+/* ---------- L7: CROWNED BY WISDOM ---------- */
+const TRIBE_RIDDLES=[
+ {tribe:"Reuben",q:"Our father was Jacob's firstborn, yet he lost the excellency of his birthright. Why?",opts:["He sold it for pottage","He defiled his father's bed","He slew a man in anger","He mocked his father"],c:1,ref:"Genesis 49:4"},
+ {tribe:"Simeon",q:"Our tribe was scattered in Israel, receiving cities within another tribe's land. Within whose inheritance did we dwell?",opts:["Benjamin's","Ephraim's","Judah's","Dan's"],c:2,ref:"Joshua 19:1"},
+ {tribe:"Levi",q:"We received no land inheritance among our brothers. What was our inheritance instead?",opts:["The cities of refuge only","The LORD Himself","The tithes of the king","The spoils of war"],c:1,ref:"Deuteronomy 10:9"},
+ {tribe:"Dan",q:"Our judge slew more in his death than in his life. How did he die?",opts:["In battle against Philistine armies","Pulling down the pillars of a temple","By Delilah's own hand","Cast from a city wall"],c:1,ref:"Judges 16:30"},
+ {tribe:"Naphtali",q:"Our captain would not go to war unless a prophetess went with him. Who was she?",opts:["Huldah","Miriam","Deborah","Jael"],c:2,ref:"Judges 4:8"},
+ {tribe:"Gad",q:"We settled east of the Jordan. What did Moses require of us before we could keep that land?",opts:["A double tithe","To cross over armed before Israel until the land was won","To build twelve altars","To send our firstborn to Shiloh"],c:1,ref:"Numbers 32:20-22"},
+ {tribe:"Asher",q:"Our land was promised richness. What did Jacob say our bread would be?",opts:["Bitter","Fat, yielding royal dainties","Scarce in famine","Plain but plentiful"],c:1,ref:"Genesis 49:20"},
+ {tribe:"Issachar",q:"Our men who came to David at Hebron were famous for a certain understanding. Of what?",opts:["The stars of heaven","The times, to know what Israel ought to do","The law of Moses","The tongues of the nations"],c:1,ref:"1 Chronicles 12:32"},
+ {tribe:"Zebulun",q:"Jacob said we would dwell at a haven. A haven of what?",opts:["Rest","Ships","Kings","Waters"],c:1,ref:"Genesis 49:13"},
+ {tribe:"Ephraim",q:"Our forefather was Joseph's younger son, yet he received the greater blessing. Who crossed his hands to bless him so?",opts:["Joseph","Jacob","Pharaoh","Manasseh"],c:1,ref:"Genesis 48:14"},
+ {tribe:"Benjamin",q:"The first king of Israel came from our tribe, head and shoulders above the people. But where was he found when they sought to crown him?",opts:["In his father's field","Hidden among the stuff","At the high place","In the gate of the city"],c:1,ref:"1 Samuel 10:22"},
+];
+let tribeIdx=0;
+function initL7(){
+  tribeIdx=0;
+  timeMax=1;timeLeft=1;
+  running=false;
+  showScreen('CROWNED BY WISDOM','Judah has already anointed you king in Hebron. Now the elders of the eleven remaining tribes come — each with a hard question. Answer all, and the crowns become one. There is no clock here.','FACE THE ELDERS',renderTribeQ,
+    '"Then came all the tribes of Israel to David unto Hebron."','2 SAMUEL 5:1');
+}
+function renderTribeQ(){
+  if(tribeIdx>=TRIBE_RIDDLES.length){winLevel();return;}
+  const item=TRIBE_RIDDLES[tribeIdx];
+  const s=$('quizscreen');s.style.display='flex';s.className='screen';
+  const opts=shuffle(item.opts.map((t,i)=>({t,correct:i===item.c})));
+  s.innerHTML=`
+    <div class="qhud"><span>TRIBE ${tribeIdx+1} OF 11 — ${item.tribe.toUpperCase()}</span><span>JUDAH: SECURED</span></div>
+    <div class="qtext">${item.q}</div>
+    <div class="qopts" id="qopts7"></div>
+    <p class="small">Answer wrongly and this elder will simply ask again. No clock. All eleven must be won.</p>`;
+  const wrap=$('qopts7');
+  opts.forEach(o=>{
+    const b=document.createElement('button');b.className='qopt';b.textContent=o.t;
+    b.onclick=()=>{
+      [...wrap.children].forEach(c=>c.disabled=true);
+      b.classList.add(o.correct?'correct':'wrong');
+      setTimeout(()=>{
+        if(o.correct){tribeIdx++;renderTribeQ();}
+        else renderTribeQ(); // per-tribe retry, untimed
+      },700);
+    };
+    wrap.appendChild(b);
+  });
+}
+function tickL7(dt){}
+function drawL7(){drawWorld('court');}
+
+/* ============ QUIZ GATES (Trial of the Word) ============ */
+const QUIZBANK=[
+ // L0 — anointing in secret (1 Sam 16)
+ [
+  {q:"Why was Samuel afraid to go anoint a new king?",opts:["The journey was long","If Saul hear it, he will kill me","The elders opposed him","He doubted the LORD's word"],c:1,ref:"1 Samuel 16:2",passage:"And Samuel said, How can I go? if Saul hear it, he will kill me. And the LORD said, Take an heifer with thee, and say, I am come to sacrifice to the LORD."},
+  {q:"What did the LORD tell Samuel to take with him to Bethlehem?",opts:["A lamb","A heifer","A horn of oil only","Two doves"],c:1,ref:"1 Samuel 16:2",passage:"And the LORD said, Take an heifer with thee, and say, I am come to sacrifice to the LORD."},
+  {q:"Which son did Samuel first assume was the LORD's anointed?",opts:["Abinadab","Shammah","Eliab","David"],c:2,ref:"1 Samuel 16:6",passage:"And it came to pass, when they were come, that he looked on Eliab, and said, Surely the LORD's anointed is before him. But the LORD said unto Samuel, Look not on his countenance."},
+  {q:"What came upon David from that day forward after his anointing?",opts:["The favour of Saul","The Spirit of the LORD","Great riches","The fear of all Israel"],c:1,ref:"1 Samuel 16:13",passage:"Then Samuel took the horn of oil, and anointed him in the midst of his brethren: and the Spirit of the LORD came upon David from that day forward."},
+  {q:"How is David's appearance described?",opts:["Tall, head and shoulders above all","Ruddy, with a beautiful countenance","Rough and weathered","Clothed in armour"],c:1,ref:"1 Samuel 16:12",passage:"Now he was ruddy, and withal of a beautiful countenance, and goodly to look to. And the LORD said, Arise, anoint him: for this is he."},
+  {q:"What departed from Saul as the Spirit came upon David?",opts:["His kingdom","His army's loyalty","The Spirit of the LORD","His health"],c:2,ref:"1 Samuel 16:14",passage:"But the Spirit of the LORD departed from Saul, and an evil spirit from the LORD troubled him."},
+ ],
+ // L1 — harp & spear (1 Sam 16:14-23, 18:10-11)
+ [
+  {q:"What troubled Saul, requiring David's harp?",opts:["Sleeplessness","An evil spirit from the LORD","Madness from battle wounds","Grief for Jonathan"],c:1,ref:"1 Samuel 16:14",passage:"But the Spirit of the LORD departed from Saul, and an evil spirit from the LORD troubled him."},
+  {q:"Who recommended David to Saul as a cunning player?",opts:["Jonathan","Abner","One of the servants","Jesse himself"],c:2,ref:"1 Samuel 16:18",passage:"Then answered one of the servants, and said, Behold, I have seen a son of Jesse the Bethlehemite, that is cunning in playing, and a mighty valiant man... and the LORD is with him."},
+  {q:"What office did Saul give David after loving him greatly?",opts:["Captain of the host","His armourbearer","Chief musician","Keeper of the gate"],c:1,ref:"1 Samuel 16:21",passage:"And David came to Saul, and stood before him: and he loved him greatly; and he became his armourbearer."},
+  {q:"How many times did Saul cast the javelin at David?",opts:["Once","Twice","Three times","Never — he only threatened"],c:1,ref:"1 Samuel 18:11",passage:"And Saul cast the javelin; for he said, I will smite David even to the wall with it. And David avoided out of his presence twice."},
+  {q:"What did Saul say as he cast the javelin?",opts:["Die, son of Jesse","I will smite David even to the wall","The kingdom is mine","Let the LORD judge"],c:1,ref:"1 Samuel 18:11",passage:"And Saul cast the javelin; for he said, I will smite David even to the wall with it."},
+  {q:"Why was Saul afraid of David?",opts:["David had more soldiers","The LORD was with David and departed from Saul","David threatened him","The people crowned David openly"],c:1,ref:"1 Samuel 18:12",passage:"And Saul was afraid of David, because the LORD was with him, and was departed from Saul."},
+ ],
+ // L2 — bride's price (1 Sam 18)
+ [
+  {q:"What did the women sing that kindled Saul's jealousy?",opts:["David is king","Saul hath slain his thousands, and David his ten thousands","The son of Jesse reigneth","The LORD hath chosen David"],c:1,ref:"1 Samuel 18:7",passage:"And the women answered one another as they played, and said, Saul hath slain his thousands, and David his ten thousands."},
+  {q:"Which daughter of Saul loved David?",opts:["Merab","Michal","Ahinoam","Rizpah"],c:1,ref:"1 Samuel 18:20",passage:"And Michal Saul's daughter loved David: and they told Saul, and the thing pleased him."},
+  {q:"What dowry did Saul ask of David?",opts:["A hundred talents of silver","A hundred Philistine foreskins","The head of a giant","Ten cities"],c:1,ref:"1 Samuel 18:25",passage:"The king desireth not any dowry, but an hundred foreskins of the Philistines, to be avenged of the king's enemies."},
+  {q:"What did Saul secretly hope the dowry-quest would accomplish?",opts:["Great glory for Israel","That David would fall by the hand of the Philistines","Peace with the Philistines","David's promotion"],c:1,ref:"1 Samuel 18:25",passage:"But Saul thought to make David fall by the hand of the Philistines."},
+  {q:"How many Philistines did David and his men slay — double the asking?",opts:["One hundred","Two hundred","Four hundred","Fifty"],c:1,ref:"1 Samuel 18:27",passage:"Wherefore David arose and went, he and his men, and slew of the Philistines two hundred men; and David brought their foreskins, and they gave them in full tale to the king."},
+  {q:"What did Saul become to David from that time on?",opts:["A distant friend","His enemy continually","A grateful king","His counsellor"],c:1,ref:"1 Samuel 18:29",passage:"And Saul was yet the more afraid of David; and Saul became David's enemy continually."},
+ ],
+ // L3 — wilderness & Adullam (1 Sam 22)
+ [
+  {q:"To which cave did David first escape?",opts:["En Gedi","Adullam","Machpelah","Carmel"],c:1,ref:"1 Samuel 22:1",passage:"David therefore departed thence, and escaped to the cave Adullam."},
+  {q:"Who gathered to David there?",opts:["The mighty of Israel","Every one in distress, in debt, and discontented","The priests of Nob","The elders of Judah"],c:1,ref:"1 Samuel 22:2",passage:"And every one that was in distress, and every one that was in debt, and every one that was discontented, gathered themselves unto him; and he became a captain over them."},
+  {q:"About how many men were with him at first?",opts:["Two hundred","Four hundred","Six hundred","One thousand"],c:1,ref:"1 Samuel 22:2",passage:"And there were with him about four hundred men."},
+  {q:"Where did David place his father and mother for safety?",opts:["In Egypt","With the king of Moab","In Hebron","In Bethlehem"],c:1,ref:"1 Samuel 22:3-4",passage:"And David went thence to Mizpeh of Moab: and he said unto the king of Moab, Let my father and my mother, I pray thee, come forth, and be with you."},
+  {q:"Which prophet told David to depart into the land of Judah?",opts:["Nathan","Samuel","Gad","Ahijah"],c:2,ref:"1 Samuel 22:5",passage:"And the prophet Gad said unto David, Abide not in the hold; depart, and get thee into the land of Judah."},
+  {q:"Where did David abide while Saul sought him every day?",opts:["In the cities of the Philistines","In strongholds in the wilderness","In Jerusalem hidden","Beyond Jordan"],c:1,ref:"1 Samuel 23:14",passage:"And David abode in the wilderness in strong holds... And Saul sought him every day, but God delivered him not into his hand."},
+ ],
+ // L4 — Keilah (1 Sam 23)
+ [
+  {q:"Who were robbing the threshingfloors of Keilah?",opts:["The Amalekites","The Philistines","The Ammonites","Saul's men"],c:1,ref:"1 Samuel 23:1",passage:"Then they told David, saying, Behold, the Philistines fight against Keilah, and they rob the threshingfloors."},
+  {q:"What did David do before going to save Keilah?",opts:["Counted his men","Enquired of the LORD","Sent spies","Made a covenant with the city"],c:1,ref:"1 Samuel 23:2",passage:"Therefore David enquired of the LORD, saying, Shall I go and smite these Philistines? And the LORD said unto David, Go, and smite the Philistines, and save Keilah."},
+  {q:"How many times did David enquire of the LORD about Keilah before the battle?",opts:["Once","Twice","Three times","He did not enquire"],c:1,ref:"1 Samuel 23:2-4",passage:"Then David enquired of the LORD yet again. And the LORD answered him and said, Arise, go down to Keilah; for I will deliver the Philistines into thine hand."},
+  {q:"What did the LORD say the men of Keilah would do if Saul came?",opts:["Fight for David","Deliver David up","Flee the city","Send for the Philistines"],c:1,ref:"1 Samuel 23:12",passage:"Then said David, Will the men of Keilah deliver me and my men into the hand of Saul? And the LORD said, They will deliver thee up."},
+  {q:"What did the priest Abiathar bring with him to David at Keilah?",opts:["The ark","An ephod","The book of the law","The showbread"],c:1,ref:"1 Samuel 23:6",passage:"And it came to pass, when Abiathar the son of Ahimelech fled to David to Keilah, that he came down with an ephod in his hand."},
+  {q:"About how many men departed from Keilah with David?",opts:["Four hundred","Six hundred","Three hundred","One thousand"],c:1,ref:"1 Samuel 23:13",passage:"Then David and his men, which were about six hundred, arose and departed out of Keilah, and went whithersoever they could go."},
+ ],
+ // L5 — the great pursuit (1 Sam 23:19-28)
+ [
+  {q:"Who betrayed David's hiding place to Saul?",opts:["The men of Keilah","The Ziphites","Doeg the Edomite","His own brother"],c:1,ref:"1 Samuel 23:19",passage:"Then came up the Ziphites to Saul to Gibeah, saying, Doth not David hide himself with us in strong holds in the wood?"},
+  {q:"Where was David when Saul's men compassed him round about?",opts:["The wilderness of Ziph","The wilderness of Maon","En Gedi","Mount Gilboa"],c:1,ref:"1 Samuel 23:25-26",passage:"And Saul and his men went to seek him. And they told David: wherefore he came down into a rock, and abode in the wilderness of Maon."},
+  {q:"How close did Saul come to taking David?",opts:["A day's march away","Saul went on this side of the mountain, David on that side","Saul never found the region","Within the same cave"],c:1,ref:"1 Samuel 23:26",passage:"And Saul went on this side of the mountain, and David and his men on that side of the mountain: and David made haste to get away for fear of Saul."},
+  {q:"What message turned Saul back from the pursuit?",opts:["Samuel is dead","The Philistines have invaded the land","Jonathan has rebelled","The ark is taken"],c:1,ref:"1 Samuel 23:27",passage:"But there came a messenger unto Saul, saying, Haste thee, and come; for the Philistines have invaded the land."},
+  {q:"What name was given to that place of escape?",opts:["Ebenezer","Sela-hammahlekoth, the rock of divisions","Mizpah","Peniel"],c:1,ref:"1 Samuel 23:28",passage:"Wherefore they called that place Sela-hammahlekoth."},
+  {q:"Where did David go up to dwell after the escape?",opts:["Hebron","The strongholds of En Gedi","Gath","The cave of Adullam"],c:1,ref:"1 Samuel 23:29",passage:"And David went up from thence, and dwelt in strong holds at Engedi."},
+ ],
+ // L6 — David's fighting men
+ [
+  {q:"What did David become over the men who gathered to him?",opts:["A judge","A captain over them","Their priest","Their king at once"],c:1,ref:"1 Samuel 22:2",passage:"And every one that was in distress... gathered themselves unto him; and he became a captain over them."},
+  {q:"Psalm 144 blesses the LORD who teaches David's hands to do what?",opts:["To build","To war","To write","To heal"],c:1,ref:"Psalm 144:1",passage:"Blessed be the LORD my strength, which teacheth my hands to war, and my fingers to fight."},
+  {q:"With what did David and his men smite the Philistines at Keilah?",opts:["Only slings","A great slaughter","Fire from heaven","The help of Saul's army"],c:1,ref:"1 Samuel 23:5",passage:"So David and his men went to Keilah, and fought with the Philistines, and brought away their cattle, and smote them with a great slaughter."},
+  {q:"What did David's men take from the Philistines at Keilah?",opts:["Their gods","Their cattle","Their gold","Their chariots"],c:1,ref:"1 Samuel 23:5",passage:"So David and his men... brought away their cattle, and smote them with a great slaughter. So David saved the inhabitants of Keilah."},
+  {q:"Who was David's nephew and mighty captain in later years?",opts:["Abner","Joab","Ittai","Benaiah"],c:1,ref:"2 Samuel 8:16",passage:"And Joab the son of Zeruiah was over the host."},
+  {q:"How does the psalmist describe the LORD in Psalm 144:2?",opts:["My fortress and my deliverer","A consuming fire","The King of glory","The judge of all the earth"],c:0,ref:"Psalm 144:2",passage:"My goodness, and my fortress; my high tower, and my deliverer; my shield, and he in whom I trust."},
+ ],
+ // L7 — crowned at Hebron (2 Sam 2, 5)
+ [
+  {q:"Which tribe anointed David king first, before all the others?",opts:["Benjamin","Ephraim","Judah","Levi"],c:2,ref:"2 Samuel 2:4",passage:"And the men of Judah came, and there they anointed David king over the house of Judah."},
+  {q:"In what city was David anointed king?",opts:["Jerusalem","Bethlehem","Hebron","Gilgal"],c:2,ref:"2 Samuel 2:4",passage:"And the men of Judah came, and there they anointed David king over the house of Judah."},
+  {q:"How old was David when he began to reign?",opts:["Twenty-five","Thirty","Forty","Thirty-three"],c:1,ref:"2 Samuel 5:4",passage:"David was thirty years old when he began to reign, and he reigned forty years."},
+  {q:"How long did David reign in total?",opts:["Thirty years","Forty years","Fifty years","Twenty-two years"],c:1,ref:"2 Samuel 5:4",passage:"David was thirty years old when he began to reign, and he reigned forty years."},
+  {q:"What did the elders say when they came to David at Hebron?",opts:["We have no king but thee","Behold, we are thy bone and thy flesh","The LORD hath rejected Saul","Give us a covenant first"],c:1,ref:"2 Samuel 5:1",passage:"Then came all the tribes of Israel to David unto Hebron, and spake, saying, Behold, we are thy bone and thy flesh."},
+  {q:"How many years passed between David's reign over Judah alone and over all Israel?",opts:["Three years","Seven years and six months","Ten years","One year"],c:1,ref:"2 Samuel 5:5",passage:"In Hebron he reigned over Judah seven years and six months: and in Jerusalem he reigned thirty and three years over all Israel and Judah."},
+ ],
+];
+
+let quizQ=[],quizIdx=0,quizStrikes=0,quizOnPass=null,quizLevelForRetry=0;
+function showQuizGate(lvlIndex,onPass){
+  quizLevelForRetry=lvlIndex;quizOnPass=onPass;
+  quizQ=shuffle(QUIZBANK[lvlIndex]).map(q=>({...q,shuffledOpts:null}));
+  quizIdx=0;quizStrikes=0;
+  renderQuizIntro();
+}
+function renderQuizIntro(){
+  const s=$('quizscreen');s.style.display='flex';s.className='screen';
+  s.innerHTML=`<h2>TRIAL OF THE WORD</h2>
+    <p>Before the road continues, answer what scripture says. ${QUIZBANK[quizLevelForRetry].length} questions — all must be answered rightly.</p>
+    <button id="quiz-start-btn">BEGIN</button>`;
+  $('quiz-start-btn').onclick=renderQuizQuestion;
+}
+function renderQuizQuestion(){
+  if(quizIdx>=quizQ.length){passQuizGate();return;}
+  const item=quizQ[quizIdx];
+  if(!item.shuffledOpts){
+    const idxs=shuffle(item.opts.map((_,i)=>i));
+    item.shuffledOpts=idxs.map(i=>({text:item.opts[i],correct:i===item.c}));
+  }
+  const s=$('quizscreen');s.style.display='flex';s.className='screen';
+  const strikeDots=Array.from({length:3},(_,i)=>`<span class="${i<quizStrikes?'x':''}"></span>`).join('');
+  s.innerHTML=`
+    <div class="qhud"><span>QUESTION ${quizIdx+1} OF ${quizQ.length}</span><span class="qstrikes">STRIKES${strikeDots}</span></div>
+    <div class="qtext">${item.q}</div>
+    <div class="qopts" id="qopts"></div>
+    ${item.showHint?`<button class="hintlink" id="hintbtn">Read the passage — ${item.ref}</button>`:''}`;
+  if(item.showHint)$('hintbtn').onclick=()=>openPassage(item.ref,item.passage);
+  const wrap=$('qopts');
+  item.shuffledOpts.forEach(opt=>{
+    const b=document.createElement('button');b.className='qopt';b.textContent=opt.text;
+    b.onclick=()=>{
+      [...wrap.children].forEach(c=>c.disabled=true);
+      b.classList.add(opt.correct?'correct':'wrong');
+      setTimeout(()=>{
+        if(opt.correct){quizIdx++;renderQuizQuestion();}
+        else{quizStrikes++;item.shuffledOpts=null;item.showHint=true;if(quizStrikes>=3){failQuizGate(item.ref);}else{renderQuizQuestion();}}
+      },700);
+    };
+    wrap.appendChild(b);
+  });
+}
+function openPassage(ref,text){
+  $('pm-ref').textContent=ref;
+  $('pm-text').textContent=text||'';
+  $('passagemodal').style.display='flex';
+}
+$('pm-close').onclick=()=>{$('passagemodal').style.display='none';};
+
+function failQuizGate(ref){
+  const s=$('quizscreen');s.style.display='flex';s.className='screen fail';
+  s.innerHTML=`<h2>THE WORD IS NOT YET KNOWN</h2>
+    <p>Three strikes. Look again to ${ref||'the scriptures'} and return.</p>
+    <button id="quiz-retry-btn">TRY AGAIN</button>`;
+  $('quiz-retry-btn').onclick=()=>{quizQ=shuffle(QUIZBANK[quizLevelForRetry]).map(q=>({...q,shuffledOpts:null}));quizIdx=0;quizStrikes=0;renderQuizQuestion();};
+}
+function passQuizGate(){
+  const s=$('quizscreen');s.style.display='flex';s.className='screen';
+  s.innerHTML=`<h2>WELL ANSWERED</h2>
+    <p>The word is known. The road continues.</p>
+    <button id="quiz-continue-btn">CONTINUE</button>`;
+  $('quiz-continue-btn').onclick=()=>{s.style.display='none';quizOnPass();};
+}
+
+/* ============ MAIN LOOP ============ */
+const TICKS=[tickL0,tickL1,tickL2,tickL3,tickL4,tickL6,tickL5,tickL7];
+const DRAWS=[drawL0,drawL1,drawL2,drawL3,drawL4,drawL6,drawL5,drawL7];
+function loop(t){
+  if(!running)return;
+  const dt=Math.min(0.05,(t-lastT)/1000);lastT=t;
+  TICKS[level](dt);
+  if(!running)return;
+  tickParticles(dt);
+  ctx.clearRect(0,0,W,H);
+  DRAWS[level]();
+  drawParticles();
+  if(timeMax>1){
+    const f=clamp(timeLeft/timeMax,0,1);
+    $('timerfill').style.width=(f*100)+'%';
+    $('timerfill').className=f<0.25?'low':'';
+  } else {$('timerfill').style.width='100%';$('timerfill').className='';}
+  requestAnimationFrame(loop);
+}
+
+/* ============ START ============ */
+showScreen("THE LONG ROAD TO THE THRONE","Anointed in secret, crowned at Hebron — eight trials between the oil and the throne. Your choices in feeding and training your men will follow you into every battle.","BEGIN",()=>startLevel(0),
+  '"And the Spirit of the LORD came upon David from that day forward."','1 SAMUEL 16:13',false,
+  'Tap to act · drag to sling · after every trial, the Word itself must be answered');
+</script>
+</body>
+</html>

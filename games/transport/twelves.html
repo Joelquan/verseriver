@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Twelves of Scripture</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14110d; --panel:#201b14; --panel2:#2a2418;
+    --gold:#C9A84C; --gold-dim:#7d6a30; --parch:#e8dcc0; --danger:#b0483a; --green:#7d8a50;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;background:var(--ink);color:var(--parch);font-family:'Cormorant Garamond',serif;overflow:hidden}
+  #app{display:flex;flex-direction:column;height:100%;max-width:820px;margin:0 auto}
+  header{padding:12px 16px 8px;text-align:center;border-bottom:1px solid var(--gold-dim)}
+  header h1{font-family:'Cinzel',serif;font-size:16px;letter-spacing:.28em;color:var(--gold)}
+  header p{font-size:14px;font-style:italic;opacity:.7;margin-top:2px}
+  #hud{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:var(--panel);border-bottom:1px solid #383021;font-size:14px}
+  #hud .h{font-family:'Cinzel',serif;letter-spacing:.1em;font-size:12px;color:var(--gold)}
+  #strikes span{display:inline-block;width:11px;height:11px;border:1px solid var(--gold-dim);border-radius:50%;margin-left:5px;vertical-align:middle}
+  #strikes span.x{background:var(--danger);border-color:var(--danger)}
+  #stage{position:relative;flex:1;display:flex;flex-direction:column;min-height:0;overflow-y:auto}
+  #qwrap{padding:16px 20px 6px;text-align:center}
+  #namecard{display:inline-block;min-width:230px;max-width:92%;background:var(--panel2);border:1px solid var(--gold);border-radius:4px;padding:14px 20px}
+  #namecard .k{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.2em;color:var(--gold);opacity:.85}
+  #namecard .n{font-size:22px;font-weight:600;margin-top:5px}
+  #diff{display:inline-block;margin-top:8px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.14em;padding:2px 10px;border:1px solid var(--gold-dim);border-radius:10px;color:var(--gold);opacity:.8}
+  #qtitle{font-size:16px;font-style:italic;opacity:.8;margin:12px 0 8px}
+  #opts{padding:0 18px 20px;display:flex;flex-direction:column;gap:9px}
+  .opt{background:var(--panel2);border:1px solid var(--gold-dim);border-radius:4px;padding:12px 16px;font-family:'Cormorant Garamond',serif;font-size:16.5px;line-height:1.3;color:var(--parch);text-align:left;cursor:pointer}
+  .opt b{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;color:var(--gold);display:block;margin-bottom:2px;opacity:.85}
+  .opt:active{border-color:var(--gold)}
+  .opt.correct{border-color:var(--green);background:rgba(125,138,80,.18)}
+  .opt.wrong{border-color:var(--danger);background:rgba(176,72,58,.18)}
+
+  .screen{position:absolute;inset:0;background:rgba(16,13,10,.97);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:26px;z-index:30;overflow-y:auto}
+  .screen h2{font-family:'Cinzel',serif;color:var(--gold);font-size:20px;letter-spacing:.14em;margin-bottom:10px}
+  .screen p{font-size:17px;max-width:460px;line-height:1.4;margin-bottom:6px}
+  .screen .verse{font-style:italic;color:var(--gold);margin:12px 0 4px;max-width:420px}
+  .screen .ref{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.16em;opacity:.75;margin-bottom:8px}
+  .screen button{font-family:'Cinzel',serif;letter-spacing:.16em;font-size:14px;padding:11px 28px;margin-top:12px;background:none;border:1px solid var(--gold);color:var(--gold);border-radius:2px;cursor:pointer}
+  .screen button:active{background:var(--gold);color:var(--ink)}
+  .fail h2{color:var(--danger)}
+  .small{font-size:13px !important;opacity:.6}
+
+  .setuprow{margin:12px 0}
+  .setuprow .lbl{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.16em;color:var(--gold);margin-bottom:8px}
+  .pillrow{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:460px}
+  .pill{font-family:'Cinzel',serif;font-size:12.5px;letter-spacing:.03em;padding:7px 12px;border:1px solid var(--gold-dim);border-radius:16px;color:var(--parch);cursor:pointer;background:none}
+  .pill.sel{border-color:var(--gold);background:rgba(201,168,76,.18);color:var(--gold)}
+</style>
+</head>
+<body>
+<div id="app">
+  <header><h1>TWELVES OF SCRIPTURE</h1><p>Gates, stones, and foundations — each in its place.</p></header>
+  <div id="hud">
+    <div><span class="h">PROGRESS</span> <span id="placed">0 / 0</span></div>
+    <div id="strikes"><span class="h">STRIKES</span><span></span><span></span><span></span></div>
+  </div>
+  <div id="stage">
+    <div class="screen" id="setup"></div>
+    <div id="qwrap" style="display:none">
+      <div id="namecard">
+        <div class="k" id="kicker">—</div>
+        <div class="n" id="qname">—</div>
+        <div id="diff">DIFFICULTY 1</div>
+      </div>
+      <div id="qtitle">—</div>
+    </div>
+    <div id="opts"></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const sample=(arr,n)=>shuffle(arr).slice(0,n);
+const OPT_COUNT_BY_DIFF={1:3,2:4,3:5};
+
+/* ---------- GATES — Ezekiel 48:31-34 (explicit tribe-to-side; Rev 21 does not specify which tribe is on which side) ---------- */
+const SIDE_VERSES={
+ North:{v:"Three gates northward; one gate of Reuben, one gate of Judah, one gate of Levi.",ref:"Ezekiel 48:31"},
+ East:{v:"At the east side... three gates; one gate of Joseph, one gate of Benjamin, one gate of Dan.",ref:"Ezekiel 48:32"},
+ South:{v:"Three gates; one gate of Simeon, one gate of Issachar, one gate of Zebulun.",ref:"Ezekiel 48:33"},
+ West:{v:"With their three gates; one gate of Gad, one gate of Asher, one gate of Naphtali.",ref:"Ezekiel 48:34"},
+};
+const GATES=[
+ {n:"Reuben",side:"North",d:2},{n:"Judah",side:"North",d:1},{n:"Levi",side:"North",d:3},
+ {n:"Joseph",side:"East",d:2},{n:"Benjamin",side:"East",d:1},{n:"Dan",side:"East",d:2},
+ {n:"Simeon",side:"South",d:2},{n:"Issachar",side:"South",d:3},{n:"Zebulun",side:"South",d:3},
+ {n:"Gad",side:"West",d:2},{n:"Asher",side:"West",d:3},{n:"Naphtali",side:"West",d:2},
+].map(g=>({...g,type:'gate',v:SIDE_VERSES[g.side].v,ref:SIDE_VERSES[g.side].ref}));
+
+/* ---------- STONES OF THE BREASTPLATE — Exodus 28:17-20 (explicit stone+row; tribe pairing is tradition, not stated text, so omitted) ---------- */
+const ROW_VERSES={
+ 1:{v:"The first row shall be a sardius, a topaz, and a carbuncle.",ref:"Exodus 28:17"},
+ 2:{v:"The second row shall be an emerald, a sapphire, and a diamond.",ref:"Exodus 28:18"},
+ 3:{v:"The third row a ligure, an agate, and an amethyst.",ref:"Exodus 28:19"},
+ 4:{v:"The fourth row a beryl, and an onyx, and a jasper: they shall be set in gold in their inclosings.",ref:"Exodus 28:20"},
+};
+const STONES=[
+ {n:"Sardius",row:1,d:1},{n:"Topaz",row:1,d:1},{n:"Carbuncle",row:1,d:3},
+ {n:"Emerald",row:2,d:1},{n:"Sapphire",row:2,d:2},{n:"Diamond",row:2,d:2},
+ {n:"Ligure",row:3,d:3},{n:"Agate",row:3,d:3},{n:"Amethyst",row:3,d:2},
+ {n:"Beryl",row:4,d:2},{n:"Onyx",row:4,d:1},{n:"Jasper",row:4,d:1},
+].map(s=>({...s,type:'stone',v:ROW_VERSES[s.row].v,ref:ROW_VERSES[s.row].ref}));
+
+/* ---------- FOUNDATIONS OF NEW JERUSALEM — Revelation 21:19-20 ---------- */
+const ORDW=["First","Second","Third","Fourth","Fifth","Sixth","Seventh","Eighth","Ninth","Tenth","Eleventh","Twelfth"];
+const FOUNDATIONS=[
+ {n:"Jasper",num:1,d:1,v:"The first foundation was jasper.",ref:"Revelation 21:19"},
+ {n:"Sapphire",num:2,d:1,v:"The second, sapphire.",ref:"Revelation 21:19"},
+ {n:"Chalcedony",num:3,d:3,v:"The third, a chalcedony.",ref:"Revelation 21:19"},
+ {n:"Emerald",num:4,d:2,v:"The fourth, an emerald.",ref:"Revelation 21:19"},
+ {n:"Sardonyx",num:5,d:3,v:"The fifth, sardonyx.",ref:"Revelation 21:20"},
+ {n:"Sardius",num:6,d:2,v:"The sixth, sardius.",ref:"Revelation 21:20"},
+ {n:"Chrysolyte",num:7,d:3,v:"The seventh, chrysolite.",ref:"Revelation 21:20"},
+ {n:"Beryl",num:8,d:2,v:"The eighth, beryl.",ref:"Revelation 21:20"},
+ {n:"Topaz",num:9,d:2,v:"The ninth, a topaz.",ref:"Revelation 21:20"},
+ {n:"Chrysoprasus",num:10,d:3,v:"The tenth, a chrysoprasus.",ref:"Revelation 21:20"},
+ {n:"Jacinth",num:11,d:3,v:"The eleventh, a jacinth.",ref:"Revelation 21:20"},
+ {n:"Amethyst",num:12,d:1,v:"The twelfth, an amethyst.",ref:"Revelation 21:20"},
+].map(f=>({...f,type:'foundation'}));
+
+const ALL=[...GATES,...STONES,...FOUNDATIONS];
+const SIDES=["North","East","South","West"];
+const ROWS=[1,2,3,4];
+
+let deck=[],cur=null,idx=0,strikes=0,stage=0;
+let chosenSet='gates', chosenDiff='mix', chosenCount=6;
+
+function setPool(key){ if(key==='gates')return GATES; if(key==='stones')return STONES; if(key==='foundations')return FOUNDATIONS; return ALL; }
+function poolFor(setKey,diff){
+  const p=setPool(setKey);
+  if(diff==='mix')return p;
+  return p.filter(r=>r.d==Number(diff));
+}
+function setupHTML(){
+  return `<h2>TWELVES OF SCRIPTURE</h2>
+    <p>Three sets of twelve: the gates of Ezekiel's city, the stones of the breastplate, and the foundations of the New Jerusalem.</p>
+    <div class="setuprow"><div class="lbl">WHICH SET</div><div class="pillrow" id="setrow"></div></div>
+    <div class="setuprow"><div class="lbl">DIFFICULTY</div><div class="pillrow" id="diffrow"></div></div>
+    <div class="setuprow"><div class="lbl">HOW MANY</div><div class="pillrow" id="countrow"></div></div>
+    <button id="startbtn">BEGIN</button>
+    <p class="small">Note: some stones share a name across sets — the breastplate and the foundations are not the same list.</p>`;
+}
+function buildSetup(){
+  const sr=$('setrow');sr.innerHTML='';
+  [["gates","12 Gates (Ezekiel)"],["stones","12 Breastplate Stones"],["foundations","12 Foundations (Rev.)"],["all","All Mixed"]].forEach(([val,label])=>{
+    const p=document.createElement('button');p.className='pill'+(val===chosenSet?' sel':'');p.textContent=label;
+    p.onclick=()=>{chosenSet=val;buildSetup();};
+    sr.appendChild(p);
+  });
+  const dr=$('diffrow');dr.innerHTML='';
+  [["1","Difficulty 1"],["2","Difficulty 2"],["3","Difficulty 3"],["mix","Mixed"]].forEach(([val,label])=>{
+    const p=document.createElement('button');p.className='pill'+(val===chosenDiff?' sel':'');p.textContent=label;
+    p.onclick=()=>{chosenDiff=val;buildSetup();};
+    dr.appendChild(p);
+  });
+  const cr=$('countrow');cr.innerHTML='';
+  const maxAvail=poolFor(chosenSet,chosenDiff).length;
+  if(chosenCount>maxAvail||chosenCount<1)chosenCount=maxAvail;
+  const step=maxAvail>12?3:1;
+  for(let n=step;n<=maxAvail;n+=step){
+    const p=document.createElement('button');p.className='pill'+(n===chosenCount?' sel':'');
+    p.textContent=n;
+    p.onclick=()=>{chosenCount=n;buildSetup();};
+    cr.appendChild(p);
+  }
+  if(chosenCount!==maxAvail){
+    const p=document.createElement('button');p.className='pill'+(maxAvail===chosenCount?' sel':'');
+    p.textContent=maxAvail+' (all)';
+    p.onclick=()=>{chosenCount=maxAvail;buildSetup();};
+    cr.appendChild(p);
+  }
+}
+function initSetupScreen(){
+  const s=$('setup');s.className='screen';s.innerHTML=setupHTML();
+  buildSetup();
+  $('startbtn').onclick=beginGame;
+}
+function beginGame(){
+  const pool=poolFor(chosenSet,chosenDiff);
+  const n=Math.min(chosenCount,pool.length);
+  deck=sample(pool,n);idx=0;strikes=0;
+  $('setup').style.display='none';
+  $('qwrap').style.display='block';
+  updateHUD();nextItem();
+}
+function updateHUD(){
+  $('placed').textContent=idx+' / '+deck.length;
+  const dots=$('strikes').querySelectorAll('span:not(.h)');
+  dots.forEach((s,i)=>s.className=i<strikes?'x':'');
+}
+function kickerFor(t){return t==='gate'?'THE GATE, NAMED FOR':t==='stone'?'THE BREASTPLATE STONE':'THE FOUNDATION STONE';}
+function nextItem(){
+  if(idx>=deck.length){win();return;}
+  cur=deck[idx];stage=0;
+  $('kicker').textContent=kickerFor(cur.type);
+  $('qname').textContent=cur.n;
+  $('diff').textContent='DIFFICULTY '+cur.d;
+  askAttr();
+}
+function renderOpts(options,correctCheck,onPick){
+  const wrap=$('opts');wrap.innerHTML='';
+  options.forEach(opt=>{
+    const b=document.createElement('button');b.className='opt';
+    b.innerHTML=opt.html!==undefined?opt.html:opt.label;
+    b.onclick=()=>{
+      const ok=correctCheck(opt);
+      b.classList.add(ok?'correct':'wrong');
+      [...wrap.children].forEach(c=>c.disabled=true);
+      setTimeout(()=>onPick(ok),550);
+    };
+    wrap.appendChild(b);
+  });
+}
+function askAttr(){
+  if(cur.type==='gate'){
+    $('qtitle').textContent='On which side of the city did this gate stand?';
+    const options=shuffle(SIDES).map(s=>({label:s,val:s}));
+    renderOpts(options,opt=>opt.val===cur.side,ok=>{ if(ok){stage=1;askVerse();} else strike('That is not the side this gate stood on.'); });
+  } else if(cur.type==='stone'){
+    $('qtitle').textContent='In which row of the breastplate did this stone sit?';
+    const options=shuffle(ROWS).map(r=>({label:ORDW[r-1]+' Row',val:r}));
+    renderOpts(options,opt=>opt.val===cur.row,ok=>{ if(ok){stage=1;askVerse();} else strike('That is not the row this stone sat in.'); });
+  } else {
+    $('qtitle').textContent='Which foundation number was it?';
+    const nWrong=(OPT_COUNT_BY_DIFF[cur.d]||4)-1;
+    const wrongNums=sample(Array.from({length:12},(_,i)=>i+1).filter(n=>n!==cur.num),Math.min(nWrong,11));
+    const options=shuffle([cur.num,...wrongNums]).map(n=>({label:ORDW[n-1],val:n}));
+    renderOpts(options,opt=>opt.val===cur.num,ok=>{ if(ok){stage=1;askVerse();} else strike('That is not its position among the foundations.'); });
+  }
+}
+function askVerse(){
+  $('qtitle').textContent='Which word of scripture confirms it?';
+  const setArr = cur.type==='gate'?GATES : cur.type==='stone'?STONES : FOUNDATIONS;
+  const nWrong=Math.min((OPT_COUNT_BY_DIFF[cur.d]||4)-1, new Set(setArr.map(x=>x.v)).size-1);
+  const distinctOthers=[];
+  const seen=new Set([cur.v]);
+  shuffle(setArr).forEach(o=>{ if(!seen.has(o.v)&&distinctOthers.length<nWrong){distinctOthers.push(o);seen.add(o.v);} });
+  const options=shuffle([{html:`<b>${cur.ref}</b>${cur.v}`,val:true},
+    ...distinctOthers.map(o=>({html:`<b>${o.ref}</b>${o.v}`,val:false}))]);
+  renderOpts(options,opt=>opt.val===true,ok=>{
+    if(ok){idx++;updateHUD();nextItem();} else strike('That word does not confirm this one.');
+  });
+}
+function strike(msg){
+  strikes++;updateHUD();
+  if(strikes>=3){fail(msg);}
+  else{
+    $('qtitle').textContent=msg+`  (${3-strikes} ${3-strikes===1?'strike':'strikes'} left — try again)`;
+    setTimeout(()=>{ if(stage===0)askAttr(); else askVerse(); },650);
+  }
+}
+function fail(msg){
+  const s=$('setup');s.style.display='flex';s.className='screen fail';
+  $('qwrap').style.display='none';$('opts').innerHTML='';
+  s.innerHTML=`<h2>THE ORDER IS LOST</h2>
+    <p>${msg}</p>
+    <p class="small">Three strikes. The twelve will be drawn afresh.</p>
+    <button id="againbtn">BEGIN AGAIN</button>`;
+  $('againbtn').onclick=initSetupScreen;
+}
+function win(){
+  const s=$('setup');s.style.display='flex';s.className='screen';
+  $('qwrap').style.display='none';$('opts').innerHTML='';
+  s.innerHTML=`<h2>EACH IN ITS PLACE</h2>
+    <p>${deck.length} things known rightly, each set in its true position.</p>
+    <p class="verse">"And the city lieth foursquare... and the wall of it, an hundred and forty and four cubits."</p>
+    <p class="ref">REVELATION 21:16-17</p>
+    <button id="againbtn">PLAY AGAIN</button>`;
+  $('againbtn').onclick=initSetupScreen;
+}
+initSetupScreen();
+</script>
+</body>
+</html>

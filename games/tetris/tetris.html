@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Bible Verse Tetris</title>
+<style>
+  :root{
+    --charcoal:#141414; --charcoal2:#1d1d1d; --gold:#c9a227; --gold-soft:#e8c66a;
+    --text:#f2ede2; --muted:#9a937f;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--charcoal);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  body{display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:10px 8px 18px;}
+  header{text-align:center;margin:2px 0 8px;}
+  header h1{font-family:Georgia,"Times New Roman",serif;color:var(--gold);font-size:24px;
+    letter-spacing:4px;margin:0 0 2px;text-transform:uppercase;}
+  header p{margin:0;color:var(--muted);font-size:12px;letter-spacing:1px;}
+  #stats{display:flex;gap:14px;justify-content:center;margin:8px 0;font-size:13px;color:var(--muted);}
+  #stats b{color:var(--gold-soft);font-size:15px;margin-left:4px;}
+  #layout{display:flex;gap:12px;align-items:flex-start;justify-content:center;flex-wrap:wrap;}
+  #well-wrap{position:relative;}
+  canvas#well{background:#0e0e0e;border:2px solid #3a352a;border-radius:10px;display:block;
+    touch-action:none;box-shadow:0 0 24px rgba(201,162,39,.08);}
+  #side{width:172px;display:flex;flex-direction:column;gap:10px;}
+  .panel{background:var(--charcoal2);border:1px solid #3a352a;border-radius:10px;padding:10px;}
+  .panel h3{margin:0 0 6px;font-size:11px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;
+    font-weight:600;}
+  canvas#next{background:#0e0e0e;border-radius:6px;display:block;margin:0 auto;}
+  #revealed-list{max-height:220px;overflow-y:auto;font-size:12px;}
+  #revealed-list .rv{margin:0 0 10px;padding-bottom:8px;border-bottom:1px solid #2c2820;}
+  #revealed-list .rv:last-child{border-bottom:none;}
+  #revealed-list .rv-t{font-family:Georgia,serif;font-weight:700;color:#fff;line-height:1.35;}
+  #revealed-list .rv-r{color:var(--gold-soft);font-size:11px;margin-top:2px;}
+  #revealed-empty{color:var(--muted);font-size:12px;font-style:italic;}
+  #controls{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap;max-width:420px;}
+  .tbtn{flex:1 1 0;min-width:64px;background:var(--charcoal2);border:1px solid #4a4436;color:var(--gold-soft);
+    border-radius:12px;font-size:22px;padding:12px 0;cursor:pointer;user-select:none;-webkit-user-select:none;
+    touch-action:none;}
+  .tbtn:active{background:#2b2b2b;border-color:var(--gold);}
+  .tbtn.small{font-size:13px;letter-spacing:1px;}
+  #reveal-toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(20px);
+    background:#20242a;border:1px solid var(--gold);border-radius:14px;padding:14px 18px;max-width:92vw;
+    width:380px;opacity:0;pointer-events:none;transition:opacity .35s,transform .35s;z-index:50;
+    box-shadow:0 8px 32px rgba(0,0,0,.6);}
+  #reveal-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  #reveal-toast h4{margin:0 0 8px;color:var(--gold);font-size:12px;letter-spacing:3px;text-transform:uppercase;
+    text-align:center;}
+  #reveal-toast .rt{font-family:Georgia,serif;font-weight:700;color:#fff;font-size:15px;line-height:1.4;
+    text-align:center;margin-bottom:2px;}
+  #reveal-toast .rr{color:var(--gold-soft);font-size:12px;text-align:center;margin-bottom:10px;}
+  #reveal-toast .rr:last-child{margin-bottom:0;}
+  #overlay{position:fixed;inset:0;background:rgba(10,10,10,.82);display:none;align-items:center;
+    justify-content:center;z-index:60;}
+  #overlay.show{display:flex;}
+  #overlay .card{background:var(--charcoal2);border:1px solid var(--gold);border-radius:16px;
+    padding:28px 32px;text-align:center;max-width:86vw;}
+  #overlay h2{color:var(--gold);font-family:Georgia,serif;letter-spacing:3px;margin:0 0 8px;font-size:22px;}
+  #overlay p{color:var(--muted);font-size:14px;margin:0 0 16px;}
+  #overlay .big{font-size:15px;color:var(--text);margin-bottom:18px;}
+  .btn{background:var(--gold);color:#141414;border:none;border-radius:10px;font-size:15px;font-weight:700;
+    padding:12px 28px;cursor:pointer;letter-spacing:1px;}
+  .btn:active{transform:scale(.97);}
+  .btn.ghost{background:transparent;color:var(--gold-soft);border:1px solid #4a4436;margin-left:8px;}
+  @media (max-width:560px){
+    #side{width:100%;max-width:352px;flex-direction:row;}
+    #side .panel{flex:1;}
+    #revealed-list{max-height:120px;}
+    header h1{font-size:20px;}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Bible Verse Tetris</h1>
+  <p>Every block carries the Word</p>
+</header>
+<div id="stats">
+  <span>Score<b id="score">0</b></span>
+  <span>Lines<b id="lines">0</b></span>
+  <span>Level<b id="level">1</b></span>
+</div>
+<div id="layout">
+  <div id="well-wrap">
+    <canvas id="well" width="352" height="660"></canvas>
+  </div>
+  <div id="side">
+    <div class="panel">
+      <h3>Next</h3>
+      <canvas id="next" width="132" height="88"></canvas>
+    </div>
+    <div class="panel" style="flex:1;">
+      <h3>Verses Revealed</h3>
+      <div id="revealed-list"><div id="revealed-empty">Clear lines to reveal verses.</div></div>
+    </div>
+  </div>
+</div>
+<div id="controls">
+  <button class="tbtn" id="btn-left" aria-label="Move left">&#9664;</button>
+  <button class="tbtn" id="btn-right" aria-label="Move right">&#9654;</button>
+  <button class="tbtn" id="btn-rot" aria-label="Rotate">&#10227;</button>
+  <button class="tbtn" id="btn-down" aria-label="Soft drop">&#9660;</button>
+  <button class="tbtn" id="btn-drop" aria-label="Hard drop">&#10515;</button>
+</div>
+<div id="controls" style="margin-top:8px;">
+  <button class="tbtn small" id="btn-pause">Pause</button>
+  <button class="tbtn small" id="btn-restart">Restart</button>
+</div>
+<div id="reveal-toast"><h4>&#10022; Verse Revealed &#10022;</h4><div id="reveal-body"></div></div>
+<div id="overlay"><div class="card">
+  <h2 id="ov-title">Game Over</h2>
+  <p id="ov-sub"></p>
+  <div class="big" id="ov-score"></div>
+  <button class="btn" id="btn-again">Play Again</button>
+</div></div>
+<script>
+"use strict";
+const VERSES = [{"t": "For we walk by faith, not by sight:", "r": "2 Corinthians 5:7"}, {"t": "We love him, because he first loved us.", "r": "1 John 4:19"}, {"t": "Thou shalt have no other gods before me.", "r": "Exodus 20:3"}, {"t": "Remember the sabbath day, to keep it holy.", "r": "Exodus 20:8"}, {"t": "The LORD bless thee, and keep thee:", "r": "Numbers 6:24"}, {"t": "For with God nothing shall be impossible.", "r": "Luke 1:37"}, {"t": "Rejoice evermore. Pray without ceasing.", "r": "1 Thessalonians 5:16-17"}, {"t": "But godliness with contentment is great gain.", "r": "1 Timothy 6:6"}, {"t": "They that sow in tears shall reap in joy.", "r": "Psalm 126:5"}, {"t": "What time I am afraid, I will trust in thee.", "r": "Psalm 56:3"}, {"t": "Thanks be unto God for his unspeakable gift.", "r": "2 Corinthians 9:15"}, {"t": "In your patience possess ye your souls.", "r": "Luke 21:19"}, {"t": "Make haste to help me, O Lord my salvation.", "r": "Psalms 38:22"}, {"t": "Shew me thy ways, O LORD; teach me thy paths.", "r": "Psalms 25:4"}, {"t": "Let brotherly love continue.", "r": "Hebrews 13:1"}, {"t": "Grace be with you all. Amen.", "r": "Hebrews 13:25"}, {"t": "God is known in her palaces for a refuge.", "r": "Psalms 48:3"}, {"t": "For our God is a consuming fire.", "r": "Hebrews 12:29"}, {"t": "But thou, LORD, art most high for evermore.", "r": "Psalms 92:8"}, {"t": "Ephraim is joined to idols: let him alone.", "r": "Hosea 4:17"}, {"t": "But ye, brethren, be not weary in well doing.", "r": "2 Thessalonians 3:13"}, {"t": "And this will we do, if God permit.", "r": "Hebrews 6:3"}, {"t": "But Noah found grace in the eyes of the LORD.", "r": "Genesis 6:8"}, {"t": "But Sarai was barren; she had no child.", "r": "Genesis 11:30"}, {"t": "I have waited for thy salvation, O LORD.", "r": "Genesis 49:18"}, {"t": "Thus Jehu destroyed Baal out of Israel.", "r": "2 Kings 10:28"}, {"t": "But he spake of the temple of his body.", "r": "John 2:21"}, {"t": "For John was not yet cast into prison.", "r": "John 3:24"}, {"t": "He must increase, but I must decrease.", "r": "John 3:30"}, {"t": "I am that bread of life.", "r": "John 6:48"}, {"t": "Ye judge after the flesh; I judge no man.", "r": "John 8:15"}, {"t": "I and my Father are one.", "r": "John 10:30"}, {"t": "And many believed on him there.", "r": "John 10:42"}, {"t": "Jesus wept.", "r": "John 11:35"}, {"t": "Then said the Jews, Behold how he loved him!", "r": "John 11:36"}, {"t": "And he that seeth me seeth him that sent me.", "r": "John 12:45"}, {"t": "If ye love me, keep my commandments.", "r": "John 14:15"}, {"t": "He that hateth me hateth my Father also.", "r": "John 15:23"}, {"t": "The same was in the beginning with God.", "r": "John 1:2"}, {"t": "I receive not honour from men.", "r": "John 5:41"}, {"t": "For neither did his brethren believe in him.", "r": "John 7:5"}, {"t": "Jesus answered them, Do ye now believe?", "r": "John 16:31"}, {"t": "That no flesh should glory in his presence.", "r": "1 Corinthians 1:29"}, {"t": "And ye are Christ's; and Christ is God's.", "r": "1 Corinthians 3:23"}, {"t": "I speak as to wise men; judge ye what I say.", "r": "1 Corinthians 10:15"}, {"t": "For we know in part, and we prophesy in part.", "r": "1 Corinthians 13:9"}, {"t": "Let all things be done decently and in order.", "r": "1 Corinthians 14:40"}, {"t": "Let all your things be done with charity.", "r": "1 Corinthians 16:14"}, {"t": "For the body is not one member, but many.", "r": "1 Corinthians 12:14"}, {"t": "Neither give place to the devil.", "r": "Ephesians 4:27"}, {"t": "Proving what is acceptable unto the Lord.", "r": "Ephesians 5:10"}, {"t": "Not of works, lest any man should boast.", "r": "Ephesians 2:9"}, {"t": "These things command and teach.", "r": "1 Timothy 4:11"}, {"t": "Honour widows that are widows indeed.", "r": "1 Timothy 5:3"}, {"t": "Greet one another with an holy kiss.", "r": "2 Corinthians 13:12"}, {"t": "So then death worketh in us, but life in you.", "r": "2 Corinthians 4:12"}, {"t": "Thou shalt not kill.", "r": "Deuteronomy 5:17"}, {"t": "Neither shalt thou steal.", "r": "Deuteronomy 5:19"}, {"t": "Neither shalt thou commit adultery.", "r": "Deuteronomy 5:18"}, {"t": "Thou shalt have none other gods before me.", "r": "Deuteronomy 5:7"}, {"t": "Blessed shall be thy basket and thy store.", "r": "Deuteronomy 28:5"}, {"t": "Thou shalt be perfect with the LORD thy God.", "r": "Deuteronomy 18:13"}, {"t": "Open rebuke is better than secret love.", "r": "Proverbs 27:5"}, {"t": "Can two walk together, except they be agreed?", "r": "Amos 3:3"}, {"t": "For the Lord will not cast off for ever:", "r": "Lamentations 3:31"}, {"t": "And I will give him the morning star.", "r": "Revelation 2:28"}, {"t": "If any man have an ear, let him hear.", "r": "Revelation 13:9"}, {"t": "Hath not my hand made all these things?", "r": "Acts 7:50"}, {"t": "And there was great joy in that city.", "r": "Acts 8:8"}, {"t": "But the word of God grew and multiplied.", "r": "Acts 12:24"}, {"t": "But God raised him from the dead:", "r": "Acts 13:30"}, {"t": "And there they preached the gospel.", "r": "Acts 14:7"}, {"t": "The LORD shall reign for ever and ever.", "r": "Exodus 15:18"}, {"t": "So the people rested on the seventh day.", "r": "Exodus 16:30"}, {"t": "Thou shalt not commit adultery.", "r": "Exodus 20:14"}, {"t": "Thou shalt not steal.", "r": "Exodus 20:15"}, {"t": "Thou shalt make thee no molten gods.", "r": "Exodus 34:17"}, {"t": "For my yoke is easy, and my burden is light.", "r": "Matthew 11:30"}, {"t": "Give us this day our daily bread.", "r": "Matthew 6:11"}, {"t": "Judge not, that ye be not judged.", "r": "Matthew 7:1"}, {"t": "To preach the acceptable year of the Lord.", "r": "Luke 4:19"}, {"t": "And he said unto her, Thy sins are forgiven.", "r": "Luke 7:48"}, {"t": "For ye are our glory and joy.", "r": "1 Thessalonians 2:20"}, {"t": "Rejoice evermore.", "r": "1 Thessalonians 5:16"}, {"t": "Pray without ceasing.", "r": "1 Thessalonians 5:17"}, {"t": "Brethren, pray for us.", "r": "1 Thessalonians 5:25"}, {"t": "Wherefore by their fruits ye shall know them.", "r": "Matthew 7:20"}, {"t": "And when ye come into an house, salute it.", "r": "Matthew 10:12"}, {"t": "He that hath ears to hear, let him hear.", "r": "Matthew 11:15"}, {"t": "Who hath ears to hear, let him hear.", "r": "Matthew 13:9"}, {"t": "He said, Bring them hither to me.", "r": "Matthew 14:18"}, {"t": "For many are called, but few are chosen.", "r": "Matthew 22:14"}, {"t": "This is the first and great commandment.", "r": "Matthew 22:38"}, {"t": "Behold, I have told you before.", "r": "Matthew 24:25"}, {"t": "The sower soweth the word.", "r": "Mark 4:14"}, {"t": "If any man have ears to hear, let him hear.", "r": "Mark 4:23"}, {"t": "For he that is not against us is on our part.", "r": "Mark 9:40"}, {"t": "Lest coming suddenly he find you sleeping.", "r": "Mark 13:36"}, {"t": "And all flesh shall see the salvation of God.", "r": "Luke 3:6"}, {"t": "But wisdom is justified of all her children.", "r": "Luke 7:35"}, {"t": "Give us day by day our daily bread.", "r": "Luke 11:3"}, {"t": "Remember Lot's wife.", "r": "Luke 17:32"}, {"t": "And it shall turn to you for a testimony.", "r": "Luke 21:13"}, {"t": "And ye are witnesses of these things.", "r": "Luke 24:48"}, {"t": "And he left all, rose up, and followed him.", "r": "Luke 5:28"}, {"t": "Quench not the Spirit.", "r": "1 Thessalonians 5:19"}, {"t": "Despise not prophesyings.", "r": "1 Thessalonians 5:20"}, {"t": "Abstain from all appearance of evil.", "r": "1 Thessalonians 5:22"}, {"t": "Greet all the brethren with an holy kiss.", "r": "1 Thessalonians 5:26"}, {"t": "Young men likewise exhort to be sober minded.", "r": "Titus 2:6"}, {"t": "Do not err, my beloved brethren.", "r": "James 1:16"}, {"t": "A little leaven leaveneth the whole lump.", "r": "Galatians 5:9"}, {"t": "And they glorified God in me.", "r": "Galatians 1:24"}, {"t": "For every man shall bear his own burden.", "r": "Galatians 6:5"}, {"t": "There is no fear of God before their eyes.", "r": "Romans 3:18"}, {"t": "Now the God of peace be with you all. Amen.", "r": "Romans 15:33"}, {"t": "For there is no respect of persons with God.", "r": "Romans 2:11"}, {"t": "For he that is dead is freed from sin.", "r": "Romans 6:7"}, {"t": "And the way of peace have they not known:", "r": "Romans 3:17"}, {"t": "Let not then your good be evil spoken of:", "r": "Romans 14:16"}, {"t": "Hear, O Israel: The LORD our God is one LORD:", "r": "Deuteronomy 6:4"}, {"t": "I said in my haste, All men are liars.", "r": "Psalms 116:11"}, {"t": "To whom be glory for ever and ever. Amen.", "r": "Galatians 1:5"}, {"t": "And be renewed in the spirit of your mind;", "r": "Ephesians 4:23"}, {"t": "And in his name shall the Gentiles trust.", "r": "Matthew 12:21"}, {"t": "Till I make thine enemies thy footstool.", "r": "Luke 20:43"}];
+/* ================= Config ================= */
+const COLS = 8, ROWS = 15, CELL = 44;
+const W = COLS * CELL, H = ROWS * CELL;
+const well = document.getElementById('well');
+const ctx = well.getContext('2d');
+const nextCv = document.getElementById('next');
+const nctx = nextCv.getContext('2d');
+const mctx = document.createElement('canvas').getContext('2d'); // measure only
+
+const SHAPES = {
+  I: { m: [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]], c: '#2e5f8a' },
+  O: { m: [[1,1],[1,1]], c: '#a67c2e' },
+  T: { m: [[0,1,0],[1,1,1],[0,0,0]], c: '#7a4a7a' },
+  S: { m: [[0,1,1],[1,1,0],[0,0,0]], c: '#3f7a4e' },
+  Z: { m: [[1,1,0],[0,1,1],[0,0,0]], c: '#8a3b46' },
+  J: { m: [[1,0,0],[1,1,1],[0,0,0]], c: '#2e7a7a' },
+  L: { m: [[0,0,1],[1,1,1],[0,0,0]], c: '#a65a2e' }
+};
+const TYPES = Object.keys(SHAPES);
+
+/* ================= State ================= */
+let grid, active, queue, score, lines, level, dropMs, lastDrop;
+let gameOver, paused, rafId;
+let activeVerseIdx, verseCellCount, revealedCount;
+
+function newGrid(){ return Array.from({length: ROWS}, () => Array(COLS).fill(null)); }
+
+function resetGame(){
+  grid = newGrid();
+  queue = [];
+  score = 0; lines = 0; level = 1;
+  dropMs = 800; lastDrop = performance.now();
+  gameOver = false; paused = false;
+  activeVerseIdx = new Set();
+  verseCellCount = new Map();
+  revealedCount = 0;
+  active = null;
+  document.getElementById('revealed-list').innerHTML =
+    '<div id="revealed-empty">Clear lines to reveal verses.</div>';
+  document.getElementById('overlay').classList.remove('show');
+  hideToast();
+  refillQueue(); refillQueue();
+  spawnPiece();
+  updateStats();
+}
+
+/* ================= 7-bag ================= */
+function refillQueue(){
+  const bag = TYPES.slice();
+  for (let i = bag.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [bag[i], bag[j]] = [bag[j], bag[i]];
+  }
+  queue.push(...bag);
+}
+
+/* ================= Verse picking ================= */
+function bboxOf(matrix){
+  let minX = 99, maxX = -1, minY = 99, maxY = -1;
+  matrix.forEach((row, dy) => row.forEach((v, dx) => {
+    if (v){ minX = Math.min(minX, dx); maxX = Math.max(maxX, dx);
+            minY = Math.min(minY, dy); maxY = Math.max(maxY, dy); }
+  }));
+  return { minX, maxX, minY, maxY };
+}
+
+function fitText(text, maxW, maxH){
+  for (let fs = 13; fs >= 11; fs--){
+    mctx.font = '700 ' + fs + 'px Georgia, "Times New Roman", serif';
+    const words = text.split(' ');
+    const lines = [];
+    let cur = '';
+    for (const w of words){
+      const t = cur ? cur + ' ' + w : w;
+      if (mctx.measureText(t).width <= maxW || !cur) cur = t;
+      else { lines.push(cur); cur = w; }
+    }
+    if (cur) lines.push(cur);
+    const lh = fs * 1.32;
+    if (lines.length * lh <= maxH) return { fs, lines, lh };
+  }
+  return null;
+}
+
+function verseFits(text, bb){
+  const bw = (bb.maxX - bb.minX + 1) * CELL;
+  const bh = (bb.maxY - bb.minY + 1) * CELL;
+  return fitText(text, bw - 10, bh - 10 - 13) !== null;
+}
+
+function pickVerse(type, matrix){
+  const maxLen = type === 'I' ? 26 : 45;
+  const bb = bboxOf(matrix);
+  for (let i = 0; i < 60; i++){
+    const idx = Math.floor(Math.random() * VERSES.length);
+    if (activeVerseIdx.has(idx)) continue;
+    const v = VERSES[idx];
+    if (v.t.length > maxLen) continue;
+    if (!verseFits(v.t, bb)) continue;
+    activeVerseIdx.add(idx);
+    return idx;
+  }
+  // Fallback: shortest verse not active
+  let best = -1, bestLen = 999;
+  for (let i = 0; i < VERSES.length; i++){
+    if (activeVerseIdx.has(i)) continue;
+    const L = VERSES[i].t.length;
+    if (L <= maxLen && L < bestLen && verseFits(VERSES[i].t, bb)){ best = i; bestLen = L; }
+  }
+  if (best >= 0){ activeVerseIdx.add(best); return best; }
+  return Math.floor(Math.random() * VERSES.length); // last resort
+}
+
+/* ================= Piece ================= */
+function spawnPiece(){
+  if (queue.length < 7) refillQueue();
+  const type = queue.shift();
+  const matrix = SHAPES[type].m.map(r => r.slice());
+  const bb = bboxOf(matrix);
+  const wCells = bb.maxX - bb.minX + 1;
+  active = {
+    type, matrix,
+    x: Math.floor((COLS - wCells) / 2) - bb.minX,
+    y: -bb.minY,
+    verseIdx: pickVerse(type, matrix)
+  };
+  if (collides(active.matrix, active.x, active.y)){
+    gameOver = true;
+    showOverlay('Game Over', 'The well is full.', true);
+  }
+}
+
+function collides(matrix, px, py){
+  for (let dy = 0; dy < matrix.length; dy++)
+    for (let dx = 0; dx < matrix[dy].length; dx++){
+      if (!matrix[dy][dx]) continue;
+      const x = px + dx, y = py + dy;
+      if (x < 0 || x >= COLS || y >= ROWS) return true;
+      if (y >= 0 && grid[y][x]) return true;
+    }
+  return false;
+}
+
+function rotateMatrix(m){
+  const n = m.length;
+  const r = Array.from({length: n}, () => Array(n).fill(0));
+  for (let y = 0; y < n; y++)
+    for (let x = 0; x < n; x++)
+      r[x][n - 1 - y] = m[y][x];
+  return r;
+}
+
+function tryRotate(){
+  if (!active || gameOver || paused) return;
+  const r = rotateMatrix(active.matrix);
+  const kicks = [[0,0],[-1,0],[1,0],[0,-1],[-2,0],[2,0],[-1,-1],[1,-1]];
+  for (const [kx, ky] of kicks){
+    if (!collides(r, active.x + kx, active.y + ky)){
+      active.matrix = r; active.x += kx; active.y += ky;
+      return;
+    }
+  }
+}
+
+function move(dx){
+  if (!active || gameOver || paused) return;
+  if (!collides(active.matrix, active.x + dx, active.y)) active.x += dx;
+}
+
+function softDrop(){
+  if (!active || gameOver || paused) return false;
+  if (!collides(active.matrix, active.x, active.y + 1)){ active.y++; score += 1; updateStats(); return true; }
+  lockPiece();
+  return false;
+}
+
+function hardDrop(){
+  if (!active || gameOver || paused) return;
+  let d = 0;
+  while (!collides(active.matrix, active.x, active.y + 1)){ active.y++; d++; }
+  score += d * 2;
+  lockPiece();
+  updateStats();
+}
+
+function lockPiece(){
+  const idx = active.verseIdx;
+  active.matrix.forEach((row, dy) => row.forEach((v, dx) => {
+    if (!v) return;
+    const x = active.x + dx, y = active.y + dy;
+    if (y >= 0 && y < ROWS && x >= 0 && x < COLS){
+      grid[y][x] = { c: SHAPES[active.type].c, v: idx };
+      verseCellCount.set(idx, (verseCellCount.get(idx) || 0) + 1);
+    }
+  }));
+  active = null;
+  clearLines();
+  if (!gameOver) spawnPiece();
+}
+
+function clearLines(){
+  const full = [];
+  for (let y = 0; y < ROWS; y++)
+    if (grid[y].every(c => c)) full.push(y);
+  if (!full.length) return;
+  const seen = new Set();
+  full.forEach(y => grid[y].forEach(cell => {
+    if (!cell) return;
+    seen.add(cell.v);
+    const n = (verseCellCount.get(cell.v) || 1) - 1;
+    if (n <= 0){ verseCellCount.delete(cell.v); activeVerseIdx.delete(cell.v); }
+    else verseCellCount.set(cell.v, n);
+  }));
+  full.sort((a, b) => a - b).forEach(y => {
+    grid.splice(y, 1);
+    grid.unshift(Array(COLS).fill(null));
+  });
+  const n = full.length;
+  lines += n;
+  score += [0, 100, 300, 500, 800][n] * level;
+  const nl = Math.floor(lines / 10) + 1;
+  if (nl !== level){ level = nl; dropMs = Math.max(60, 800 - (level - 1) * 70); }
+  updateStats();
+  revealVerses([...seen].map(i => VERSES[i]));
+}
+
+/* ================= Rendering ================= */
+function roundRect(c, x, y, w, h, r){
+  c.beginPath();
+  c.moveTo(x + r, y);
+  c.arcTo(x + w, y, x + w, y + h, r);
+  c.arcTo(x + w, y + h, x, y + h, r);
+  c.arcTo(x, y + h, x, y, r);
+  c.arcTo(x, y, x + w, y, r);
+  c.closePath();
+}
+
+function drawCell(c, x, y, color, alpha){
+  c.save();
+  c.globalAlpha = alpha === undefined ? 1 : alpha;
+  c.fillStyle = color;
+  roundRect(c, x * CELL + 1.5, y * CELL + 1.5, CELL - 3, CELL - 3, 8);
+  c.fill();
+  c.fillStyle = 'rgba(255,255,255,0.10)';
+  roundRect(c, x * CELL + 5, y * CELL + 5, CELL - 10, 14, 6);
+  c.fill();
+  c.restore();
+}
+
+function drawPieceVerse(p){
+  const bb = bboxOf(p.matrix);
+  const bx = (p.x + bb.minX) * CELL, by = (p.y + bb.minY) * CELL;
+  const bw = (bb.maxX - bb.minX + 1) * CELL, bh = (bb.maxY - bb.minY + 1) * CELL;
+  const v = VERSES[p.verseIdx];
+  const pad = 5, refH = 13;
+  const fit = fitText(v.t, bw - pad * 2, bh - pad * 2 - refH);
+  if (!fit) return;
+  const textH = fit.lines.length * fit.lh;
+  const totalH = textH + 4 + refH;
+  const sy = by + (bh - totalH) / 2;
+  // dark label behind text
+  ctx.fillStyle = 'rgba(0,0,0,0.62)';
+  roundRect(ctx, bx + 3, sy - 4, bw - 6, totalH + 8, 8);
+  ctx.fill();
+  // verse text
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.font = '700 ' + fit.fs + 'px Georgia, "Times New Roman", serif';
+  fit.lines.forEach((ln, i) => ctx.fillText(ln, bx + bw / 2, sy + i * fit.lh));
+  // reference
+  ctx.fillStyle = '#e8c66a';
+  ctx.font = '600 9px Georgia, "Times New Roman", serif';
+  ctx.fillText(v.r, bx + bw / 2, sy + textH + 4);
+}
+
+function ghostY(){
+  let y = active.y;
+  while (!collides(active.matrix, active.x, y + 1)) y++;
+  return y;
+}
+
+function render(){
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#0e0e0e';
+  ctx.fillRect(0, 0, W, H);
+  // faint grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx.lineWidth = 1;
+  for (let x = 1; x < COLS; x++){ ctx.beginPath(); ctx.moveTo(x * CELL, 0); ctx.lineTo(x * CELL, H); ctx.stroke(); }
+  for (let y = 1; y < ROWS; y++){ ctx.beginPath(); ctx.moveTo(0, y * CELL); ctx.lineTo(W, y * CELL); ctx.stroke(); }
+  // locked cells
+  for (let y = 0; y < ROWS; y++)
+    for (let x = 0; x < COLS; x++)
+      if (grid[y][x]) drawCell(ctx, x, y, grid[y][x].c);
+  if (active && !gameOver){
+    // ghost
+    const gy = ghostY();
+    if (gy !== active.y){
+      ctx.save();
+      ctx.strokeStyle = 'rgba(232,198,106,0.35)';
+      ctx.lineWidth = 2;
+      active.matrix.forEach((row, dy) => row.forEach((val, dx) => {
+        if (!val) return;
+        const x = active.x + dx, y = gy + dy;
+        if (y >= 0) { roundRect(ctx, x * CELL + 2, y * CELL + 2, CELL - 4, CELL - 4, 7); ctx.stroke(); }
+      }));
+      ctx.restore();
+    }
+    // falling piece cells
+    const col = SHAPES[active.type].c;
+    active.matrix.forEach((row, dy) => row.forEach((val, dx) => {
+      if (!val) return;
+      const x = active.x + dx, y = active.y + dy;
+      if (y >= 0) drawCell(ctx, x, y, col);
+    }));
+    drawPieceVerse(active);
+  }
+  renderNext();
+}
+
+function renderNext(){
+  nctx.clearRect(0, 0, 132, 88);
+  nctx.fillStyle = '#0e0e0e';
+  nctx.fillRect(0, 0, 132, 88);
+  if (!queue.length) return;
+  const type = queue[0];
+  const m = SHAPES[type].m, bb = bboxOf(m);
+  const bw = (bb.maxX - bb.minX + 1), bh = (bb.maxY - bb.minY + 1);
+  const s = 26, ox = (132 - bw * s) / 2 - bb.minX * s, oy = (88 - bh * s) / 2 - bb.minY * s;
+  nctx.fillStyle = SHAPES[type].c;
+  m.forEach((row, dy) => row.forEach((val, dx) => {
+    if (!val) return;
+    nctx.beginPath();
+    const rx = ox + dx * s, ry = oy + dy * s, r = 6;
+    nctx.moveTo(rx + r, ry);
+    nctx.arcTo(rx + s, ry, rx + s, ry + s, r);
+    nctx.arcTo(rx + s, ry + s, rx, ry + s, r);
+    nctx.arcTo(rx, ry + s, rx, ry, r);
+    nctx.arcTo(rx, ry, rx + s, ry, r);
+    nctx.closePath();
+    nctx.fill();
+  }));
+}
+
+/* ================= UI ================= */
+function updateStats(){
+  document.getElementById('score').textContent = score;
+  document.getElementById('lines').textContent = lines;
+  document.getElementById('level').textContent = level;
+}
+
+let toastTimer = null;
+function revealVerses(verses){
+  if (!verses.length) return;
+  revealedCount += verses.length;
+  const body = document.getElementById('reveal-body');
+  body.innerHTML = verses.map(v =>
+    '<div class="rt">' + escapeHtml(v.t) + '</div><div class="rr">' + escapeHtml(v.r) + '</div>'
+  ).join('');
+  const toast = document.getElementById('reveal-toast');
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(hideToast, 4500);
+  const list = document.getElementById('revealed-list');
+  const empty = document.getElementById('revealed-empty');
+  if (empty) empty.remove();
+  verses.forEach(v => {
+    const d = document.createElement('div');
+    d.className = 'rv';
+    d.innerHTML = '<div class="rv-t">' + escapeHtml(v.t) + '</div><div class="rv-r">' + escapeHtml(v.r) + '</div>';
+    list.prepend(d);
+  });
+  while (list.children.length > 40) list.lastChild.remove();
+}
+
+function hideToast(){
+  document.getElementById('reveal-toast').classList.remove('show');
+}
+
+function escapeHtml(s){
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function showOverlay(title, sub, isGameOver){
+  document.getElementById('ov-title').textContent = title;
+  document.getElementById('ov-sub').textContent = sub || '';
+  document.getElementById('ov-score').textContent =
+    'Score ' + score + '  \u00B7  Lines ' + lines + '  \u00B7  Verses revealed ' + revealedCount;
+  document.getElementById('overlay').classList.add('show');
+}
+
+function togglePause(){
+  if (gameOver) return;
+  paused = !paused;
+  document.getElementById('btn-pause').textContent = paused ? 'Resume' : 'Pause';
+  if (paused) showOverlay('Paused', 'Take a breath.', false);
+  else { document.getElementById('overlay').classList.remove('show'); lastDrop = performance.now(); }
+}
+
+/* ================= Input: keyboard ================= */
+document.addEventListener('keydown', e => {
+  if (e.repeat && (e.key === ' ' || e.key === 'ArrowUp')) return;
+  switch (e.key){
+    case 'ArrowLeft': move(-1); e.preventDefault(); break;
+    case 'ArrowRight': move(1); e.preventDefault(); break;
+    case 'ArrowDown': softDrop(); e.preventDefault(); break;
+    case 'ArrowUp': tryRotate(); e.preventDefault(); break;
+    case ' ': hardDrop(); e.preventDefault(); break;
+    case 'p': case 'P': togglePause(); break;
+    case 'Enter':
+      if (gameOver || paused) { resetGame(); }
+      break;
+  }
+});
+
+/* ================= Input: touch ================= */
+function holdButton(id, fn){
+  const el = document.getElementById(id);
+  let iv = null, to = null;
+  const start = e => {
+    e.preventDefault();
+    fn();
+    to = setTimeout(() => { iv = setInterval(fn, 90); }, 260);
+  };
+  const end = e => {
+    e.preventDefault();
+    clearTimeout(to); clearInterval(iv); to = iv = null;
+  };
+  el.addEventListener('touchstart', start, { passive: false });
+  el.addEventListener('touchend', end, { passive: false });
+  el.addEventListener('touchcancel', end, { passive: false });
+  el.addEventListener('mousedown', e => { e.preventDefault(); fn(); });
+}
+
+function tapButton(id, fn){
+  const el = document.getElementById(id);
+  el.addEventListener('touchstart', e => { e.preventDefault(); fn(); }, { passive: false });
+  el.addEventListener('mousedown', e => { e.preventDefault(); fn(); });
+}
+
+holdButton('btn-left', () => move(-1));
+holdButton('btn-right', () => move(1));
+holdButton('btn-down', () => softDrop());
+tapButton('btn-rot', tryRotate);
+tapButton('btn-drop', hardDrop);
+tapButton('btn-pause', togglePause);
+tapButton('btn-restart', () => resetGame());
+tapButton('btn-again', () => resetGame());
+
+/* ================= Main loop ================= */
+function loop(now){
+  rafId = requestAnimationFrame(loop);
+  if (gameOver || paused || !active) { render(); return; }
+  if (now - lastDrop >= dropMs){
+    lastDrop = now;
+    if (!collides(active.matrix, active.x, active.y + 1)) active.y++;
+    else lockPiece();
+  }
+  render();
+}
+
+/* ================= Boot ================= */
+window.__tetris = {
+  get grid(){ return grid; }, get active(){ return active; },
+  get score(){ return score; }, get gameOver(){ return gameOver; },
+  spawnPiece, hardDrop, tryRotate, move, resetGame,
+  get activeVerseIdx(){ return activeVerseIdx; }
+};
+resetGame();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

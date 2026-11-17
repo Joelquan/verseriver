@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Judges of Israel</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14110d; --panel:#201b14; --panel2:#2a2418;
+    --gold:#C9A84C; --gold-dim:#7d6a30; --parch:#e8dcc0; --danger:#b0483a; --green:#7d8a50;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;background:var(--ink);color:var(--parch);font-family:'Cormorant Garamond',serif;overflow:hidden}
+  #app{display:flex;flex-direction:column;height:100%;max-width:820px;margin:0 auto}
+  header{padding:12px 16px 8px;text-align:center;border-bottom:1px solid var(--gold-dim)}
+  header h1{font-family:'Cinzel',serif;font-size:16px;letter-spacing:.28em;color:var(--gold)}
+  header p{font-size:14px;font-style:italic;opacity:.7;margin-top:2px}
+  #hud{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:var(--panel);border-bottom:1px solid #383021;font-size:14px}
+  #hud .h{font-family:'Cinzel',serif;letter-spacing:.1em;font-size:12px;color:var(--gold)}
+  #strikes span{display:inline-block;width:11px;height:11px;border:1px solid var(--gold-dim);border-radius:50%;margin-left:5px;vertical-align:middle}
+  #strikes span.x{background:var(--danger);border-color:var(--danger)}
+  #stage{position:relative;flex:1;display:flex;flex-direction:column;min-height:0;overflow-y:auto}
+  #qwrap{padding:18px 20px;text-align:center}
+  #namecard{display:inline-block;min-width:230px;max-width:92%;background:var(--panel2);border:1px solid var(--gold);border-radius:4px;padding:16px 22px}
+  #namecard .k{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.24em;color:var(--gold);opacity:.85}
+  #namecard .n{font-size:25px;font-weight:600;margin-top:5px}
+  #diff{display:inline-block;margin-top:8px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.14em;padding:2px 10px;border:1px solid var(--gold-dim);border-radius:10px;color:var(--gold);opacity:.8}
+  #qtitle{font-size:16px;font-style:italic;opacity:.8;margin:14px 0 8px}
+  #opts{padding:0 18px 20px;display:flex;flex-direction:column;gap:9px}
+  .opt{background:var(--panel2);border:1px solid var(--gold-dim);border-radius:4px;padding:12px 16px;font-family:'Cormorant Garamond',serif;font-size:16px;line-height:1.3;color:var(--parch);text-align:left;cursor:pointer}
+  .opt b{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;color:var(--gold);display:block;margin-bottom:2px;opacity:.85}
+  .opt:active{border-color:var(--gold)}
+  .opt.correct{border-color:var(--green);background:rgba(125,138,80,.18)}
+  .opt.wrong{border-color:var(--danger);background:rgba(176,72,58,.18)}
+
+  .screen{position:absolute;inset:0;background:rgba(16,13,10,.97);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:26px;z-index:30;overflow-y:auto}
+  .screen h2{font-family:'Cinzel',serif;color:var(--gold);font-size:20px;letter-spacing:.14em;margin-bottom:10px}
+  .screen p{font-size:17px;max-width:460px;line-height:1.4;margin-bottom:6px}
+  .screen .verse{font-style:italic;color:var(--gold);margin:12px 0 4px;max-width:420px}
+  .screen .ref{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.16em;opacity:.75;margin-bottom:8px}
+  .screen button{font-family:'Cinzel',serif;letter-spacing:.16em;font-size:14px;padding:11px 28px;margin-top:12px;background:none;border:1px solid var(--gold);color:var(--gold);border-radius:2px;cursor:pointer}
+  .screen button:active{background:var(--gold);color:var(--ink)}
+  .fail h2{color:var(--danger)}
+  .small{font-size:13px !important;opacity:.6}
+
+  .setuprow{margin:12px 0}
+  .setuprow .lbl{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.16em;color:var(--gold);margin-bottom:8px}
+  .pillrow{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:460px}
+  .pill{font-family:'Cinzel',serif;font-size:12.5px;letter-spacing:.03em;padding:7px 12px;border:1px solid var(--gold-dim);border-radius:16px;color:var(--parch);cursor:pointer;background:none}
+  .pill.sel{border-color:var(--gold);background:rgba(201,168,76,.18);color:var(--gold)}
+</style>
+</head>
+<body>
+<div id="app">
+  <header><h1>JUDGES OF ISRAEL</h1><p>Deliverers raised up in the cycle of sin, cry, and rescue.</p></header>
+  <div id="hud">
+    <div><span class="h">PROGRESS</span> <span id="placed">0 / 0</span></div>
+    <div id="strikes"><span class="h">STRIKES</span><span></span><span></span><span></span></div>
+  </div>
+  <div id="stage">
+    <div class="screen" id="setup"></div>
+    <div id="qwrap" style="display:none">
+      <div id="namecard">
+        <div class="k">THE JUDGE</div>
+        <div class="n" id="qname">—</div>
+        <div id="diff">DIFFICULTY 1</div>
+      </div>
+      <div id="qtitle">Who oppressed Israel in his time?</div>
+    </div>
+    <div id="opts"></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const sample=(arr,n)=>shuffle(arr).slice(0,n);
+const OPT_COUNT_BY_DIFF={1:3,2:4,3:5};
+
+const OPPRESSORS=[
+ "Cushan-rishathaim of Mesopotamia",
+ "Eglon, king of Moab",
+ "The Philistines",
+ "Jabin, king of Canaan (through his captain Sisera)",
+ "Midian",
+ "The Ammonites",
+ "No oppressor recorded — a minor judge",
+ "Not a true judge — a usurping king, not raised up by the LORD",
+];
+
+/* ---------- THE JUDGES — Book of Judges (KJV). Abimelech was not a judge, but a usurper; included as the exception he was. ---------- */
+const ROSTER=[
+ {n:"Othniel",d:2,opp:0,
+   deed:"Judah's kinsman by marriage to Caleb's daughter, became Israel's first judge as the Spirit of the LORD came upon him",
+   ref:"Judges 3:10",v:"The Spirit of the LORD came upon him, and he judged Israel, and went out to war."},
+ {n:"Ehud",d:1,opp:1,
+   deed:"A left-handed Benjamite who hid a dagger on his right thigh and killed the king in his upper chamber",
+   ref:"Judges 3:16",v:"Ehud made him a dagger which had two edges, of a cubit length; and he did gird it under his raiment upon his right thigh."},
+ {n:"Shamgar",d:3,opp:2,
+   deed:"Slew six hundred Philistines with an ox goad, and he too delivered Israel",
+   ref:"Judges 3:31",v:"He slew of the Philistines six hundred men with an ox goad: and he also delivered Israel."},
+ {n:"Deborah (and Barak)",d:1,opp:3,
+   deed:"A prophetess who judged Israel, and called Barak to battle where the enemy's army was destroyed",
+   ref:"Judges 4:14",v:"Deborah said unto Barak, Up; for this is the day in which the LORD hath delivered Sisera into thine hand."},
+ {n:"Gideon",d:1,opp:4,
+   deed:"Tested the LORD with a fleece of wool, then defeated a vast army with only three hundred men",
+   ref:"Judges 7:7",v:"The LORD said unto Gideon, By the three hundred men that lapped will I save you, and deliver the Midianites into thine hand."},
+ {n:"Abimelech",d:2,opp:7,
+   deed:"Killed seventy of his own brothers upon one stone to seize the throne, and died when a woman dropped a millstone on his head",
+   ref:"Judges 9:53",v:"A certain woman cast a piece of a millstone upon Abimelech's head, and all to brake his skull."},
+ {n:"Tola",d:3,opp:6,
+   deed:"Arose after Abimelech's death to defend Israel, and judged for twenty-three years",
+   ref:"Judges 10:1",v:"He arose to defend Israel."},
+ {n:"Jair",d:3,opp:6,
+   deed:"Judged Israel twenty-two years; had thirty sons who rode on thirty donkeys and held thirty towns",
+   ref:"Judges 10:4",v:"He had thirty sons that rode on thirty ass colts, and they had thirty cities."},
+ {n:"Jephthah",d:2,opp:5,
+   deed:"A rejected son recalled by his brothers to lead them, who made a rash vow before his victory",
+   ref:"Judges 11:35",v:"I have opened my mouth unto the LORD, and I cannot go back."},
+ {n:"Ibzan",d:3,opp:6,
+   deed:"Judged seven years; had thirty sons and thirty daughters, given and taken in marriage outside his own clan",
+   ref:"Judges 12:9",v:"He had thirty sons, and thirty daughters, whom he sent abroad, and took in thirty daughters from abroad for his sons."},
+ {n:"Elon",d:3,opp:6,
+   deed:"A Zebulonite who judged Israel for ten years",
+   ref:"Judges 12:11",v:"Elon the Zebulonite judged Israel; and he judged Israel ten years."},
+ {n:"Abdon",d:3,opp:6,
+   deed:"Judged eight years; had forty sons and thirty nephews who rode on seventy donkeys",
+   ref:"Judges 12:14",v:"He had forty sons and thirty nephews, that rode on seventy ass colts."},
+ {n:"Samson",d:1,opp:2,
+   deed:"A Nazirite from birth whose strength lay in his uncut hair, betrayed by Delilah",
+   ref:"Judges 16:17",v:"If I be shaven, then my strength will go from me, and I shall become weak, and be like any other man."},
+];
+
+let deck=[],cur=null,idx=0,strikes=0,stage=0;
+let chosenDiff='mix', chosenCount=10;
+
+function poolFor(diff){
+  if(diff==='mix')return ROSTER;
+  return ROSTER.filter(r=>r.d==Number(diff));
+}
+function setupHTML(){
+  return `<h2>JUDGES OF ISRAEL</h2>
+    <p>Thirteen names from the Book of Judges — twelve deliverers raised up by the LORD, and one usurper among them.</p>
+    <div class="setuprow"><div class="lbl">DIFFICULTY</div><div class="pillrow" id="diffrow"></div></div>
+    <div class="setuprow"><div class="lbl">HOW MANY JUDGES</div><div class="pillrow" id="countrow"></div></div>
+    <button id="startbtn">BEGIN</button>
+    <p class="small">Note: Abimelech, Gideon's son, was not a judge raised up by the LORD — he seized the throne by force. Three strikes and the roll resets.</p>`;
+}
+function buildSetup(){
+  const dr=$('diffrow');dr.innerHTML='';
+  [["1","Difficulty 1"],["2","Difficulty 2"],["3","Difficulty 3"],["mix","Mixed"]].forEach(([val,label])=>{
+    const p=document.createElement('button');p.className='pill'+(val===chosenDiff?' sel':'');p.textContent=label;
+    p.onclick=()=>{chosenDiff=val;buildSetup();};
+    dr.appendChild(p);
+  });
+  const cr=$('countrow');cr.innerHTML='';
+  const maxAvail=poolFor(chosenDiff).length;
+  if(chosenCount>maxAvail||chosenCount<1)chosenCount=maxAvail;
+  for(let n=1;n<=maxAvail;n++){
+    const p=document.createElement('button');p.className='pill'+(n===chosenCount?' sel':'');
+    p.textContent=n;
+    p.onclick=()=>{chosenCount=n;buildSetup();};
+    cr.appendChild(p);
+  }
+}
+function initSetupScreen(){
+  const s=$('setup');s.className='screen';s.innerHTML=setupHTML();
+  buildSetup();
+  $('startbtn').onclick=beginGame;
+}
+function beginGame(){
+  const pool=poolFor(chosenDiff);
+  const n=Math.min(chosenCount,pool.length);
+  deck=sample(pool,n);idx=0;strikes=0;
+  $('setup').style.display='none';
+  $('qwrap').style.display='block';
+  updateHUD();nextItem();
+}
+function updateHUD(){
+  $('placed').textContent=idx+' / '+deck.length;
+  const dots=$('strikes').querySelectorAll('span:not(.h)');
+  dots.forEach((s,i)=>s.className=i<strikes?'x':'');
+}
+function nextItem(){
+  if(idx>=deck.length){win();return;}
+  cur=deck[idx];stage=0;
+  $('qname').textContent=cur.n;
+  $('diff').textContent='DIFFICULTY '+cur.d;
+  askOpp();
+}
+function renderOpts(options,correctCheck,onPick){
+  const wrap=$('opts');wrap.innerHTML='';
+  options.forEach(opt=>{
+    const b=document.createElement('button');b.className='opt';
+    b.innerHTML=opt.html!==undefined?opt.html:opt.label;
+    b.onclick=()=>{
+      const ok=correctCheck(opt);
+      b.classList.add(ok?'correct':'wrong');
+      [...wrap.children].forEach(c=>c.disabled=true);
+      setTimeout(()=>onPick(ok),550);
+    };
+    wrap.appendChild(b);
+  });
+}
+function askOpp(){
+  $('qtitle').textContent='Who oppressed Israel in his time?';
+  const nWrong=(OPT_COUNT_BY_DIFF[cur.d]||4)-1;
+  const wrongIdx=sample(OPPRESSORS.map((_,i)=>i).filter(i=>i!==cur.opp),Math.min(nWrong,OPPRESSORS.length-1));
+  const options=shuffle([cur.opp,...wrongIdx]).map(i=>({label:OPPRESSORS[i],val:i}));
+  renderOpts(options,opt=>opt.val===cur.opp,ok=>{
+    if(ok){stage=1;askDeed();} else strike('That is not who oppressed Israel in his time.');
+  });
+}
+function askDeed(){
+  $('qtitle').textContent='What is he specifically known for?';
+  const nWrong=(OPT_COUNT_BY_DIFF[cur.d]||4)-1;
+  const others=sample(ROSTER.filter(r=>r.n!==cur.n),nWrong);
+  const options=shuffle([{label:cur.deed,val:true},...others.map(o=>({label:o.deed,val:false}))]);
+  renderOpts(options,opt=>opt.val===true,ok=>{
+    if(ok){stage=2;askVerse();} else strike('That deed does not belong to him.');
+  });
+}
+function askVerse(){
+  $('qtitle').textContent='Which word of scripture says this of him?';
+  const nWrong=(OPT_COUNT_BY_DIFF[cur.d]||4)-1;
+  const others=sample(ROSTER.filter(r=>r.n!==cur.n && r.v!==cur.v),nWrong);
+  const options=shuffle([{html:`<b>${cur.ref}</b>${cur.v}`,val:true},
+    ...others.map(o=>({html:`<b>${o.ref}</b>${o.v}`,val:false}))]);
+  renderOpts(options,opt=>opt.val===true,ok=>{
+    if(ok){idx++;updateHUD();nextItem();} else strike('That word speaks of a different judge.');
+  });
+}
+function strike(msg){
+  strikes++;updateHUD();
+  if(strikes>=3){fail(msg);}
+  else{
+    $('qtitle').textContent=msg+`  (${3-strikes} ${3-strikes===1?'strike':'strikes'} left — try again)`;
+    setTimeout(()=>{ if(stage===0)askOpp(); else if(stage===1)askDeed(); else askVerse(); },650);
+  }
+}
+function fail(msg){
+  const s=$('setup');s.style.display='flex';s.className='screen fail';
+  $('qwrap').style.display='none';$('opts').innerHTML='';
+  s.innerHTML=`<h2>THE CYCLE BEGINS AGAIN</h2>
+    <p>${msg}</p>
+    <p class="small">Three strikes. The judges will be drawn afresh.</p>
+    <button id="againbtn">BEGIN AGAIN</button>`;
+  $('againbtn').onclick=initSetupScreen;
+}
+function win(){
+  const s=$('setup');s.style.display='flex';s.className='screen';
+  $('qwrap').style.display='none';$('opts').innerHTML='';
+  s.innerHTML=`<h2>THERE WAS NO KING</h2>
+    <p>${deck.length} judges known rightly — their oppressor, their deed, and the word spoken of them.</p>
+    <p class="verse">"In those days there was no king in Israel: every man did that which was right in his own eyes."</p>
+    <p class="ref">JUDGES 21:25</p>
+    <button id="againbtn">PLAY AGAIN</button>`;
+  $('againbtn').onclick=initSetupScreen;
+}
+initSetupScreen();
+</script>
+</body>
+</html>

@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>David's Journey — The Lord's Anointed</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#161310; --panel:#221d16; --panel2:#2b2519;
+    --gold:#C9A84C; --gold-dim:#8a7434; --parch:#e8dcc0;
+    --grass:#8f9a5e; --grass2:#7d8a50; --earth:#a3915f; --danger:#b0483a; --green:#7d8a50;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;background:var(--ink);color:var(--parch);font-family:'Cormorant Garamond',serif;overflow:hidden}
+  #app{display:flex;flex-direction:column;height:100%;max-width:900px;margin:0 auto}
+
+  header{padding:10px 14px 6px;display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--gold-dim)}
+  header h1{font-family:'Cinzel',serif;font-size:15px;letter-spacing:.22em;color:var(--gold);font-weight:700}
+  header .lvl{font-size:14px;color:var(--parch);opacity:.85;font-style:italic}
+
+  #hud{display:flex;gap:14px;align-items:center;padding:7px 14px;font-size:15px;background:var(--panel);border-bottom:1px solid #3a3122}
+  .stat{display:flex;gap:6px;align-items:center}
+  .stat b{color:var(--gold);font-family:'Cinzel',serif;font-size:13px;letter-spacing:.06em}
+  #timerbar{flex:1;height:8px;background:#0d0b08;border:1px solid var(--gold-dim);border-radius:4px;overflow:hidden}
+  #timerfill{height:100%;background:var(--gold);width:100%;transition:width .2s linear}
+  #timerfill.low{background:var(--danger)}
+
+  #stage{position:relative;flex:1;min-height:0}
+  canvas{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair}
+
+  #cluebar{position:absolute;left:50%;transform:translateX(-50%);bottom:12px;max-width:88%;background:rgba(22,19,16,.92);border:1px solid var(--gold-dim);border-radius:3px;padding:8px 16px;font-size:17px;font-style:italic;text-align:center;pointer-events:none;line-height:1.3}
+  #cluebar b{font-style:normal;color:var(--gold);font-family:'Cinzel',serif;font-size:12px;letter-spacing:.14em;display:block;margin-bottom:2px}
+
+  /* overlay screens */
+  .screen{position:absolute;inset:0;background:rgba(16,13,10,.94);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:26px;z-index:10}
+  .screen h2{font-family:'Cinzel',serif;color:var(--gold);font-size:24px;letter-spacing:.14em;margin-bottom:10px}
+  .screen p{font-size:19px;max-width:460px;line-height:1.45;margin-bottom:8px}
+  .screen .verse{font-style:italic;color:var(--gold);opacity:.9;margin:14px 0 4px;max-width:420px}
+  .screen .ref{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.18em;opacity:.75;margin-bottom:14px}
+  button{font-family:'Cinzel',serif;letter-spacing:.16em;font-size:14px;padding:12px 30px;margin-top:14px;background:none;border:1px solid var(--gold);color:var(--gold);border-radius:2px;cursor:pointer}
+  button:active{background:var(--gold);color:var(--ink)}
+  .fail h2{color:var(--danger)}
+  .small{font-size:14px !important;opacity:.65}
+
+  #quizscreen .qhud{display:flex;justify-content:space-between;width:100%;max-width:480px;margin-bottom:10px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.14em;color:var(--gold);opacity:.85}
+  #quizscreen .qstrikes span{display:inline-block;width:9px;height:9px;border:1px solid var(--gold-dim);border-radius:50%;margin-left:4px;vertical-align:middle}
+  #quizscreen .qstrikes span.x{background:var(--danger);border-color:var(--danger)}
+  #quizscreen .qtext{font-size:20px;line-height:1.4;max-width:480px;margin-bottom:16px}
+  #quizscreen .qopts{display:flex;flex-direction:column;gap:9px;width:100%;max-width:480px}
+  #quizscreen .qopt{background:var(--panel2);border:1px solid var(--gold-dim);border-radius:3px;padding:11px 16px;font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--parch);text-align:left;cursor:pointer}
+  #quizscreen .qopt:active{border-color:var(--gold)}
+  #quizscreen .qopt.correct{border-color:var(--green);background:rgba(125,138,80,.2)}
+  #quizscreen .qopt.wrong{border-color:var(--danger);background:rgba(176,72,58,.2)}
+  .hintlink{background:none;border:none;color:var(--gold);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;text-decoration:underline;cursor:pointer;margin-top:12px;padding:0}
+  #passagemodal{position:absolute;inset:0;background:rgba(10,8,6,.92);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:40;padding:26px}
+  #passagemodal .pm-card{background:var(--panel2);border:1px solid var(--gold);border-radius:4px;padding:20px 24px;max-width:460px}
+  #passagemodal .pm-ref{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.16em;color:var(--gold);margin-bottom:8px}
+  #passagemodal .pm-text{font-style:italic;font-size:17px;line-height:1.5;color:var(--parch)}
+  #passagemodal button{margin-top:16px}
+</style>
+</head>
+<body>
+<div id="app">
+  <header><h1>DAVID'S JOURNEY</h1><div class="lvl" id="lvlname">—</div></header>
+  <div id="hud">
+    <div class="stat"><b id="stat1label">SHEEP</b><span id="stat1">0</span></div>
+    <div class="stat" id="stat2wrap" style="display:none"><b id="stat2label"></b><span id="stat2"></span></div>
+    <div id="timerbar"><div id="timerfill"></div></div>
+  </div>
+  <div id="stage">
+    <canvas id="cv"></canvas>
+    <div id="cluebar" style="display:none"><b>CLUE</b><span id="cluetext"></span></div>
+    <div class="screen" id="screen">
+      <h2 id="sc-title">DAVID'S JOURNEY</h2>
+      <p id="sc-body">From shepherd boy to giant slayer. Eight trials. Begin with nothing.</p>
+      <p class="verse" id="sc-verse" style="display:none"></p>
+      <p class="ref" id="sc-ref" style="display:none"></p>
+      <button id="sc-btn">BEGIN</button>
+      <p class="small" id="sc-hint"></p>
+    </div>
+    <div class="screen" id="quizscreen" style="display:none"></div>
+    <div id="passagemodal">
+      <div class="pm-card">
+        <div class="pm-ref" id="pm-ref"></div>
+        <div class="pm-text" id="pm-text"></div>
+        <button id="pm-close">CLOSE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ============ CORE ============ */
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+let W=0,H=0,DPR=1;
+function resize(){ DPR=Math.min(2,window.devicePixelRatio||1);
+  const r=cv.parentElement.getBoundingClientRect();
+  W=r.width;H=r.height;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);}
+window.addEventListener('resize',resize);resize();
+
+const $=id=>document.getElementById(id);
+const rand=(a,b)=>a+Math.random()*(b-a);
+const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+
+/* ---- state ---- */
+let level=0, running=false, timeLeft=0, timeMax=1, entities=[], david=null, particles=[];
+let dragStart=null, dragNow=null, lastT=0;
+
+/* ---- screens ---- */
+function showScreen(title,body,btn,cb,verse,ref,fail,hint){
+  const s=$('screen');s.style.display='flex';s.className='screen'+(fail?' fail':'');
+  $('sc-title').textContent=title;$('sc-body').textContent=body;
+  $('sc-verse').style.display=verse?'block':'none';$('sc-verse').textContent=verse||'';
+  $('sc-ref').style.display=ref?'block':'none';$('sc-ref').textContent=ref||'';
+  $('sc-hint').textContent=hint||'';
+  const b=$('sc-btn');b.textContent=btn;
+  b.onclick=()=>{s.style.display='none';cb();};
+}
+function setClue(t){const c=$('cluebar');if(!t){c.style.display='none';return}c.style.display='block';$('cluetext').textContent=t;}
+function setHUD(l1,v1,l2,v2){$('stat1label').textContent=l1;$('stat1').textContent=v1;
+  const w=$('stat2wrap');if(l2==null){w.style.display='none'}else{w.style.display='flex';$('stat2label').textContent=l2;$('stat2').textContent=v2;}}
+
+/* ============ WORLD DRAWING (AoE-flavored iso tiles) ============ */
+function drawWorld(theme){
+  ctx.fillStyle=theme==='dusk'?'#5a5342':theme==='valley'?'#847a52':'#8f9a5e';
+  ctx.fillRect(0,0,W,H);
+  const tw=64,th=32;
+  for(let r=-2;r<H/th*2+4;r++){for(let c=-2;c<W/tw+4;c++){
+    const x=c*tw+(r%2?tw/2:0), y=r*th/2;
+    const n=((r*7+c*13)%9);
+    let col;
+    if(theme==='valley') col=n<2?'#8d8258':n<4?'#7e744e':'#847a52';
+    else if(theme==='dusk') col=n<2?'#615946':n<4?'#544d3d':'#5a5342';
+    else col=n<2?'#97a366':n<4?'#7d8a50':'#8f9a5e';
+    ctx.fillStyle=col;
+    ctx.beginPath();ctx.moveTo(x,y-th/2);ctx.lineTo(x+tw/2,y);ctx.lineTo(x,y+th/2);ctx.lineTo(x-tw/2,y);ctx.closePath();ctx.fill();
+  }}
+}
+function drawTree(x,y,s=1){
+  ctx.fillStyle='#5d4a2e';ctx.fillRect(x-3*s,y-4*s,6*s,14*s);
+  ctx.fillStyle='#556b3a';ctx.beginPath();ctx.ellipse(x,y-16*s,16*s,13*s,0,0,7);ctx.fill();
+  ctx.fillStyle='#617a42';ctx.beginPath();ctx.ellipse(x-6*s,y-20*s,10*s,8*s,0,0,7);ctx.fill();
+}
+function drawRock(x,y,s=1){
+  ctx.fillStyle='#8c8577';ctx.beginPath();ctx.ellipse(x,y,14*s,9*s,0,0,7);ctx.fill();
+  ctx.fillStyle='#a09a8b';ctx.beginPath();ctx.ellipse(x-4*s,y-3*s,8*s,5*s,0,0,7);ctx.fill();
+}
+function drawWater(x,y,w,h){
+  ctx.fillStyle='#6e8590';ctx.beginPath();ctx.ellipse(x,y,w,h,0,0,7);ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.25)';ctx.lineWidth=1.5;
+  for(let i=0;i<3;i++){ctx.beginPath();ctx.ellipse(x,y,w*(0.4+i*0.22),h*(0.4+i*0.22),0,0,7);ctx.stroke();}
+}
+function drawSheep(x,y,alive=true,flash=false){
+  ctx.save();ctx.translate(x,y);
+  if(!alive)ctx.globalAlpha=.35;
+  ctx.fillStyle='rgba(0,0,0,.2)';ctx.beginPath();ctx.ellipse(0,8,12,4,0,0,7);ctx.fill();
+  ctx.fillStyle=flash?'#fff3c4':'#e9e4d4';
+  ctx.beginPath();ctx.ellipse(0,0,12,8,0,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(-4,-5,4.5,0,7);ctx.fill();ctx.beginPath();ctx.arc(4,-4,4,0,7);ctx.fill();
+  ctx.fillStyle='#3d3428';ctx.beginPath();ctx.ellipse(11,-2,4.5,3.5,0,0,7);ctx.fill();
+  ctx.fillRect(-7,6,2.5,5);ctx.fillRect(4,6,2.5,5);
+  ctx.restore();
+}
+function drawDavid(x,y){
+  ctx.save();ctx.translate(x,y);
+  ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(0,11,9,3.5,0,0,7);ctx.fill();
+  ctx.fillStyle='#8a5c34';ctx.fillRect(-2,-14,2.5,26); // staff
+  ctx.fillStyle='#b7513f';ctx.beginPath();ctx.moveTo(-6,10);ctx.lineTo(6,10);ctx.lineTo(4,-4);ctx.lineTo(-4,-4);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#d9a06b';ctx.beginPath();ctx.arc(0,-8,5,0,7);ctx.fill();
+  ctx.fillStyle='#4a3520';ctx.beginPath();ctx.arc(0,-10,4.5,Math.PI,0);ctx.fill();
+  ctx.restore();
+}
+function drawBeast(x,y,type,hurt){
+  ctx.save();ctx.translate(x,y);
+  ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(0,12,18,5,0,0,7);ctx.fill();
+  if(type==='lion'){
+    ctx.fillStyle=hurt?'#d4a15c':'#c08a3e';
+    ctx.beginPath();ctx.ellipse(0,0,20,11,0,0,7);ctx.fill();
+    ctx.fillStyle='#8a5c22';ctx.beginPath();ctx.arc(-16,-4,10,0,7);ctx.fill();
+    ctx.fillStyle=hurt?'#d4a15c':'#c08a3e';ctx.beginPath();ctx.arc(-16,-4,6,0,7);ctx.fill();
+    ctx.fillStyle='#2b2013';ctx.beginPath();ctx.arc(-18,-5,1.4,0,7);ctx.fill();
+  } else if(type==='bear'){
+    ctx.fillStyle=hurt?'#7d6450':'#5f4a38';
+    ctx.beginPath();ctx.ellipse(0,-2,22,14,0,0,7);ctx.fill();
+    ctx.beginPath();ctx.arc(-19,-9,8,0,7);ctx.fill();
+    ctx.fillStyle='#2b2013';ctx.beginPath();ctx.arc(-22,-10,1.5,0,7);ctx.fill();
+  }
+  ctx.restore();
+}
+function drawGoliath(x,y,hitFlash){
+  ctx.save();ctx.translate(x,y);
+  const s=2.6;
+  ctx.fillStyle='rgba(0,0,0,.3)';ctx.beginPath();ctx.ellipse(0,44*s*0.4,20*s,6*s,0,0,7);ctx.fill();
+  ctx.fillStyle='#6e6558';ctx.fillRect(-9*s,-10*s,18*s,26*s); // armor torso
+  ctx.fillStyle='#7d7364';ctx.fillRect(-9*s,-10*s,18*s,4*s);
+  ctx.fillStyle='#4a4238';ctx.fillRect(-8*s,16*s,6*s,10*s);ctx.fillRect(2*s,16*s,6*s,10*s);
+  ctx.fillStyle='#c79768';ctx.beginPath();ctx.arc(0,-16*s,6.5*s,0,7);ctx.fill(); // head
+  // helmet leaves forehead exposed
+  ctx.fillStyle='#5c5346';ctx.beginPath();ctx.arc(0,-16*s,6.8*s,Math.PI*0.95,Math.PI*2.05);ctx.fill();
+  ctx.fillStyle=hitFlash?'#ffd873':'#d9ad7c';
+  ctx.fillRect(-4*s,-20.5*s,8*s,3.4*s); // forehead band (hitbox)
+  ctx.fillStyle='#2b2013';ctx.beginPath();ctx.arc(-2*s,-15*s,1.1*s,0,7);ctx.fill();ctx.beginPath();ctx.arc(2*s,-15*s,1.1*s,0,7);ctx.fill();
+  ctx.fillStyle='#8a8072';ctx.fillRect(11*s,-14*s,3*s,30*s); // spear
+  ctx.restore();
+}
+function drawItem(it){
+  ctx.save();ctx.translate(it.x,it.y);
+  if(it.kind==='food'){ctx.fillStyle='#b5a145';ctx.beginPath();ctx.ellipse(0,0,9,6,0,0,7);ctx.fill();
+    ctx.strokeStyle='#8a7a2e';ctx.lineWidth=1.5;for(let i=-1;i<2;i++){ctx.beginPath();ctx.moveTo(i*4,-4);ctx.lineTo(i*4,4);ctx.stroke();}}
+  else if(it.kind==='branch'){ctx.strokeStyle='#6b4e2a';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-9,5);ctx.lineTo(9,-6);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(2,-2);ctx.lineTo(8,3);ctx.stroke();}
+  else if(it.kind==='hide'){ctx.fillStyle='#a4763f';ctx.beginPath();ctx.moveTo(-9,-5);ctx.lineTo(9,-7);ctx.lineTo(7,7);ctx.lineTo(-7,6);ctx.closePath();ctx.fill();}
+  else if(it.kind==='cord'){ctx.strokeStyle='#c9b98a';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(0,0,7,0,5.5);ctx.stroke();}
+  else if(it.kind==='stone'){ctx.fillStyle='#9b968a';ctx.beginPath();ctx.ellipse(0,1,6,4.5,0,0,7);ctx.fill();
+    ctx.fillStyle='#b5b0a3';ctx.beginPath();ctx.ellipse(-1.5,-.5,3,2,0,0,7);ctx.fill();}
+  ctx.restore();
+  // sparkle
+  ctx.fillStyle='rgba(201,168,76,'+(0.4+0.4*Math.sin(perf()*0.005+it.x))+')';
+  ctx.beginPath();ctx.arc(it.x,it.y-14,2,0,7);ctx.fill();
+}
+const perf=()=>performance.now();
+
+/* ============ INPUT ============ */
+let tapCB=null, dragMode=false;
+function pt(e){const r=cv.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:t.clientX-r.left,y:t.clientY-r.top};}
+cv.addEventListener('pointerdown',e=>{const p=pt(e);
+  if(dragMode){dragStart=p;dragNow=p;}
+  else if(tapCB)tapCB(p);
+});
+cv.addEventListener('pointermove',e=>{if(dragMode&&dragStart)dragNow=pt(e);});
+cv.addEventListener('pointerup',e=>{
+  if(dragMode&&dragStart){const p=pt(e);if(releaseCB)releaseCB(dragStart,p);dragStart=null;dragNow=null;}
+});
+let releaseCB=null;
+
+/* ============ LEVEL DEFINITIONS ============ */
+const LEVELS=[
+ {name:'I · Gather the Flock', verse:'"Your servant has been keeping his father\'s sheep."', ref:'1 SAMUEL 17:34'},
+ {name:'II · Feed the Flock', verse:'"He makes me lie down in green pastures."', ref:'PSALM 23:2'},
+ {name:'III · Save the Flock', verse:'"He calls his own sheep by name and leads them out."', ref:'JOHN 10:3'},
+ {name:'IV · The Lion', verse:'"When a lion came and carried off a sheep, I went after it and struck it."', ref:'1 SAMUEL 17:34–35'},
+ {name:'V · The Bear', verse:'"Your servant has killed both the lion and the bear."', ref:'1 SAMUEL 17:36'},
+ {name:'VI · The Way Home', verse:'"He leads me beside still waters. He restores my soul."', ref:'PSALM 23:2–3'},
+ {name:'VII · To the Battlefield', verse:'"He chose five smooth stones from the stream."', ref:'1 SAMUEL 17:40'},
+ {name:'VIII · Goliath', verse:'"The stone sank into his forehead, and he fell facedown."', ref:'1 SAMUEL 17:49'},
+];
+
+let scenery=[], flockCount=0;
+
+/* ============ SCRIPTURE QUIZ GATES — between every level ============ */
+const QUIZBANK = [
+ // Level 0 — Gather the Flock: David's anointing
+ [
+  {q:"What was David's occupation before Samuel anointed him?",opts:["A soldier","A keeper of sheep","A scribe","A priest"],c:1,ref:"1 Samuel 16:11",passage:"And Samuel said unto Jesse, Are here all thy children? And he said, There remaineth yet the youngest, and, behold, he keepeth the sheep. And Samuel said unto Jesse, Send and fetch him."},
+  {q:"Which prophet anointed David as king?",opts:["Nathan","Elijah","Samuel","Gad"],c:2,ref:"1 Samuel 16:13",passage:"Then Samuel took the horn of oil, and anointed him in the midst of his brethren: and the Spirit of the LORD came upon David from that day forward."},
+  {q:"Who was David's father?",opts:["Jesse","Boaz","Obed","Nahshon"],c:0,ref:"1 Samuel 16:1",passage:"And the LORD said unto Samuel... fill thine horn with oil, and go, I will send thee to Jesse the Bethlehemite: for I have provided me a king among his sons."},
+  {q:"What did the LORD say He looks at, unlike man?",opts:["The hands","The outward appearance","The heart","The words"],c:2,ref:"1 Samuel 16:7",passage:"For the LORD seeth not as man seeth; for man looketh on the outward appearance, but the LORD looketh on the heart."},
+  {q:"How many of Jesse's older sons passed before Samuel before David was sent for?",opts:["Five","Six","Seven","Eight"],c:2,ref:"1 Samuel 16:10",passage:"Again, Jesse made seven of his sons to pass before Samuel. And Samuel said unto Jesse, The LORD hath not chosen these."},
+  {q:"In which town did Samuel anoint David?",opts:["Hebron","Bethlehem","Gibeah","Shiloh"],c:1,ref:"1 Samuel 16:4-13",passage:"And Samuel did that which the LORD spake, and came to Bethlehem... And he sanctified Jesse and his sons, and called them to the sacrifice."},
+ ],
+ // Level 1 — Feed the Flock: Psalm 23
+ [
+  {q:"\"The LORD is my ___.\"",opts:["shepherd","strength","refuge","portion"],c:0,ref:"Psalm 23:1",passage:"The LORD is my shepherd; I shall not want."},
+  {q:"\"He maketh me to lie down in ___ pastures.\"",opts:["quiet","green","wide","dry"],c:1,ref:"Psalm 23:2",passage:"He maketh me to lie down in green pastures: he leadeth me beside the still waters."},
+  {q:"\"He leadeth me beside the ___ waters.\"",opts:["deep","still","flowing","cool"],c:1,ref:"Psalm 23:2",passage:"He maketh me to lie down in green pastures: he leadeth me beside the still waters."},
+  {q:"Who wrote Psalm 23?",opts:["Solomon","Asaph","David","Moses"],c:2,ref:"Psalm 23 (title)",passage:"A Psalm of David. The LORD is my shepherd; I shall not want."},
+  {q:"\"He restoreth my ___.\"",opts:["soul","strength","joy","hope"],c:0,ref:"Psalm 23:3",passage:"He restoreth my soul: he leadeth me in the paths of righteousness for his name's sake."},
+  {q:"\"I will dwell in the house of the LORD ___.\"",opts:["all my days","for ever","in peace","with joy"],c:1,ref:"Psalm 23:6",passage:"Surely goodness and mercy shall follow me all the days of my life: and I will dwell in the house of the LORD for ever."},
+ ],
+ // Level 2 — Save the Flock: John 10, the Good Shepherd
+ [
+  {q:"Who said, \"I am the good shepherd\"?",opts:["Moses","David","Jesus","John the Baptist"],c:2,ref:"John 10:11",passage:"I am the good shepherd: the good shepherd giveth his life for the sheep."},
+  {q:"The good shepherd giveth his life for the ___.",opts:["sheep","lost","weak","flock's sake"],c:0,ref:"John 10:11",passage:"I am the good shepherd: the good shepherd giveth his life for the sheep."},
+  {q:"\"My sheep hear my voice, and I know them, and they ___.\"",opts:["rest","follow me","obey","are safe"],c:1,ref:"John 10:27",passage:"My sheep hear my voice, and I know them, and they follow me: And I give unto them eternal life."},
+  {q:"Why does the hireling flee when the wolf comes?",opts:["He is afraid of wolves","He careth not for the sheep","He has no weapon","He is not strong enough"],c:1,ref:"John 10:12-13",passage:"But he that is an hireling... seeth the wolf coming, and leaveth the sheep, and fleeth... because he is an hireling, and careth not for the sheep."},
+  {q:"How does the good shepherd call his own sheep?",opts:["By a horn","By name","By a whistle","By a staff"],c:1,ref:"John 10:3",passage:"The sheep hear his voice: and he calleth his own sheep by name, and leadeth them out."},
+  {q:"What does Jesus say will happen to the \"other sheep\" not of this fold?",opts:["They will be forgotten","They will be scattered","They will be brought, one flock, one shepherd","They will find their own way"],c:2,ref:"John 10:16",passage:"And other sheep I have, which are not of this fold: them also I must bring, and they shall hear my voice; and there shall be one fold, and one shepherd."},
+ ],
+ // Level 3 — The Lion: David's testimony before Saul
+ [
+  {q:"What two animals did David say he had killed while keeping his father's sheep?",opts:["Wolf and jackal","Lion and bear","Bear and boar","Lion and leopard"],c:1,ref:"1 Samuel 17:34-36",passage:"Thy servant kept his father's sheep, and there came a lion, and a bear, and took a lamb out of the flock: And I went out after him, and smote him, and delivered it out of his mouth."},
+  {q:"How did David say he caught the lion?",opts:["With a sling","By the beard, and smote it","With a spear","He did not catch it"],c:1,ref:"1 Samuel 17:35",passage:"And when he arose against me, I caught him by his beard, and smote him, and slew him."},
+  {q:"Who was David speaking to when he told this story?",opts:["Jonathan","Samuel","Saul","Eliab"],c:2,ref:"1 Samuel 17:31-37",passage:"And when the words were heard which David spake, they rehearsed them before Saul: and he sent for him."},
+  {q:"What did David call Goliath for defying the armies of the living God?",opts:["A wicked man","An uncircumcised Philistine","A cursed giant","A servant of Dagon"],c:1,ref:"1 Samuel 17:26",passage:"For who is this uncircumcised Philistine, that he should defy the armies of the living God?"},
+  {q:"David said the LORD delivered him from the paw of the lion and the paw of the ___.",opts:["wolf","bear","serpent","dog"],c:1,ref:"1 Samuel 17:37",passage:"The LORD that delivered me out of the paw of the lion, and out of the paw of the bear, he will deliver me out of the hand of this Philistine."},
+  {q:"What did David say would deliver him from the Philistine?",opts:["His sling","His own strength","The LORD","His brothers"],c:2,ref:"1 Samuel 17:37",passage:"The LORD that delivered me out of the paw of the lion, and out of the paw of the bear, he will deliver me out of the hand of this Philistine. And Saul said unto David, Go, and the LORD be with thee."},
+ ],
+ // Level 4 — The Bear: the stones and the sling
+ [
+  {q:"How many stones did David choose from the brook?",opts:["Three","Five","Seven","Ten"],c:1,ref:"1 Samuel 17:40",passage:"And he took his staff in his hand, and chose him five smooth stones out of the brook, and put them in a shepherd's bag which he had, even in a scrip; and his sling was in his hand."},
+  {q:"What did David put the stones in?",opts:["His pocket","A shepherd's bag","A basket","His hand only"],c:1,ref:"1 Samuel 17:40",passage:"And he took his staff in his hand, and chose him five smooth stones out of the brook, and put them in a shepherd's bag which he had, even in a scrip."},
+  {q:"Besides his sling, what else did David carry?",opts:["A sword","A staff","A spear","A shield"],c:1,ref:"1 Samuel 17:40",passage:"And he took his staff in his hand, and chose him five smooth stones out of the brook."},
+  {q:"Where did David choose his stones from?",opts:["A field","A brook","A mountain","The camp"],c:1,ref:"1 Samuel 17:40",passage:"And he took his staff in his hand, and chose him five smooth stones out of the brook."},
+  {q:"What did Saul try to put on David before he went to fight?",opts:["A crown","His own armour","A cloak","Nothing"],c:1,ref:"1 Samuel 17:38",passage:"And Saul armed David with his armour, and he put an helmet of brass upon his head; also he armed him with a coat of mail."},
+  {q:"Did David fight Goliath wearing Saul's armour?",opts:["Yes, the whole time","No, he put it off, for he had not proved it","Only the helmet","Only the sword"],c:1,ref:"1 Samuel 17:39",passage:"And David said unto Saul, I cannot go with these; for I have not proved them. And David put them off him."},
+ ],
+ // Level 5 — Find Your Way Home: Psalm 23 continued
+ [
+  {q:"\"Thy rod and thy staff, they ___ me.\"",opts:["comfort","guide","protect","strengthen"],c:0,ref:"Psalm 23:4",passage:"Yea, though I walk through the valley of the shadow of death, I will fear no evil: for thou art with me; thy rod and thy staff they comfort me."},
+  {q:"\"Though I walk through the valley of the shadow of death, I will fear no ___.\"",opts:["darkness","evil","man","harm"],c:1,ref:"Psalm 23:4",passage:"Yea, though I walk through the valley of the shadow of death, I will fear no evil: for thou art with me."},
+  {q:"\"For thou art with ___.\"",opts:["them","us","me","him"],c:2,ref:"Psalm 23:4",passage:"Yea, though I walk through the valley of the shadow of death, I will fear no evil: for thou art with me; thy rod and thy staff they comfort me."},
+  {q:"\"Thou preparest a table before me in the presence of mine ___.\"",opts:["friends","enemies","brethren","household"],c:1,ref:"Psalm 23:5",passage:"Thou preparest a table before me in the presence of mine enemies: thou anointest my head with oil; my cup runneth over."},
+  {q:"\"Thou anointest my head with ___.\"",opts:["water","wine","oil","gold"],c:2,ref:"Psalm 23:5",passage:"Thou preparest a table before me in the presence of mine enemies: thou anointest my head with oil; my cup runneth over."},
+  {q:"\"My cup ___.\"",opts:["is full","runneth over","is blessed","overflows with joy"],c:1,ref:"Psalm 23:5",passage:"Thou preparest a table before me in the presence of mine enemies: thou anointest my head with oil; my cup runneth over."},
+ ],
+ // Level 6 — To the Battlefield: 1 Samuel 17 context
+ [
+  {q:"Who was the giant champion of the Philistines?",opts:["Ishbi-benob","Goliath","Lahmi","Saph"],c:1,ref:"1 Samuel 17:4",passage:"And there went out a champion out of the camp of the Philistines, named Goliath, of Gath, whose height was six cubits and a span."},
+  {q:"How was Goliath's height described?",opts:["Four cubits","Six cubits and a span","Ten cubits","A span and a cubit"],c:1,ref:"1 Samuel 17:4",passage:"There went out a champion... named Goliath, of Gath, whose height was six cubits and a span."},
+  {q:"For how many days did Goliath come out to defy Israel?",opts:["Seven","Twenty","Forty","Three"],c:2,ref:"1 Samuel 17:16",passage:"And the Philistine drew near morning and evening, and presented himself forty days."},
+  {q:"Which brother of David rebuked him for coming to the battle line?",opts:["Abinadab","Shammah","Eliab","Ozem"],c:2,ref:"1 Samuel 17:28",passage:"And Eliab his eldest brother heard when he spake unto the men; and Eliab's anger was kindled against David."},
+  {q:"What was David sent to bring his brothers?",opts:["Water and oil","Bread, parched corn, and cheeses","Wine and figs","Weapons"],c:1,ref:"1 Samuel 17:17-18",passage:"Take now for thy brethren an ephah of this parched corn, and these ten loaves... and carry these ten cheeses unto the captain of their thousand."},
+  {q:"Who carried Goliath's shield before him?",opts:["His son","His armourbearer","A servant","No one"],c:1,ref:"1 Samuel 17:7",passage:"And one bearing a shield went before him."},
+ ],
+ // Level 7 — Goliath: the finale
+ [
+  {q:"Where did the stone strike Goliath?",opts:["His chest","His forehead","His neck","His shoulder"],c:1,ref:"1 Samuel 17:49",passage:"And David put his hand in his bag, and took thence a stone, and slang it, and smote the Philistine in his forehead, that the stone sunk into his forehead."},
+  {q:"What did David do after Goliath fell?",opts:["Fled the field","Took Goliath's sword and cut off his head","Called for Saul","Prayed over him"],c:1,ref:"1 Samuel 17:51",passage:"Therefore David ran, and stood upon the Philistine, and took his sword, and drew it out of the sheath thereof, and slew him, and cut off his head therewith."},
+  {q:"David said, \"I come to thee in the name of the ___.\"",opts:["King of Israel","LORD of hosts","God of Abraham","Most High"],c:1,ref:"1 Samuel 17:45",passage:"Then said David to the Philistine... I come to thee in the name of the LORD of hosts, the God of the armies of Israel, whom thou hast defied."},
+  {q:"Why did David say the LORD would give victory that day?",opts:["So Israel could take spoil","So all the earth may know there is a God in Israel","To make David famous","So Saul would be pleased"],c:1,ref:"1 Samuel 17:46",passage:"This day will the LORD deliver thee into mine hand... that all the earth may know that there is a God in Israel."},
+  {q:"What did the Philistines do when they saw their champion was dead?",opts:["Surrendered at once","Fled","Attacked harder","Called for reinforcements"],c:1,ref:"1 Samuel 17:51",passage:"And when the Philistines saw their champion was dead, they fled."},
+  {q:"Whose head did David bring to Jerusalem?",opts:["Saul's","Goliath's","Eliab's","Doeg's"],c:1,ref:"1 Samuel 17:54",passage:"And David took the head of the Philistine, and brought it to Jerusalem; but he put his armour in his tent."},
+ ],
+];
+
+let quizQ=[],quizIdx=0,quizStrikes=0,quizOnPass=null,quizLevelForRetry=0;
+
+function showQuizGate(lvlIndex,onPass){
+  quizLevelForRetry=lvlIndex;
+  quizOnPass=onPass;
+  quizQ=shuffle(QUIZBANK[lvlIndex]).map(q=>({...q,shuffledOpts:null}));
+  quizIdx=0;quizStrikes=0;
+  renderQuizIntro();
+}
+function renderQuizIntro(){
+  const s=$('quizscreen');s.style.display='flex';s.className='screen';
+  s.innerHTML=`<h2>TRIAL OF THE WORD</h2>
+    <p>Before the road continues, answer what scripture says. ${QUIZBANK[quizLevelForRetry].length} questions — all must be answered rightly.</p>
+    <button id="quiz-start-btn">BEGIN</button>`;
+  $('quiz-start-btn').onclick=renderQuizQuestion;
+}
+function renderQuizQuestion(){
+  if(quizIdx>=quizQ.length){ passQuizGate(); return; }
+  const item=quizQ[quizIdx];
+  if(!item.shuffledOpts){
+    const idxs=shuffle(item.opts.map((_,i)=>i));
+    item.shuffledOpts=idxs.map(i=>({text:item.opts[i],correct:i===item.c}));
+  }
+  const s=$('quizscreen');s.style.display='flex';s.className='screen';
+  const strikeDots=Array.from({length:3},(_,i)=>`<span class="${i<quizStrikes?'x':''}"></span>`).join('');
+  s.innerHTML=`
+    <div class="qhud"><span>QUESTION ${quizIdx+1} OF ${quizQ.length}</span><span class="qstrikes">STRIKES${strikeDots}</span></div>
+    <div class="qtext">${item.q}</div>
+    <div class="qopts" id="qopts"></div>
+    ${item.showHint?`<button class="hintlink" id="hintbtn">Read the passage — ${item.ref}</button>`:''}`;
+  if(item.showHint)$('hintbtn').onclick=()=>openPassage(item.ref,item.passage);
+  const wrap=$('qopts');
+  item.shuffledOpts.forEach(opt=>{
+    const b=document.createElement('button');b.className='qopt';b.textContent=opt.text;
+    b.onclick=()=>{
+      [...wrap.children].forEach(c=>c.disabled=true);
+      b.classList.add(opt.correct?'correct':'wrong');
+      setTimeout(()=>{
+        if(opt.correct){ quizIdx++; renderQuizQuestion(); }
+        else { quizStrikes++; item.shuffledOpts=null; item.showHint=true; if(quizStrikes>=3){ failQuizGate(item.ref); } else { renderQuizQuestion(); } }
+      },700);
+    };
+    wrap.appendChild(b);
+  });
+}
+function openPassage(ref,text){
+  $('pm-ref').textContent=ref;
+  $('pm-text').textContent=text||'';
+  $('passagemodal').style.display='flex';
+}
+$('pm-close').onclick=()=>{$('passagemodal').style.display='none';};
+
+function failQuizGate(ref){
+  const s=$('quizscreen');s.style.display='flex';s.className='screen fail';
+  s.innerHTML=`<h2>THE WORD IS NOT YET KNOWN</h2>
+    <p>Three strikes. Look again to ${ref||'the scriptures'} and return.</p>
+    <button id="quiz-retry-btn">TRY AGAIN</button>`;
+  $('quiz-retry-btn').onclick=()=>{ quizQ=shuffle(QUIZBANK[quizLevelForRetry]).map(q=>({...q,shuffledOpts:null})); quizIdx=0; quizStrikes=0; renderQuizQuestion(); };
+}
+function passQuizGate(){
+  const s=$('quizscreen');s.style.display='flex';s.className='screen';
+  s.innerHTML=`<h2>WELL ANSWERED</h2>
+    <p>The word is known. The road continues.</p>
+    <button id="quiz-continue-btn">CONTINUE</button>`;
+  $('quiz-continue-btn').onclick=()=>{ s.style.display='none'; quizOnPass(); };
+}
+
+
+function startLevel(n){
+  level=n;$('lvlname').textContent=LEVELS[n].name;
+  entities=[];particles=[];tapCB=null;releaseCB=null;dragMode=false;setClue('');
+  scenery=[];
+  const inits=[initL0,initL1,initL2,initL3,initL4,initL5,initL6,initL7];
+  inits[n]();
+  running=true;lastT=perf();
+  requestAnimationFrame(loop);
+}
+function winLevel(){
+  running=false;const L=LEVELS[level];
+  const completedLevel=level;
+  if(level<7) showScreen(L.name.split('·')[1].trim().toUpperCase()+' — COMPLETE','',
+     level===6?'FACE GOLIATH':'CONTINUE',
+     ()=>showQuizGate(completedLevel,()=>startLevel(completedLevel+1)),
+     L.verse,L.ref);
+  else showScreen('THE GIANT FALLS','From shepherd boy to slayer of giants — every trial prepared this shot.','PLAY AGAIN',
+     ()=>showQuizGate(completedLevel,()=>startLevel(0)),
+     L.verse,L.ref);
+}
+function failLevel(msg){
+  running=false;
+  showScreen('THE FLOCK SUFFERS',msg,'TRY AGAIN',()=>startLevel(level),null,null,true,'No hints. The clues will change.');
+}
+
+/* ---------- L0: GATHER (timed hunt, soft-fail) ---------- */
+const CLUE_TEXTS={
+ tree:'Wool clings where branches bend low.',
+ rock:'Hoofprints circle the grey stones.',
+ water:'A bleat echoes beside still waters.',
+ open:'Fresh tracks cross the open grass.'
+};
+function placeScenery(){
+  scenery=[];
+  scenery.push({t:'water',x:W*0.78,y:H*0.72,w:70,h:30});
+  for(let i=0;i<4;i++)scenery.push({t:'tree',x:rand(W*.08,W*.4),y:rand(H*.15,H*.85)});
+  for(let i=0;i<3;i++)scenery.push({t:'rock',x:rand(W*.45,W*.9),y:rand(H*.12,H*.5)});
+}
+function nearestScenery(type){
+  const list=scenery.filter(s=>s.t===type);return list[Math.floor(Math.random()*list.length)];
+}
+function hideNear(type){
+  if(type==='open')return{x:rand(W*.15,W*.85),y:rand(H*.15,H*.8)};
+  const s=nearestScenery(type);
+  return {x:clamp(s.x+rand(-45,45),20,W-20),y:clamp(s.y+rand(-35,35),20,H-30)};
+}
+function initL0(){
+  placeScenery();flockCount=0;
+  const types=['tree','rock','water','open','tree','rock','open','water'];
+  types.forEach(t=>{const p=hideNear(t);entities.push({e:'sheep',x:p.x,y:p.y,found:false,clue:t});});
+  timeMax=timeLeft=75;
+  david={x:W/2,y:H/2,tx:W/2,ty:H/2};
+  setHUD('SHEEP','0 / 8');
+  updateClueL0();
+  tapCB=p=>{david.tx=p.x;david.ty=p.y;};
+}
+function updateClueL0(){
+  const next=entities.find(s=>!s.found);
+  setClue(next?CLUE_TEXTS[next.clue]:'');
+}
+function tickL0(dt){
+  moveDavid(dt);
+  entities.forEach(s=>{if(!s.found&&dist(s,david)<26){s.found=true;flockCount++;pop(s.x,s.y);}});
+  setHUD('SHEEP',flockCount+' / 8');updateClueL0();
+  if(flockCount===8){winLevel();return;}
+  timeLeft-=dt;if(timeLeft<=0){
+    running=false;
+    showScreen('THE SUN SETS',`You gathered ${flockCount} of 8. Every sheep matters — search again.`,'RETRY',()=>startLevel(0),null,null,true);
+  }
+}
+function drawL0(){
+  drawWorld();drawSceneryAll();
+  entities.forEach(s=>{if(!s.found)drawSheepHidden(s);});
+  drawFlockFollow();drawDavid(david.x,david.y);
+}
+function drawSheepHidden(s){
+  // subtle: only visible when david is near
+  const d=dist(s,david);
+  if(d<130){ctx.globalAlpha=clamp(1-(d-40)/90,0.15,1);drawSheep(s.x,s.y);ctx.globalAlpha=1;}
+}
+function drawFlockFollow(){
+  let n=Math.min(flockCount,8);
+  for(let i=0;i<n;i++){const a=i/n*6.283+perf()*0.0004;
+    drawSheep(david.x+Math.cos(a)*34,david.y+Math.sin(a)*22+6);}
+}
+
+/* ---------- L1: FEED (hard fail) ---------- */
+let foodFound=0;
+function initL1(){
+  placeScenery();foodFound=0;
+  const types=['tree','rock','water','open','tree','rock','water','open'];
+  types.sort(()=>Math.random()-.5);
+  types.forEach(t=>{const p=hideNear(t);entities.push({e:'item',kind:'food',x:p.x,y:p.y,found:false,clue:t});});
+  timeMax=timeLeft=65;
+  david={x:W/2,y:H*0.8,tx:W/2,ty:H*0.8};
+  setHUD('FOOD','0 / 8','FLOCK','8');
+  updateClueL1();
+  tapCB=p=>{david.tx=p.x;david.ty=p.y;};
+}
+const FOOD_CLUES={tree:'Wild figs fall where shade is deepest.',rock:'Grain grows sheltered by the stones.',water:'Green pasture crowds the water\'s edge.',open:'Barley bends in the open field.'};
+function updateClueL1(){const nx=entities.find(i=>!i.found);setClue(nx?FOOD_CLUES[nx.clue]:'');}
+function tickL1(dt){
+  moveDavid(dt);
+  entities.forEach(i=>{if(!i.found&&dist(i,david)<26){i.found=true;foodFound++;pop(i.x,i.y);}});
+  setHUD('FOOD',foodFound+' / 8','FLOCK','8');updateClueL1();
+  if(foodFound===8){winLevel();return;}
+  timeLeft-=dt;
+  if(timeLeft<=0)failLevel(`Only ${foodFound} of 8 fed. ${8-foodFound} sheep were lost to hunger. The flock must not lose one.`);
+}
+function drawL1(){
+  drawWorld('valley');drawSceneryAll();
+  entities.forEach(i=>{if(!i.found){const d=dist(i,david);
+    if(d<140){ctx.globalAlpha=clamp(1-(d-40)/100,0.2,1);drawItem(i);ctx.globalAlpha=1;}}});
+  drawFlockFollow();drawDavid(david.x,david.y);
+}
+
+/* ---------- L2: TRIAGE (visible timers) ---------- */
+function initL2(){
+  placeScenery();
+  const spots=[
+    {x:W*0.12,y:H*0.18,t:11,label:'cliff'},
+    {x:W*0.88,y:H*0.2,t:16,label:'ravine'},
+    {x:W*0.14,y:H*0.82,t:22,label:'thicket'},
+    {x:W*0.86,y:H*0.8,t:27,label:'wolf'},
+  ];
+  spots.sort(()=>Math.random()-.5);
+  // shuffle timers slightly so order != obvious
+  spots.forEach(s=>{entities.push({e:'endangered',x:s.x,y:s.y,timer:s.t+rand(-1.5,1.5),saved:false});});
+  timeMax=1;timeLeft=1; // hide main bar usage
+  david={x:W/2,y:H/2,tx:W/2,ty:H/2};
+  setHUD('SAVED','0 / 4');
+  setClue('Four wander toward danger at once. Read the timers — judge who is first.');
+  tapCB=p=>{david.tx=p.x;david.ty=p.y;};
+}
+function tickL2(dt){
+  moveDavid(dt,150);
+  let saved=0;
+  for(const s of entities){
+    if(s.saved){saved++;continue}
+    s.timer-=dt;
+    if(dist(s,david)<28){s.saved=true;pop(s.x,s.y);continue}
+    if(s.timer<=0){failLevel('One sheep was lost. A shepherd guards them all — judge again.');return;}
+  }
+  setHUD('SAVED',saved+' / 4');
+  $('timerfill').style.width='100%';
+  if(saved===4)winLevel();
+}
+function drawL2(){
+  drawWorld('dusk');drawSceneryAll();
+  entities.forEach(s=>{
+    if(s.saved){return}
+    drawSheep(s.x,s.y,true,s.timer<5&&Math.sin(perf()*0.02)>0);
+    // timer ring
+    const frac=clamp(s.timer/28,0,1);
+    ctx.strokeStyle=s.timer<6?'#b0483a':'#C9A84C';ctx.lineWidth=3;
+    ctx.beginPath();ctx.arc(s.x,s.y-26,11,-Math.PI/2,-Math.PI/2+frac*6.283);ctx.stroke();
+    ctx.fillStyle=s.timer<6?'#e88373':'#e8dcc0';
+    ctx.font='13px Cinzel, serif';ctx.textAlign='center';
+    ctx.fillText(Math.ceil(s.timer),s.x,s.y-22);
+  });
+  // saved flock follows
+  let i=0;entities.forEach(s=>{if(s.saved){const a=i++/4*6.283+perf()*0.0004;drawSheep(david.x+Math.cos(a)*32,david.y+Math.sin(a)*20+6);}});
+  drawDavid(david.x,david.y);
+}
+
+/* ---------- L3 & L4: BEAST LEVELS (gather then fight) ---------- */
+let beast=null, phase=1, materials=[], weaponReady=false, stones=0;
+function initBeast(type){
+  placeScenery();phase=1;weaponReady=false;
+  const mats=type==='lion'?[['branch','A straight branch lies beneath the tallest tree.'],['cord','Twisted cord waits among the rocks.'],['branch','A second shaft rests by the water.']]
+                          :[['hide','A leather strip dries on the rocks.'],['cord','Braided cord hangs in the low branches.'],['hide','A pouch of hide lies near the stream.']];
+  const spots=['tree','rock','water'];
+  materials=mats.map((m,i)=>{const p=hideNear(spots[i]);return{e:'item',kind:m[0],x:p.x,y:p.y,found:false,clue:m[1]};});
+  beast={type,x:type==='lion'?-60:W+60,y:H*0.25,speed:(W+140)/(type==='lion'?38:34),hp:type==='lion'?2:1,hurt:0,lungeT:0,vx:0,vy:0};
+  david={x:W/2,y:H*0.75,tx:W/2,ty:H*0.75};
+  timeMax=1;timeLeft=1;
+  setHUD(type==='lion'?'ROD':'SLING','0 / 3','FLOCK','8');
+  setClue(materials[0].clue);
+  tapCB=p=>{david.tx=p.x;david.ty=p.y;};
+}
+function initL3(){initBeast('lion');}
+function initL4(){initBeast('bear');}
+function tickBeast(dt){
+  const type=beast.type;
+  if(phase===1){
+    moveDavid(dt);
+    let got=0;
+    materials.forEach(m=>{if(m.found){got++;return}if(dist(m,david)<26){m.found=true;pop(m.x,m.y);}});
+    const nx=materials.find(m=>!m.found);setClue(nx?nx.clue:'');
+    setHUD(type==='lion'?'ROD':'SLING',got+' / 3','FLOCK','8');
+    // beast approaches flock (flock at david's position visually; use fixed flock point)
+    const target={x:W/2,y:H*0.75};
+    const d=dist(beast,target);
+    const ang=Math.atan2(target.y-beast.y,target.x-beast.x);
+    beast.x+=Math.cos(ang)*beast.speed*dt;beast.y+=Math.sin(ang)*beast.speed*dt;
+    if(d<70){failLevel(`The ${type} reached the flock before your weapon was ready.`);return;}
+    if(got===3){
+      phase=2;weaponReady=true;
+      if(type==='lion'){
+        setClue('THE ROD IS READY — tap the lion as it charges. Two true strikes.');
+        tapCB=p=>{ if(dist(p,beast)<42&&dist(beast,david)<190){beast.hp--;beast.hurt=0.4;pop(beast.x,beast.y,'#c08a3e');
+            const kb=Math.atan2(beast.y-david.y,beast.x-david.x);beast.x+=Math.cos(kb)*46;beast.y+=Math.sin(kb)*46;} };
+      } else {
+        setClue('THE SLING IS READY — drag back from David, release to hurl the stone.');
+        dragMode=true;tapCB=null;
+        releaseCB=(a,b)=>{fireStone(a,b,'bear');};
+      }
+    }
+  } else {
+    // fight phase
+    beast.lungeT-=dt;
+    const tgt=david;
+    const ang=Math.atan2(tgt.y-beast.y,tgt.x-beast.x);
+    const sp=beast.type==='lion'?95:70;
+    beast.x+=Math.cos(ang)*sp*dt;beast.y+=Math.sin(ang)*sp*dt;
+    beast.hurt=Math.max(0,beast.hurt-dt);
+    if(beast.type==='lion'){moveDavid(dt,150);}
+    if(dist(beast,david)<30){failLevel(`The ${beast.type} broke through. Strike sooner.`);return;}
+    if(beast.hp<=0){winLevel();return;}
+    tickProjectiles(dt);
+  }
+}
+function drawBeastLevel(){
+  drawWorld(beast.type==='bear'?'dusk':undefined);drawSceneryAll();
+  materials.forEach(m=>{if(!m.found){const d=dist(m,david);
+    if(d<150){ctx.globalAlpha=clamp(1-(d-40)/100,0.25,1);drawItem(m);ctx.globalAlpha=1;}}});
+  drawFlockAt(W/2,H*0.75);
+  drawBeast(beast.x,beast.y,beast.type,beast.hurt>0);
+  drawDavid(david.x,david.y);
+  drawProjectiles();drawAimLine();
+  if(phase===2&&beast.type==='lion'){
+    ctx.strokeStyle='rgba(201,168,76,.4)';ctx.setLineDash([5,5]);ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(david.x,david.y,190,0,7);ctx.stroke();ctx.setLineDash([]);
+  }
+}
+function drawFlockAt(x,y){
+  for(let i=0;i<8;i++){const a=i/8*6.283;drawSheep(x+Math.cos(a)*44,y+Math.sin(a)*26+4);}
+}
+
+/* ---------- projectiles (bear + goliath) ---------- */
+let projectiles=[], wind=0;
+function fireStone(a,b,target){
+  if(target==='goliath'&&stones<=0)return;
+  const dx=a.x-b.x, dy=a.y-b.y; // drag back = launch forward
+  const pw=clamp(Math.hypot(dx,dy)/60,0.2,3.2);
+  projectiles.push({x:david.x,y:david.y-10,vx:dx*3.4*pw/Math.hypot(dx,dy)*140,vy:dy*3.4*pw/Math.hypot(dx,dy)*140,target});
+  if(target==='goliath'){stones--;setHUD('STONES',stones+' / 5','WIND',windLabel());}
+}
+function tickProjectiles(dt){
+  for(const p of projectiles){
+    p.vy+=290*dt; p.vx+=wind*dt;
+    p.x+=p.vx*dt;p.y+=p.vy*dt;
+    if(p.target==='bear'&&beast&&dist(p,beast)<26){beast.hp=0;pop(beast.x,beast.y,'#5f4a38');p.dead=true;}
+    if(p.target==='goliath'&&goliath){
+      // forehead hitbox
+      const fx=goliath.x, fy=goliath.y-19*2.6*1.0-16; // approximate forehead band
+      if(Math.abs(p.x-fx)<12&&Math.abs(p.y-(goliath.y-49))<9){goliath.hit=true;p.dead=true;pop(fx,goliath.y-49,'#C9A84C');}
+      else if(Math.abs(p.x-goliath.x)<26&&p.y>goliath.y-44&&p.y<goliath.y+26){p.dead=true;pop(p.x,p.y,'#6e6558');goliathTaunt();}
+    }
+    if(p.y>H+30||p.x<-40||p.x>W+40)p.dead=true;
+  }
+  projectiles=projectiles.filter(p=>!p.dead);
+}
+function drawProjectiles(){
+  projectiles.forEach(p=>{ctx.fillStyle='#9b968a';ctx.beginPath();ctx.arc(p.x,p.y,4.5,0,7);ctx.fill();});
+}
+function drawAimLine(){
+  if(dragMode&&dragStart&&dragNow){
+    ctx.strokeStyle='rgba(201,168,76,.8)';ctx.lineWidth=2;ctx.setLineDash([6,5]);
+    ctx.beginPath();ctx.moveTo(david.x,david.y-10);
+    ctx.lineTo(david.x+(dragStart.x-dragNow.x)*1.6,david.y-10+(dragStart.y-dragNow.y)*1.6);
+    ctx.stroke();ctx.setLineDash([]);
+  }
+}
+
+/* ---------- L5: WAY HOME (fork navigation) ---------- */
+let forks=[], forkIndex=0;
+const FORK_DATA=[
+ {clue:'"He leads me beside still waters." — take the path where water rests.',good:'water'},
+ {clue:'"The trees of the field shall clap their hands." — pass beneath the branches.',good:'tree'},
+ {clue:'"My rock, in whom I take refuge." — walk the way of the stones.',good:'rock'},
+];
+function initL5(){
+  forkIndex=0;
+  david={x:W/2,y:H*0.85,tx:W/2,ty:H*0.85};
+  timeMax=1;timeLeft=1;
+  setHUD('FLOCK','8','FORKS','0 / 3');
+  buildFork();
+}
+function buildFork(){
+  const F=FORK_DATA[forkIndex];
+  const opts=['water','tree','rock'].sort(()=>Math.random()-.5).slice(0,2);
+  if(!opts.includes(F.good))opts[Math.floor(Math.random()*2)]=F.good;
+  forks=[{side:'left',x:W*0.25,y:H*0.3,type:opts[0]},{side:'right',x:W*0.75,y:H*0.3,type:opts[1]}];
+  setClue(F.clue);
+  tapCB=p=>{
+    const pick=p.x<W/2?forks[0]:forks[1];
+    if(pick.type===F.good){
+      forkIndex++;pop(pick.x,pick.y);
+      setHUD('FLOCK','8','FORKS',forkIndex+' / 3');
+      if(forkIndex>=3){winLevel();}else buildFork();
+    } else {
+      failLevel('The wrong path scattered the flock into danger. Read the verse again — the clues have changed.');
+    }
+  };
+}
+function tickL5(dt){}
+function drawL5(){
+  drawWorld('dusk');
+  // two path fields
+  forks.forEach(f=>{
+    ctx.fillStyle='rgba(232,220,192,.07)';
+    ctx.fillRect(f.side==='left'?0:W/2,0,W/2,H);
+    if(f.type==='water')drawWater(f.x,f.y,55,24);
+    if(f.type==='tree'){drawTree(f.x-20,f.y,1.2);drawTree(f.x+22,f.y+12,1);}
+    if(f.type==='rock'){drawRock(f.x-14,f.y,1.2);drawRock(f.x+16,f.y+8,1);}
+  });
+  ctx.strokeStyle='rgba(201,168,76,.35)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(W/2,0);ctx.lineTo(W/2,H);ctx.stroke();
+  drawFlockAt(david.x,david.y-40);
+  drawDavid(david.x,david.y);
+  ctx.fillStyle='rgba(232,220,192,.55)';ctx.font='italic 15px Cormorant Garamond,serif';
+  ctx.textAlign='center';ctx.fillText('tap a side to choose the path',W/2,H*0.62);
+}
+
+/* ---------- L6: TO THE BATTLEFIELD (five stones) ---------- */
+function initL6(){
+  placeScenery();stones=0;
+  const stream=scenery.find(s=>s.t==='water');
+  for(let i=0;i<5;i++){
+    entities.push({e:'item',kind:'stone',x:clamp(stream.x+rand(-80,80),30,W-30),y:clamp(stream.y+rand(-45,45),30,H-30),found:false});
+  }
+  timeMax=timeLeft=40;
+  david={x:W*0.1,y:H*0.5,tx:W*0.1,ty:H*0.5};
+  setHUD('STONES','0 / 5');
+  setClue('The valley of Elah lies ahead. Choose five smooth stones from the stream.');
+  tapCB=p=>{david.tx=p.x;david.ty=p.y;};
+}
+function tickL6(dt){
+  moveDavid(dt);
+  let got=0;
+  entities.forEach(s=>{if(s.found){got++;return}if(dist(s,david)<24){s.found=true;got++;stones++;pop(s.x,s.y);}});
+  setHUD('STONES',got+' / 5');
+  if(got===5){winLevel();return;}
+  timeLeft-=dt;if(timeLeft<=0)failLevel('The army will not wait. Gather the stones swiftly.');
+}
+function drawL6(){
+  drawWorld('valley');drawSceneryAll();
+  entities.forEach(s=>{if(!s.found)drawItem(s);});
+  drawDavid(david.x,david.y);
+}
+
+/* ---------- L7: GOLIATH ---------- */
+let goliath=null, tauntT=0;
+function initL7(){
+  goliath={x:W*0.82,y:H*0.42,hit:false};
+  stones=5;
+  wind=rand(-40,40);
+  david={x:W*0.13,y:H*0.72,tx:W*0.13,ty:H*0.72};
+  timeMax=1;timeLeft=1;
+  setHUD('STONES','5 / 5','WIND',windLabel());
+  setClue('Drag back from David and release. Only a clean forehead shot will fell him.');
+  dragMode=true;releaseCB=(a,b)=>fireStone(a,b,'goliath');
+}
+function windLabel(){
+  const w=Math.round(wind/8);
+  return w===0?'CALM':(w>0?'→ ':'← ')+Math.abs(w);
+}
+function goliathTaunt(){setClue('The stone glanced off his armor. Only the forehead.');}
+function tickL7(dt){
+  tickProjectiles(dt);
+  if(goliath.hit){winLevel();return;}
+  if(stones<=0&&projectiles.length===0){
+    failLevel('Five stones spent. The giant still stands. Steady your aim — wind has shifted.');
+  }
+}
+function drawL7(){
+  drawWorld('valley');
+  // armies suggestion
+  ctx.fillStyle='rgba(0,0,0,.12)';ctx.fillRect(0,H*0.12,W,3);
+  drawGoliath(goliath.x,goliath.y,goliath.hit);
+  // forehead marker hint
+  ctx.strokeStyle='rgba(201,168,76,.5)';ctx.lineWidth=1;
+  ctx.strokeRect(goliath.x-11,goliath.y-57,22,12);
+  drawDavid(david.x,david.y);
+  drawProjectiles();drawAimLine();
+  // wind arrow
+  ctx.fillStyle='rgba(232,220,192,.6)';ctx.font='14px Cinzel,serif';ctx.textAlign='center';
+  ctx.fillText('WIND '+windLabel(),W/2,26);
+}
+
+/* ============ SHARED ============ */
+function moveDavid(dt,sp=170){
+  const d=Math.hypot(david.tx-david.x,david.ty-david.y);
+  if(d>3){const a=Math.atan2(david.ty-david.y,david.tx-david.x);
+    david.x+=Math.cos(a)*Math.min(sp*dt,d);david.y+=Math.sin(a)*Math.min(sp*dt,d);}
+}
+function drawSceneryAll(){
+  scenery.forEach(s=>{
+    if(s.t==='tree')drawTree(s.x,s.y);
+    else if(s.t==='rock')drawRock(s.x,s.y);
+    else if(s.t==='water')drawWater(s.x,s.y,s.w,s.h);
+  });
+}
+function pop(x,y,col='#C9A84C'){
+  for(let i=0;i<10;i++){const a=rand(0,6.283);particles.push({x,y,vx:Math.cos(a)*rand(30,110),vy:Math.sin(a)*rand(30,110)-40,life:rand(.4,.8),col});}
+}
+function tickParticles(dt){
+  particles.forEach(p=>{p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=160*dt;});
+  particles=particles.filter(p=>p.life>0);
+}
+function drawParticles(){
+  particles.forEach(p=>{ctx.globalAlpha=clamp(p.life*1.6,0,1);ctx.fillStyle=p.col;
+    ctx.beginPath();ctx.arc(p.x,p.y,2.4,0,7);ctx.fill();});
+  ctx.globalAlpha=1;
+}
+
+/* ============ MAIN LOOP ============ */
+const TICKS=[tickL0,tickL1,tickL2,tickBeast,tickBeast,tickL5,tickL6,tickL7];
+const DRAWS=[drawL0,drawL1,drawL2,drawBeastLevel,drawBeastLevel,drawL5,drawL6,drawL7];
+function loop(t){
+  if(!running)return;
+  const dt=Math.min(0.05,(t-lastT)/1000);lastT=t;
+  TICKS[level](dt);
+  if(!running)return;
+  tickParticles(dt);
+  ctx.clearRect(0,0,W,H);
+  DRAWS[level]();
+  drawParticles();
+  // timer bar
+  if(timeMax>1){
+    const f=clamp(timeLeft/timeMax,0,1);
+    $('timerfill').style.width=(f*100)+'%';
+    $('timerfill').className=f<0.25?'low':'';
+  } else {$('timerfill').style.width='100%';$('timerfill').className='';}
+  requestAnimationFrame(loop);
+}
+
+/* ============ START ============ */
+showScreen("DAVID'S JOURNEY","Eight trials, from the sheepfold to the valley of Elah. You begin with nothing — gather, guard, build, and aim.","BEGIN",()=>startLevel(0),
+  '"Your servant has been keeping his father\'s sheep."','1 SAMUEL 17:34',false,
+  'Tap to move · clues fade in as you draw near · later trials use drag-to-sling');
+</script>
+</body>
+</html>

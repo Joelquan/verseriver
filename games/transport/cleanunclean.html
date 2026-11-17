@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Clean & Unclean</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14110d; --panel:#201b14; --panel2:#2a2418;
+    --gold:#C9A84C; --gold-dim:#7d6a30; --parch:#e8dcc0; --danger:#b0483a; --green:#7d8a50;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;background:var(--ink);color:var(--parch);font-family:'Cormorant Garamond',serif;overflow:hidden}
+  #app{display:flex;flex-direction:column;height:100%;max-width:820px;margin:0 auto}
+  header{padding:12px 16px 8px;text-align:center;border-bottom:1px solid var(--gold-dim)}
+  header h1{font-family:'Cinzel',serif;font-size:16px;letter-spacing:.28em;color:var(--gold)}
+  header p{font-size:14px;font-style:italic;opacity:.7;margin-top:2px}
+  #hud{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:var(--panel);border-bottom:1px solid #383021;font-size:14px}
+  #hud .h{font-family:'Cinzel',serif;letter-spacing:.1em;font-size:12px;color:var(--gold)}
+  #strikes span{display:inline-block;width:11px;height:11px;border:1px solid var(--gold-dim);border-radius:50%;margin-left:5px;vertical-align:middle}
+  #strikes span.x{background:var(--danger);border-color:var(--danger)}
+  #stage{position:relative;flex:1;display:flex;flex-direction:column;min-height:0;overflow-y:auto}
+  #qwrap{padding:18px 20px;text-align:center}
+  #namecard{display:inline-block;min-width:230px;max-width:92%;background:var(--panel2);border:1px solid var(--gold);border-radius:4px;padding:16px 22px}
+  #namecard .k{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.24em;color:var(--gold);opacity:.85}
+  #namecard .n{font-size:25px;font-weight:600;margin-top:5px}
+  #diff{display:inline-block;margin-top:8px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.14em;padding:2px 10px;border:1px solid var(--gold-dim);border-radius:10px;color:var(--gold);opacity:.8}
+  #qtitle{font-size:16px;font-style:italic;opacity:.8;margin:14px 0 8px}
+  #opts{padding:0 18px 20px;display:flex;flex-direction:column;gap:9px}
+  .opt{background:var(--panel2);border:1px solid var(--gold-dim);border-radius:4px;padding:12px 16px;font-family:'Cormorant Garamond',serif;font-size:16px;line-height:1.3;color:var(--parch);text-align:left;cursor:pointer}
+  .opt b{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;color:var(--gold);display:block;margin-bottom:2px;opacity:.85}
+  .opt:active{border-color:var(--gold)}
+  .opt.correct{border-color:var(--green);background:rgba(125,138,80,.18)}
+  .opt.wrong{border-color:var(--danger);background:rgba(176,72,58,.18)}
+
+  .screen{position:absolute;inset:0;background:rgba(16,13,10,.97);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:26px;z-index:30;overflow-y:auto}
+  .screen h2{font-family:'Cinzel',serif;color:var(--gold);font-size:20px;letter-spacing:.14em;margin-bottom:10px}
+  .screen p{font-size:17px;max-width:460px;line-height:1.4;margin-bottom:6px}
+  .screen .verse{font-style:italic;color:var(--gold);margin:12px 0 4px;max-width:420px}
+  .screen .ref{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.16em;opacity:.75;margin-bottom:8px}
+  .screen button{font-family:'Cinzel',serif;letter-spacing:.16em;font-size:14px;padding:11px 28px;margin-top:12px;background:none;border:1px solid var(--gold);color:var(--gold);border-radius:2px;cursor:pointer}
+  .screen button:active{background:var(--gold);color:var(--ink)}
+  .fail h2{color:var(--danger)}
+  .small{font-size:13px !important;opacity:.6}
+
+  .setuprow{margin:12px 0}
+  .setuprow .lbl{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.16em;color:var(--gold);margin-bottom:8px}
+  .pillrow{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:460px}
+  .pill{font-family:'Cinzel',serif;font-size:12.5px;letter-spacing:.03em;padding:7px 12px;border:1px solid var(--gold-dim);border-radius:16px;color:var(--parch);cursor:pointer;background:none}
+  .pill.sel{border-color:var(--gold);background:rgba(201,168,76,.18);color:var(--gold)}
+</style>
+</head>
+<body>
+<div id="app">
+  <header><h1>CLEAN &amp; UNCLEAN</h1><p>Four different rules — one for each kind of creature.</p></header>
+  <div id="hud">
+    <div><span class="h">PROGRESS</span> <span id="placed">0 / 0</span></div>
+    <div id="strikes"><span class="h">STRIKES</span><span></span><span></span><span></span></div>
+  </div>
+  <div id="stage">
+    <div class="screen" id="setup"></div>
+    <div id="qwrap" style="display:none">
+      <div id="namecard">
+        <div class="k">THE CREATURE</div>
+        <div class="n" id="qname">—</div>
+        <div id="diff">DIFFICULTY 1</div>
+      </div>
+      <div id="qtitle">What kind of creature is this?</div>
+    </div>
+    <div id="opts"></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const sample=(arr,n)=>shuffle(arr).slice(0,n);
+const OPT_COUNT_BY_DIFF={1:3,2:4,3:5};
+
+const CATEGORIES=["Land Animal","Water Creature","Bird","Flying Insect"];
+const VERDICTS=["Clean","Unclean"];
+const REASONS=[
+ "Chews the cud AND has a split hoof — both required for land animals",
+ "Chews the cud, but does not have a split hoof",
+ "Has a split hoof, but does not chew the cud",
+ "Has fins AND scales — both required for water creatures",
+ "Lacks fins, scales, or both",
+ "Named explicitly among the unclean birds — no reason is given in the text itself",
+ "Not named among the unclean birds, and so clean by implication",
+ "Has jointed legs above its feet, made for leaping",
+ "Walks on all four feet, with no leaping joint",
+];
+
+/* ---------- CLEAN AND UNCLEAN CREATURES — Leviticus 11, Deuteronomy 14 (KJV) ---------- */
+const ROSTER=[
+ {n:"Ox",d:1,cat:0,verdict:0,reason:0,ref:"Leviticus 11:3",v:"Whatsoever parteth the hoof, and is clovenfooted, and cheweth the cud, among the beasts, that shall ye eat."},
+ {n:"Sheep",d:1,cat:0,verdict:0,reason:0,ref:"Deuteronomy 14:4",v:"These are the beasts which ye shall eat: the ox, the sheep, and the goat."},
+ {n:"Goat",d:1,cat:0,verdict:0,reason:0,ref:"Deuteronomy 14:4",v:"These are the beasts which ye shall eat: the ox, the sheep, and the goat."},
+ {n:"Hart (Deer)",d:2,cat:0,verdict:0,reason:0,ref:"Deuteronomy 14:5",v:"The hart, and the roebuck, and the fallow deer, and the wild goat, and the pygarg, and the wild ox, and the chamois."},
+ {n:"Gazelle (Roebuck)",d:3,cat:0,verdict:0,reason:0,ref:"Deuteronomy 14:5",v:"The hart, and the roebuck, and the fallow deer, and the wild goat, and the pygarg, and the wild ox, and the chamois."},
+ {n:"Camel",d:1,cat:0,verdict:1,reason:1,ref:"Leviticus 11:4",v:"The camel, because he cheweth the cud, but divideth not the hoof; he is unclean unto you."},
+ {n:"Rock Badger (Coney)",d:3,cat:0,verdict:1,reason:1,ref:"Leviticus 11:5",v:"The coney, because he cheweth the cud, but divideth not the hoof; he is unclean unto you."},
+ {n:"Hare",d:3,cat:0,verdict:1,reason:1,ref:"Leviticus 11:6",v:"The hare, because he cheweth the cud, but divideth not the hoof; he is unclean unto you."},
+ {n:"Swine (Pig)",d:1,cat:0,verdict:1,reason:2,ref:"Leviticus 11:7",v:"The swine, though he divide the hoof, and be clovenfooted, yet he cheweth not the cud; he is unclean to you."},
+ {n:"Fish (with fins & scales)",d:2,cat:1,verdict:0,reason:3,ref:"Leviticus 11:9",v:"Whatsoever hath fins and scales in the waters, in the seas, and in the rivers, them shall ye eat."},
+ {n:"Shellfish & Scaleless Water Creatures",d:2,cat:1,verdict:1,reason:4,ref:"Leviticus 11:10",v:"All that have not fins and scales in the seas, and in the rivers... they shall be an abomination unto you."},
+ {n:"Eagle",d:1,cat:2,verdict:1,reason:5,ref:"Leviticus 11:13",v:"These are they which ye shall have in abomination among the fowls; they shall not be eaten, they are an abomination: the eagle."},
+ {n:"Vulture",d:2,cat:2,verdict:1,reason:5,ref:"Leviticus 11:14",v:"And the vulture, and the kite after his kind."},
+ {n:"Raven",d:2,cat:2,verdict:1,reason:5,ref:"Leviticus 11:15",v:"Every raven after his kind."},
+ {n:"Owl",d:2,cat:2,verdict:1,reason:5,ref:"Leviticus 11:16",v:"And the owl, and the night hawk, and the cuckow, and the hawk after his kind."},
+ {n:"Stork",d:3,cat:2,verdict:1,reason:5,ref:"Leviticus 11:19",v:"And the stork, the heron after her kind, and the lapwing, and the bat."},
+ {n:"Bat",d:3,cat:2,verdict:1,reason:5,ref:"Leviticus 11:19",v:"And the stork, the heron after her kind, and the lapwing, and the bat."},
+ {n:"Dove (Pigeon)",d:2,cat:2,verdict:0,reason:6,ref:"Leviticus 1:14",v:"If the burnt sacrifice for his offering to the LORD be of fowls, then he shall bring his offering of turtledoves, or of young pigeons."},
+ {n:"Locust",d:1,cat:3,verdict:0,reason:7,ref:"Leviticus 11:22",v:"Even these of them ye may eat; the locust after his kind, and the bald locust after his kind, and the beetle after his kind, and the grasshopper after his kind."},
+ {n:"Grasshopper",d:2,cat:3,verdict:0,reason:7,ref:"Leviticus 11:22",v:"Even these of them ye may eat; the locust after his kind, and the bald locust after his kind, and the beetle after his kind, and the grasshopper after his kind."},
+ {n:"Beetle (Cricket)",d:3,cat:3,verdict:0,reason:7,ref:"Leviticus 11:22",v:"Even these of them ye may eat; the locust after his kind, and the bald locust after his kind, and the beetle after his kind, and the grasshopper after his kind."},
+ {n:"Other Four-Footed Flying Creeper",d:3,cat:3,verdict:1,reason:8,ref:"Leviticus 11:23",v:"All other flying creeping things, which have four feet, shall be an abomination unto you."},
+];
+
+let deck=[],cur=null,idx=0,strikes=0,stage=0;
+let chosenDiff='mix', chosenCount=10;
+
+function poolFor(diff){
+  if(diff==='mix')return ROSTER;
+  return ROSTER.filter(r=>r.d==Number(diff));
+}
+function setupHTML(){
+  return `<h2>CLEAN &amp; UNCLEAN</h2>
+    <p>Twenty-two creatures from Leviticus 11 and Deuteronomy 14. Four categories, four different rules — land, water, bird, and flying insect each judged by their own mechanism.</p>
+    <div class="setuprow"><div class="lbl">DIFFICULTY</div><div class="pillrow" id="diffrow"></div></div>
+    <div class="setuprow"><div class="lbl">HOW MANY CREATURES</div><div class="pillrow" id="countrow"></div></div>
+    <button id="startbtn">BEGIN</button>
+    <p class="small">Note: the bat is grouped with the unclean birds in the text (Leviticus 11:19), though it is not a bird. Three strikes and the roll resets.</p>`;
+}
+function buildSetup(){
+  const dr=$('diffrow');dr.innerHTML='';
+  [["1","Difficulty 1"],["2","Difficulty 2"],["3","Difficulty 3"],["mix","Mixed"]].forEach(([val,label])=>{
+    const p=document.createElement('button');p.className='pill'+(val===chosenDiff?' sel':'');p.textContent=label;
+    p.onclick=()=>{chosenDiff=val;buildSetup();};
+    dr.appendChild(p);
+  });
+  const cr=$('countrow');cr.innerHTML='';
+  const maxAvail=poolFor(chosenDiff).length;
+  if(chosenCount>maxAvail||chosenCount<1)chosenCount=maxAvail;
+  for(let n=1;n<=maxAvail;n++){
+    const p=document.createElement('button');p.className='pill'+(n===chosenCount?' sel':'');
+    p.textContent=n;
+    p.onclick=()=>{chosenCount=n;buildSetup();};
+    cr.appendChild(p);
+  }
+}
+function initSetupScreen(){
+  const s=$('setup');s.className='screen';s.innerHTML=setupHTML();
+  buildSetup();
+  $('startbtn').onclick=beginGame;
+}
+function beginGame(){
+  const pool=poolFor(chosenDiff);
+  const n=Math.min(chosenCount,pool.length);
+  deck=sample(pool,n);idx=0;strikes=0;
+  $('setup').style.display='none';
+  $('qwrap').style.display='block';
+  updateHUD();nextItem();
+}
+function updateHUD(){
+  $('placed').textContent=idx+' / '+deck.length;
+  const dots=$('strikes').querySelectorAll('span:not(.h)');
+  dots.forEach((s,i)=>s.className=i<strikes?'x':'');
+}
+function nextItem(){
+  if(idx>=deck.length){win();return;}
+  cur=deck[idx];stage=0;
+  $('qname').textContent=cur.n;
+  $('diff').textContent='DIFFICULTY '+cur.d;
+  askCat();
+}
+function renderOpts(options,correctCheck,onPick){
+  const wrap=$('opts');wrap.innerHTML='';
+  options.forEach(opt=>{
+    const b=document.createElement('button');b.className='opt';
+    b.innerHTML=opt.html!==undefined?opt.html:opt.label;
+    b.onclick=()=>{
+      const ok=correctCheck(opt);
+      b.classList.add(ok?'correct':'wrong');
+      [...wrap.children].forEach(c=>c.disabled=true);
+      setTimeout(()=>onPick(ok),550);
+    };
+    wrap.appendChild(b);
+  });
+}
+function askCat(){
+  $('qtitle').textContent='What kind of creature is this?';
+  const options=shuffle(CATEGORIES.map((c,i)=>({label:c,val:i})));
+  renderOpts(options,opt=>opt.val===cur.cat,ok=>{
+    if(ok){stage=1;askVerdict();} else strike('That is not the right category — and the category decides which rule applies.');
+  });
+}
+function askVerdict(){
+  $('qtitle').textContent='Clean, or unclean?';
+  const options=shuffle(VERDICTS.map((v,i)=>({label:v,val:i})));
+  renderOpts(options,opt=>opt.val===cur.verdict,ok=>{
+    if(ok){stage=2;askReason();} else strike('That is not the verdict scripture gives.');
+  });
+}
+function askReason(){
+  $('qtitle').textContent='By which rule was that decided?';
+  const nWrong=(OPT_COUNT_BY_DIFF[cur.d]||4)-1;
+  const wrongIdx=sample(REASONS.map((_,i)=>i).filter(i=>i!==cur.reason),Math.min(nWrong,REASONS.length-1));
+  const options=shuffle([cur.reason,...wrongIdx]).map(i=>({label:REASONS[i],val:i}));
+  renderOpts(options,opt=>opt.val===cur.reason,ok=>{
+    if(ok){stage=3;askVerse();} else strike('That is not the rule that applies here.');
+  });
+}
+function askVerse(){
+  $('qtitle').textContent='Which word of scripture confirms it?';
+  const nWrong=(OPT_COUNT_BY_DIFF[cur.d]||4)-1;
+  const others=sample(ROSTER.filter(r=>r.n!==cur.n && r.v!==cur.v),nWrong);
+  const options=shuffle([{html:`<b>${cur.ref}</b>${cur.v}`,val:true},
+    ...others.map(o=>({html:`<b>${o.ref}</b>${o.v}`,val:false}))]);
+  renderOpts(options,opt=>opt.val===true,ok=>{
+    if(ok){idx++;updateHUD();nextItem();} else strike('That word confirms a different creature.');
+  });
+}
+function strike(msg){
+  strikes++;updateHUD();
+  if(strikes>=3){fail(msg);}
+  else{
+    $('qtitle').textContent=msg+`  (${3-strikes} ${3-strikes===1?'strike':'strikes'} left — try again)`;
+    setTimeout(()=>{ if(stage===0)askCat(); else if(stage===1)askVerdict(); else if(stage===2)askReason(); else askVerse(); },650);
+  }
+}
+function fail(msg){
+  const s=$('setup');s.style.display='flex';s.className='screen fail';
+  $('qwrap').style.display='none';$('opts').innerHTML='';
+  s.innerHTML=`<h2>THE LINE IS CROSSED</h2>
+    <p>${msg}</p>
+    <p class="small">Three strikes. The creatures will be drawn afresh.</p>
+    <button id="againbtn">BEGIN AGAIN</button>`;
+  $('againbtn').onclick=initSetupScreen;
+}
+function win(){
+  const s=$('setup');s.style.display='flex';s.className='screen';
+  $('qwrap').style.display='none';$('opts').innerHTML='';
+  s.innerHTML=`<h2>HOLY, AS I AM HOLY</h2>
+    <p>${deck.length} creatures known rightly — their kind, their verdict, their rule, and their word.</p>
+    <p class="verse">"Ye shall therefore put difference between clean beasts and unclean, and between unclean fowls and clean."</p>
+    <p class="ref">LEVITICUS 20:25</p>
+    <button id="againbtn">PLAY AGAIN</button>`;
+  $('againbtn').onclick=initSetupScreen;
+}
+initSetupScreen();
+</script>
+</body>
+</html>

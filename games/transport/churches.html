@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Seven Churches</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14110d; --panel:#201b14; --panel2:#2a2418;
+    --gold:#C9A84C; --gold-dim:#7d6a30; --parch:#e8dcc0; --danger:#b0483a; --green:#7d8a50;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;background:var(--ink);color:var(--parch);font-family:'Cormorant Garamond',serif;overflow:hidden}
+  #app{display:flex;flex-direction:column;height:100%;max-width:820px;margin:0 auto}
+  header{padding:12px 16px 8px;text-align:center;border-bottom:1px solid var(--gold-dim)}
+  header h1{font-family:'Cinzel',serif;font-size:16px;letter-spacing:.28em;color:var(--gold)}
+  header p{font-size:14px;font-style:italic;opacity:.7;margin-top:2px}
+  #hud{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:var(--panel);border-bottom:1px solid #383021;font-size:14px}
+  #hud .h{font-family:'Cinzel',serif;letter-spacing:.1em;font-size:12px;color:var(--gold)}
+  #strikes span{display:inline-block;width:11px;height:11px;border:1px solid var(--gold-dim);border-radius:50%;margin-left:5px;vertical-align:middle}
+  #strikes span.x{background:var(--danger);border-color:var(--danger)}
+  #stage{position:relative;flex:1;display:flex;flex-direction:column;min-height:0;overflow-y:auto}
+  #qwrap{padding:16px 20px 6px;text-align:center}
+  #namecard{display:inline-block;min-width:250px;max-width:94%;background:var(--panel2);border:1px solid var(--gold);border-radius:4px;padding:16px 20px}
+  #namecard .k{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.2em;color:var(--gold);opacity:.85}
+  #namecard .n{font-size:19px;font-weight:600;margin-top:6px;line-height:1.35}
+  #diff{display:inline-block;margin-top:9px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.14em;padding:2px 10px;border:1px solid var(--gold-dim);border-radius:10px;color:var(--gold);opacity:.8}
+  #qtitle{font-size:16px;font-style:italic;opacity:.8;margin:12px 0 8px}
+  #opts{padding:0 18px 20px;display:flex;flex-direction:column;gap:9px}
+  .opt{background:var(--panel2);border:1px solid var(--gold-dim);border-radius:4px;padding:12px 16px;font-family:'Cinzel',serif;letter-spacing:.03em;font-size:15px;color:var(--parch);text-align:left;cursor:pointer}
+  .opt:active{border-color:var(--gold)}
+  .opt.correct{border-color:var(--green);background:rgba(125,138,80,.18)}
+  .opt.wrong{border-color:var(--danger);background:rgba(176,72,58,.18)}
+
+  .screen{position:absolute;inset:0;background:rgba(16,13,10,.97);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:26px;z-index:30;overflow-y:auto}
+  .screen h2{font-family:'Cinzel',serif;color:var(--gold);font-size:21px;letter-spacing:.14em;margin-bottom:10px}
+  .screen p{font-size:18px;max-width:440px;line-height:1.4;margin-bottom:6px}
+  .screen .verse{font-style:italic;color:var(--gold);margin:12px 0 4px;max-width:420px}
+  .screen .ref{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.16em;opacity:.75;margin-bottom:8px}
+  .screen button{font-family:'Cinzel',serif;letter-spacing:.16em;font-size:14px;padding:11px 28px;margin-top:12px;background:none;border:1px solid var(--gold);color:var(--gold);border-radius:2px;cursor:pointer}
+  .screen button:active{background:var(--gold);color:var(--ink)}
+  .fail h2{color:var(--danger)}
+  .small{font-size:13.5px !important;opacity:.6}
+
+  .setuprow{margin:14px 0}
+  .setuprow .lbl{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.16em;color:var(--gold);margin-bottom:8px}
+  .pillrow{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;max-width:440px}
+  .pill{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.04em;padding:8px 14px;border:1px solid var(--gold-dim);border-radius:16px;color:var(--parch);cursor:pointer;background:none}
+  .pill.sel{border-color:var(--gold);background:rgba(201,168,76,.18);color:var(--gold)}
+</style>
+</head>
+<body>
+<div id="app">
+  <header><h1>SEVEN CHURCHES</h1><p>What the Lord said to each — placed rightly, or not at all.</p></header>
+  <div id="hud">
+    <div><span class="h">PROGRESS</span> <span id="placed">0 / 0</span></div>
+    <div id="strikes"><span class="h">STRIKES</span><span></span><span></span><span></span></div>
+  </div>
+  <div id="stage">
+    <div class="screen" id="setup"></div>
+    <div id="qwrap" style="display:none">
+      <div id="namecard">
+        <div class="k">WHAT WAS SAID</div>
+        <div class="n" id="qtext">—</div>
+        <div id="diff">DIFFICULTY 1</div>
+      </div>
+      <div id="qtitle">Which church does this belong to?</div>
+    </div>
+    <div id="opts"></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const sample=(arr,n)=>shuffle(arr).slice(0,n);
+
+const CHURCHES=["Ephesus","Smyrna","Pergamos","Thyatira","Sardis","Philadelphia","Laodicea"];
+const CATS=["Work","Correction","Reward"];
+
+/* ---------- ITEM POOL (Revelation 2-3, KJV — public domain, names of the item's own church withheld) ---------- */
+const ROSTER=[
+ // EPHESUS
+ {c:"Ephesus",cat:"Work",d:2,txt:"Tested those who called themselves apostles, and found them liars",ref:"Revelation 2:2"},
+ {c:"Ephesus",cat:"Work",d:3,txt:"Hated the deeds of a certain sect, which the Lord also hates",ref:"Revelation 2:6"},
+ {c:"Ephesus",cat:"Correction",d:1,txt:"Left the love they had at first",ref:"Revelation 2:4"},
+ {c:"Ephesus",cat:"Reward",d:1,txt:"Will be given to eat of the tree of life, in the midst of the paradise of God",ref:"Revelation 2:7"},
+
+ // SMYRNA
+ {c:"Smyrna",cat:"Work",d:2,txt:"Endured tribulation and poverty — yet is truly rich",ref:"Revelation 2:9"},
+ {c:"Smyrna",cat:"Correction",d:3,txt:"Received no rebuke at all, only a warning of coming suffering",ref:"Revelation 2:10"},
+ {c:"Smyrna",cat:"Reward",d:1,txt:"Will receive a crown of life, and not be hurt of the second death",ref:"Revelation 2:10-11"},
+
+ // PERGAMOS
+ {c:"Pergamos",cat:"Work",d:3,txt:"Held fast to the Name even where Satan's seat is, not denying the faith even when a faithful witness was martyred among them",ref:"Revelation 2:13"},
+ {c:"Pergamos",cat:"Correction",d:2,txt:"Holds the teaching that led Israel to eat things sacrificed to idols and commit fornication",ref:"Revelation 2:14"},
+ {c:"Pergamos",cat:"Correction",d:3,txt:"Also holds the doctrine of the Nicolaitans",ref:"Revelation 2:15"},
+ {c:"Pergamos",cat:"Reward",d:3,txt:"Will be given hidden manna, and a white stone with a new name written on it",ref:"Revelation 2:17"},
+
+ // THYATIRA
+ {c:"Thyatira",cat:"Work",d:2,txt:"Known for charity, service, faith, and patience — whose latter works exceed the first",ref:"Revelation 2:19"},
+ {c:"Thyatira",cat:"Correction",d:2,txt:"Tolerates a false prophetess who leads the servants of God into fornication and idolatry",ref:"Revelation 2:20"},
+ {c:"Thyatira",cat:"Reward",d:3,txt:"Will be given power over the nations, and the morning star",ref:"Revelation 2:26-28"},
+
+ // SARDIS
+ {c:"Sardis",cat:"Correction",d:1,txt:"Has a name that it lives, but is dead — its works are not found complete",ref:"Revelation 3:1-2"},
+ {c:"Sardis",cat:"Work",d:3,txt:"Still has a few who have not defiled their garments",ref:"Revelation 3:4"},
+ {c:"Sardis",cat:"Reward",d:2,txt:"Will be clothed in white, and their name will not be blotted out of the book of life",ref:"Revelation 3:5"},
+
+ // PHILADELPHIA
+ {c:"Philadelphia",cat:"Work",d:3,txt:"Has kept the word, has not denied the Name, though having only a little strength",ref:"Revelation 3:8"},
+ {c:"Philadelphia",cat:"Correction",d:3,txt:"Received no rebuke at all, only commendation despite having little strength",ref:"Revelation 3:8"},
+ {c:"Philadelphia",cat:"Reward",d:2,txt:"Will be given an open door that no man is able to shut",ref:"Revelation 3:8"},
+ {c:"Philadelphia",cat:"Reward",d:3,txt:"Will become a pillar in the temple of God, and go out from there no more",ref:"Revelation 3:12"},
+
+ // LAODICEA
+ {c:"Laodicea",cat:"Work",d:1,txt:"Neither cold nor hot, but lukewarm",ref:"Revelation 3:15-16"},
+ {c:"Laodicea",cat:"Correction",d:1,txt:"Says, I am rich and have need of nothing — yet is wretched, miserable, poor, blind, and naked",ref:"Revelation 3:17"},
+ {c:"Laodicea",cat:"Reward",d:2,txt:"Will sit with the Lord in His throne, as He also overcame and sat down with His Father in His throne",ref:"Revelation 3:21"},
+];
+
+const OPT_COUNT_BY_DIFF={1:3,2:4,3:5};
+
+let pool=[],deck=[],cur=null,idx=0,strikes=0,stage=0; // stage 0=church,1=category
+let chosenDiff='mix', chosenCount=10;
+
+function poolFor(diff){
+  if(diff==='mix')return ROSTER;
+  return ROSTER.filter(r=>r.d==Number(diff));
+}
+function setupHTML(){
+  return `<h2>SEVEN CHURCHES</h2>
+    <p>Twenty-four things the Lord said to His churches in Asia — their works, their corrections, their rewards. Place each rightly.</p>
+    <div class="setuprow"><div class="lbl">DIFFICULTY</div><div class="pillrow" id="diffrow"></div></div>
+    <div class="setuprow"><div class="lbl">HOW MANY ITEMS</div><div class="pillrow" id="countrow"></div></div>
+    <button id="startbtn">BEGIN</button>
+    <p class="small">Three strikes and the letters reshuffle. No church names given away.</p>`;
+}
+function buildSetup(){
+  const dr=$('diffrow');dr.innerHTML='';
+  [["1","Difficulty 1"],["2","Difficulty 2"],["3","Difficulty 3"],["mix","Mixed"]].forEach(([val,label])=>{
+    const p=document.createElement('button');p.className='pill'+(val===chosenDiff?' sel':'');p.textContent=label;
+    p.onclick=()=>{chosenDiff=val;buildSetup();};
+    dr.appendChild(p);
+  });
+  const cr=$('countrow');cr.innerHTML='';
+  const maxAvail=poolFor(chosenDiff).length;
+  if(chosenCount>maxAvail)chosenCount=Math.max(5,Math.min(maxAvail,5*Math.floor(maxAvail/5)||maxAvail));
+  for(let n=5;n<=Math.max(20,Math.ceil(maxAvail/5)*5);n+=5){
+    const p=document.createElement('button');p.className='pill'+(n===chosenCount?' sel':'');
+    p.textContent=n>maxAvail?n+' (max '+maxAvail+')':n;
+    p.style.opacity=n>maxAvail?'0.4':'1';
+    p.onclick=()=>{chosenCount=Math.min(n,maxAvail);buildSetup();};
+    cr.appendChild(p);
+  }
+}
+function initSetupScreen(){
+  const s=$('setup');s.className='screen';s.innerHTML=setupHTML();
+  buildSetup();
+  $('startbtn').onclick=beginGame;
+}
+function beginGame(){
+  pool=poolFor(chosenDiff);
+  const n=Math.min(chosenCount,pool.length);
+  deck=sample(pool,n);idx=0;strikes=0;
+  $('setup').style.display='none';
+  $('qwrap').style.display='block';
+  updateHUD();nextItem();
+}
+function updateHUD(){
+  $('placed').textContent=idx+' / '+deck.length;
+  const dots=$('strikes').querySelectorAll('span:not(.h)');
+  dots.forEach((s,i)=>s.className=i<strikes?'x':'');
+}
+function nextItem(){
+  if(idx>=deck.length){win();return;}
+  cur=deck[idx];stage=0;
+  $('qtext').textContent='"'+cur.txt+'"';
+  $('diff').textContent='DIFFICULTY '+cur.d;
+  askChurch();
+}
+function renderOpts(options,correctCheck,onPick){
+  const wrap=$('opts');wrap.innerHTML='';
+  options.forEach(opt=>{
+    const b=document.createElement('button');b.className='opt';
+    b.textContent=opt.label;
+    b.onclick=()=>{
+      const ok=correctCheck(opt);
+      b.classList.add(ok?'correct':'wrong');
+      [...wrap.children].forEach(c=>c.disabled=true);
+      setTimeout(()=>onPick(ok),550);
+    };
+    wrap.appendChild(b);
+  });
+}
+function askChurch(){
+  $('qtitle').textContent='Which church does this belong to?';
+  const nWrong=(OPT_COUNT_BY_DIFF[cur.d]||4)-1;
+  const wrong=sample(CHURCHES.filter(c=>c!==cur.c),nWrong);
+  const options=shuffle([cur.c,...wrong]).map(c=>({label:c,val:c}));
+  renderOpts(options,opt=>opt.val===cur.c,ok=>{
+    if(ok){stage=1;askCategory();} else strike('That is not the church this was said to.');
+  });
+}
+function askCategory(){
+  $('qtitle').textContent='Is this a Work, a Correction, or a Reward?';
+  const options=shuffle(CATS).map(c=>({label:c,val:c}));
+  renderOpts(options,opt=>opt.val===cur.cat,ok=>{
+    if(ok){idx++;updateHUD();nextItem();} else strike('Wrong category — read what was actually said.');
+  });
+}
+function strike(msg){
+  strikes++;updateHUD();
+  if(strikes>=3){fail(msg);}
+  else{
+    $('qtitle').textContent=msg+`  (${3-strikes} ${3-strikes===1?'strike':'strikes'} left — try again)`;
+    setTimeout(()=>{ if(stage===0)askChurch(); else askCategory(); },650);
+  }
+}
+function fail(msg){
+  const s=$('setup');s.style.display='flex';s.className='screen fail';
+  $('qwrap').style.display='none';$('opts').innerHTML='';
+  s.innerHTML=`<h2>THE LETTERS ARE LOST</h2>
+    <p>${msg}</p>
+    <p class="small">Three strikes. The sayings will be drawn afresh.</p>
+    <button id="againbtn">BEGIN AGAIN</button>`;
+  $('againbtn').onclick=initSetupScreen;
+}
+function win(){
+  const s=$('setup');s.style.display='flex';s.className='screen';
+  $('qwrap').style.display='none';$('opts').innerHTML='';
+  s.innerHTML=`<h2>HE THAT HATH AN EAR</h2>
+    <p>${deck.length} sayings, each rightly placed — works known, corrections heard, rewards promised.</p>
+    <p class="verse">"He that hath an ear, let him hear what the Spirit saith unto the churches."</p>
+    <p class="ref">REVELATION 2:7, 11, 17, 29 · 3:6, 13, 22</p>
+    <button id="againbtn">PLAY AGAIN</button>`;
+  $('againbtn').onclick=initSetupScreen;
+}
+initSetupScreen();
+</script>
+</body>
+</html>

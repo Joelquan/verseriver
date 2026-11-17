@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Kings of Israel</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14110d; --panel:#201b14; --panel2:#2a2418;
+    --gold:#C9A84C; --gold-dim:#7d6a30; --parch:#e8dcc0; --danger:#b0483a; --green:#7d8a50;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;background:var(--ink);color:var(--parch);font-family:'Cormorant Garamond',serif;overflow:hidden}
+  #app{display:flex;flex-direction:column;height:100%;max-width:820px;margin:0 auto}
+  header{padding:12px 16px 8px;text-align:center;border-bottom:1px solid var(--gold-dim)}
+  header h1{font-family:'Cinzel',serif;font-size:16px;letter-spacing:.28em;color:var(--gold)}
+  header p{font-size:14px;font-style:italic;opacity:.7;margin-top:2px}
+  #hud{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:var(--panel);border-bottom:1px solid #383021;font-size:14px}
+  #hud .h{font-family:'Cinzel',serif;letter-spacing:.1em;font-size:12px;color:var(--gold)}
+  #strikes span{display:inline-block;width:11px;height:11px;border:1px solid var(--gold-dim);border-radius:50%;margin-left:5px;vertical-align:middle}
+  #strikes span.x{background:var(--danger);border-color:var(--danger)}
+  #stage{position:relative;flex:1;display:flex;flex-direction:column;min-height:0;overflow-y:auto}
+  #qwrap{padding:18px 20px;text-align:center}
+  #namecard{display:inline-block;min-width:230px;max-width:92%;background:var(--panel2);border:1px solid var(--gold);border-radius:4px;padding:16px 22px}
+  #namecard .k{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.24em;color:var(--gold);opacity:.85}
+  #namecard .n{font-size:25px;font-weight:600;margin-top:5px}
+  #diff{display:inline-block;margin-top:8px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.14em;padding:2px 10px;border:1px solid var(--gold-dim);border-radius:10px;color:var(--gold);opacity:.8}
+  #qtitle{font-size:16px;font-style:italic;opacity:.8;margin:14px 0 8px}
+  #opts{padding:0 18px 20px;display:flex;flex-direction:column;gap:9px}
+  .opt{background:var(--panel2);border:1px solid var(--gold-dim);border-radius:4px;padding:12px 16px;font-family:'Cormorant Garamond',serif;font-size:16px;line-height:1.3;color:var(--parch);text-align:left;cursor:pointer}
+  .opt b{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;color:var(--gold);display:block;margin-bottom:2px;opacity:.85}
+  .opt:active{border-color:var(--gold)}
+  .opt.correct{border-color:var(--green);background:rgba(125,138,80,.18)}
+  .opt.wrong{border-color:var(--danger);background:rgba(176,72,58,.18)}
+
+  .screen{position:absolute;inset:0;background:rgba(16,13,10,.97);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:26px;z-index:30;overflow-y:auto}
+  .screen h2{font-family:'Cinzel',serif;color:var(--gold);font-size:20px;letter-spacing:.14em;margin-bottom:10px}
+  .screen p{font-size:17px;max-width:460px;line-height:1.4;margin-bottom:6px}
+  .screen .verse{font-style:italic;color:var(--gold);margin:12px 0 4px;max-width:420px}
+  .screen .ref{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.16em;opacity:.75;margin-bottom:8px}
+  .screen button{font-family:'Cinzel',serif;letter-spacing:.16em;font-size:14px;padding:11px 28px;margin-top:12px;background:none;border:1px solid var(--gold);color:var(--gold);border-radius:2px;cursor:pointer}
+  .screen button:active{background:var(--gold);color:var(--ink)}
+  .fail h2{color:var(--danger)}
+  .small{font-size:13px !important;opacity:.6}
+
+  .setuprow{margin:12px 0}
+  .setuprow .lbl{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.16em;color:var(--gold);margin-bottom:8px}
+  .pillrow{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:460px}
+  .pill{font-family:'Cinzel',serif;font-size:12.5px;letter-spacing:.03em;padding:7px 12px;border:1px solid var(--gold-dim);border-radius:16px;color:var(--parch);cursor:pointer;background:none}
+  .pill.sel{border-color:var(--gold);background:rgba(201,168,76,.18);color:var(--gold)}
+</style>
+</head>
+<body>
+<div id="app">
+  <header><h1>KINGS OF ISRAEL</h1><p>Not one did right in the LORD's sight — but each was evil in his own way.</p></header>
+  <div id="hud">
+    <div><span class="h">PROGRESS</span> <span id="placed">0 / 0</span></div>
+    <div id="strikes"><span class="h">STRIKES</span><span></span><span></span><span></span></div>
+  </div>
+  <div id="stage">
+    <div class="screen" id="setup"></div>
+    <div id="qwrap" style="display:none">
+      <div id="namecard">
+        <div class="k">THE KING</div>
+        <div class="n" id="qname">—</div>
+        <div id="diff">DIFFICULTY 1</div>
+      </div>
+      <div id="qtitle">How is his evil specifically described?</div>
+    </div>
+    <div id="opts"></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const sample=(arr,n)=>shuffle(arr).slice(0,n);
+const OPT_COUNT_BY_DIFF={1:3,2:4,3:5};
+
+const VERDICTS=[
+ "Introduced the sin that every king after him would follow",
+ "Followed the sins of Jeroboam, who made Israel to sin",
+ "Did evil, worse than all who reigned before him",
+ "Purged Baal worship in zeal for the LORD, yet clung to Jeroboam's golden calves",
+ "Did evil, yet not so much as the kings before him",
+ "Reigned only days or weeks before being violently overthrown",
+];
+
+/* ---------- THE KINGS OF ISRAEL — 1-2 Kings (KJV). No king of Israel is ever recorded as doing right in the LORD's sight. ---------- */
+const ROSTER=[
+ {n:"Jeroboam I",d:1,verdict:0,
+   deed:"Made two golden calves, set at Bethel and Dan, fearing the people would return to Rehoboam if they worshipped in Jerusalem",
+   ref:"1 Kings 12:28",v:"The king took counsel, and made two calves of gold, and said unto them, It is too much for you to go up to Jerusalem: behold thy gods, O Israel."},
+ {n:"Nadab",d:3,verdict:1,
+   deed:"Reigned two years and was killed by Baasha, who then destroyed all of Jeroboam's house",
+   ref:"1 Kings 15:27-28",v:"Baasha... slew him... and reigned in his stead."},
+ {n:"Baasha",d:2,verdict:1,
+   deed:"Destroyed the entire house of Jeroboam as the LORD had spoken, yet walked in the very same sin himself",
+   ref:"1 Kings 15:34",v:"He did evil in the sight of the LORD, and walked in the way of Jeroboam, and in his sin wherewith he made Israel to sin."},
+ {n:"Elah",d:3,verdict:1,
+   deed:"Was killed while drunk in his steward's house by Zimri, one of his own captains",
+   ref:"1 Kings 16:9-10",v:"Zimri... smote him, and killed him... and reigned in his stead."},
+ {n:"Zimri",d:1,verdict:5,
+   deed:"Reigned only seven days before burning the king's house down over himself when besieged",
+   ref:"1 Kings 16:15,18",v:"He went into the palace of the king's house, and burnt the king's house over him with fire, and died."},
+ {n:"Omri",d:2,verdict:2,
+   deed:"Did worse than all the kings before him, and bought the hill of Samaria to build his new capital",
+   ref:"1 Kings 16:24-25",v:"Omri wrought evil in the eyes of the LORD, and did worse than all that were before him."},
+ {n:"Ahab",d:1,verdict:2,
+   deed:"Married Jezebel, served and worshipped Baal, and did more to provoke the LORD than all the kings of Israel before him",
+   ref:"1 Kings 16:30,33",v:"Ahab did more to provoke the LORD God of Israel to anger than all the kings of Israel that were before him."},
+ {n:"Ahaziah",d:3,verdict:1,
+   deed:"Served Baal and worshipped him, as his father Ahab had done",
+   ref:"1 Kings 22:53",v:"He served Baal, and worshipped him, and provoked to anger the LORD God of Israel, according to all that his father had done."},
+ {n:"Jehoram (Joram)",d:2,verdict:1,
+   deed:"Put away the image of Baal his father had made, yet still clung to the sins of Jeroboam",
+   ref:"2 Kings 3:2-3",v:"He wrought evil in the sight of the LORD; but not like his father, and like his mother: for he put away the image of Baal that his father had made."},
+ {n:"Jehu",d:1,verdict:3,
+   deed:"Destroyed the house of Ahab and wiped out Baal worship from Israel at the LORD's command, yet did not turn from the golden calves of Jeroboam",
+   ref:"2 Kings 10:28-29",v:"Thus Jehu destroyed Baal out of Israel. Howbeit from the sins of Jeroboam... Jehu departed not from after them."},
+ {n:"Jehoahaz",d:3,verdict:1,
+   deed:"Followed the sins of Jeroboam, and Israel suffered under Syrian oppression throughout his reign",
+   ref:"2 Kings 13:2-3",v:"He did that which was evil in the sight of the LORD, and followed the sins of Jeroboam... he departed not therefrom."},
+ {n:"Jehoash (Joash)",d:3,verdict:1,
+   deed:"Followed the sins of Jeroboam, though he wept before the dying prophet Elisha and won victories over Syria",
+   ref:"2 Kings 13:11",v:"He did that which was evil in the sight of the LORD; he departed not from all the sins of Jeroboam."},
+ {n:"Jeroboam II",d:2,verdict:1,
+   deed:"Followed the sins of Jeroboam, yet the LORD used him to restore Israel's border and give the nation relief",
+   ref:"2 Kings 14:24-25",v:"He did that which was evil in the sight of the LORD: he departed not from all the sins of Jeroboam."},
+ {n:"Zechariah",d:2,verdict:1,
+   deed:"Reigned only six months before being publicly assassinated by Shallum",
+   ref:"2 Kings 15:9-10",v:"He did that which was evil in the sight of the LORD, as his fathers had done... Shallum... smote him, and slew him."},
+ {n:"Shallum",d:3,verdict:5,
+   deed:"Reigned only one month before being killed by Menahem, who then seized the throne",
+   ref:"2 Kings 15:13-14",v:"Menahem... smote Shallum... and slew him, and reigned in his stead."},
+ {n:"Menahem",d:3,verdict:1,
+   deed:"Seized the throne with great cruelty, even ripping open pregnant women in a city that resisted him",
+   ref:"2 Kings 15:16",v:"Then Menahem smote... all the women therein that were with child he ripped up."},
+ {n:"Pekahiah",d:3,verdict:1,
+   deed:"Followed the sins of Jeroboam and was assassinated in the king's own palace by his captain Pekah",
+   ref:"2 Kings 15:24-25",v:"He did that which was evil in the sight of the LORD: he departed not from the sins of Jeroboam."},
+ {n:"Pekah",d:3,verdict:1,
+   deed:"Killed Pekahiah to seize the throne, and followed the sins of Jeroboam throughout his reign",
+   ref:"2 Kings 15:28",v:"He did that which was evil in the sight of the LORD: he departed not from the sins of Jeroboam."},
+ {n:"Hoshea",d:1,verdict:4,
+   deed:"Did evil, yet not so much as the kings before him — and in his ninth year Israel fell to Assyria and was carried into exile",
+   ref:"2 Kings 17:1-2,6",v:"He did that which was evil in the sight of the LORD, but not as the kings of Israel that were before him."},
+];
+
+let deck=[],cur=null,idx=0,strikes=0,stage=0;
+let chosenDiff='mix', chosenCount=10;
+
+function poolFor(diff){
+  if(diff==='mix')return ROSTER;
+  return ROSTER.filter(r=>r.d==Number(diff));
+}
+function setupHTML(){
+  return `<h2>KINGS OF ISRAEL</h2>
+    <p>Nineteen rulers of the northern kingdom, from Jeroboam I to Hoshea. Not one is ever recorded as doing right in the LORD's sight — the question is how each was evil.</p>
+    <div class="setuprow"><div class="lbl">DIFFICULTY</div><div class="pillrow" id="diffrow"></div></div>
+    <div class="setuprow"><div class="lbl">HOW MANY KINGS</div><div class="pillrow" id="countrow"></div></div>
+    <button id="startbtn">BEGIN</button>
+    <p class="small">Three strikes and the roll resets. No hints — read closely.</p>`;
+}
+function buildSetup(){
+  const dr=$('diffrow');dr.innerHTML='';
+  [["1","Difficulty 1"],["2","Difficulty 2"],["3","Difficulty 3"],["mix","Mixed"]].forEach(([val,label])=>{
+    const p=document.createElement('button');p.className='pill'+(val===chosenDiff?' sel':'');p.textContent=label;
+    p.onclick=()=>{chosenDiff=val;buildSetup();};
+    dr.appendChild(p);
+  });
+  const cr=$('countrow');cr.innerHTML='';
+  const maxAvail=poolFor(chosenDiff).length;
+  if(chosenCount>maxAvail||chosenCount<1)chosenCount=maxAvail;
+  for(let n=1;n<=maxAvail;n++){
+    const p=document.createElement('button');p.className='pill'+(n===chosenCount?' sel':'');
+    p.textContent=n;
+    p.onclick=()=>{chosenCount=n;buildSetup();};
+    cr.appendChild(p);
+  }
+}
+function initSetupScreen(){
+  const s=$('setup');s.className='screen';s.innerHTML=setupHTML();
+  buildSetup();
+  $('startbtn').onclick=beginGame;
+}
+function beginGame(){
+  const pool=poolFor(chosenDiff);
+  const n=Math.min(chosenCount,pool.length);
+  deck=sample(pool,n);idx=0;strikes=0;
+  $('setup').style.display='none';
+  $('qwrap').style.display='block';
+  updateHUD();nextItem();
+}
+function updateHUD(){
+  $('placed').textContent=idx+' / '+deck.length;
+  const dots=$('strikes').querySelectorAll('span:not(.h)');
+  dots.forEach((s,i)=>s.className=i<strikes?'x':'');
+}
+function nextItem(){
+  if(idx>=deck.length){win();return;}
+  cur=deck[idx];stage=0;
+  $('qname').textContent=cur.n;
+  $('diff').textContent='DIFFICULTY '+cur.d;
+  askVerdict();
+}
+function renderOpts(options,correctCheck,onPick){
+  const wrap=$('opts');wrap.innerHTML='';
+  options.forEach(opt=>{
+    const b=document.createElement('button');b.className='opt';
+    b.innerHTML=opt.html!==undefined?opt.html:opt.label;
+    b.onclick=()=>{
+      const ok=correctCheck(opt);
+      b.classList.add(ok?'correct':'wrong');
+      [...wrap.children].forEach(c=>c.disabled=true);
+      setTimeout(()=>onPick(ok),550);
+    };
+    wrap.appendChild(b);
+  });
+}
+function askVerdict(){
+  $('qtitle').textContent='How is his evil specifically described?';
+  const options=shuffle(VERDICTS.map((v,i)=>({label:v,val:i})));
+  renderOpts(options,opt=>opt.val===cur.verdict,ok=>{
+    if(ok){stage=1;askDeed();} else strike('That is not how scripture describes his evil.');
+  });
+}
+function askDeed(){
+  $('qtitle').textContent='What is he specifically known for?';
+  const nWrong=(OPT_COUNT_BY_DIFF[cur.d]||4)-1;
+  const others=sample(ROSTER.filter(r=>r.n!==cur.n),nWrong);
+  const options=shuffle([{label:cur.deed,val:true},...others.map(o=>({label:o.deed,val:false}))]);
+  renderOpts(options,opt=>opt.val===true,ok=>{
+    if(ok){stage=2;askVerse();} else strike('That deed does not belong to him.');
+  });
+}
+function askVerse(){
+  $('qtitle').textContent='Which word of scripture says this of him?';
+  const nWrong=(OPT_COUNT_BY_DIFF[cur.d]||4)-1;
+  const others=sample(ROSTER.filter(r=>r.n!==cur.n && r.v!==cur.v),nWrong);
+  const options=shuffle([{html:`<b>${cur.ref}</b>${cur.v}`,val:true},
+    ...others.map(o=>({html:`<b>${o.ref}</b>${o.v}`,val:false}))]);
+  renderOpts(options,opt=>opt.val===true,ok=>{
+    if(ok){idx++;updateHUD();nextItem();} else strike('That word speaks of a different king.');
+  });
+}
+function strike(msg){
+  strikes++;updateHUD();
+  if(strikes>=3){fail(msg);}
+  else{
+    $('qtitle').textContent=msg+`  (${3-strikes} ${3-strikes===1?'strike':'strikes'} left — try again)`;
+    setTimeout(()=>{ if(stage===0)askVerdict(); else if(stage===1)askDeed(); else askVerse(); },650);
+  }
+}
+function fail(msg){
+  const s=$('setup');s.style.display='flex';s.className='screen fail';
+  $('qwrap').style.display='none';$('opts').innerHTML='';
+  s.innerHTML=`<h2>THE KINGDOM FALLS AGAIN</h2>
+    <p>${msg}</p>
+    <p class="small">Three strikes. The kings will be drawn afresh.</p>
+    <button id="againbtn">BEGIN AGAIN</button>`;
+  $('againbtn').onclick=initSetupScreen;
+}
+function win(){
+  const s=$('setup');s.style.display='flex';s.className='screen';
+  $('qwrap').style.display='none';$('opts').innerHTML='';
+  s.innerHTML=`<h2>THE NORTHERN KINGDOM</h2>
+    <p>${deck.length} kings known rightly — how each was evil, what he did, and the word spoken over him.</p>
+    <p class="verse">"So was Israel carried away out of their own land to Assyria unto this day."</p>
+    <p class="ref">2 KINGS 17:23</p>
+    <button id="againbtn">PLAY AGAIN</button>`;
+  $('againbtn').onclick=initSetupScreen;
+}
+initSetupScreen();
+</script>
+</body>
+</html>

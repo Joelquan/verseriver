@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Sevens of Scripture</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14110d; --panel:#201b14; --panel2:#2a2418;
+    --gold:#C9A84C; --gold-dim:#7d6a30; --parch:#e8dcc0; --danger:#b0483a; --green:#7d8a50;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;background:var(--ink);color:var(--parch);font-family:'Cormorant Garamond',serif;overflow:hidden}
+  #app{display:flex;flex-direction:column;height:100%;max-width:820px;margin:0 auto}
+  header{padding:12px 16px 8px;text-align:center;border-bottom:1px solid var(--gold-dim)}
+  header h1{font-family:'Cinzel',serif;font-size:16px;letter-spacing:.28em;color:var(--gold)}
+  header p{font-size:14px;font-style:italic;opacity:.7;margin-top:2px}
+  #hud{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:var(--panel);border-bottom:1px solid #383021;font-size:14px}
+  #hud .h{font-family:'Cinzel',serif;letter-spacing:.1em;font-size:12px;color:var(--gold)}
+  #strikes span{display:inline-block;width:11px;height:11px;border:1px solid var(--gold-dim);border-radius:50%;margin-left:5px;vertical-align:middle}
+  #strikes span.x{background:var(--danger);border-color:var(--danger)}
+  #stage{position:relative;flex:1;display:flex;flex-direction:column;min-height:0;overflow-y:auto}
+  #qwrap{padding:16px 20px 6px;text-align:center}
+  #namecard{display:inline-block;min-width:250px;max-width:94%;background:var(--panel2);border:1px solid var(--gold);border-radius:4px;padding:14px 20px}
+  #namecard .k{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.2em;color:var(--gold);opacity:.85}
+  #namecard .n{font-size:18px;font-weight:600;margin-top:6px;line-height:1.35}
+  #diff{display:inline-block;margin-top:9px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.14em;padding:2px 10px;border:1px solid var(--gold-dim);border-radius:10px;color:var(--gold);opacity:.8}
+  #qtitle{font-size:16px;font-style:italic;opacity:.8;margin:12px 0 8px}
+  #opts{padding:0 18px 20px;display:flex;flex-direction:column;gap:9px}
+  .opt{background:var(--panel2);border:1px solid var(--gold-dim);border-radius:4px;padding:12px 16px;font-family:'Cormorant Garamond',serif;font-size:16.5px;line-height:1.3;color:var(--parch);text-align:left;cursor:pointer}
+  .opt b{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;color:var(--gold);display:block;margin-bottom:2px;opacity:.85}
+  .opt:active{border-color:var(--gold)}
+  .opt.correct{border-color:var(--green);background:rgba(125,138,80,.18)}
+  .opt.wrong{border-color:var(--danger);background:rgba(176,72,58,.18)}
+
+  .screen{position:absolute;inset:0;background:rgba(16,13,10,.97);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:26px;z-index:30;overflow-y:auto}
+  .screen h2{font-family:'Cinzel',serif;color:var(--gold);font-size:20px;letter-spacing:.14em;margin-bottom:10px}
+  .screen p{font-size:17px;max-width:460px;line-height:1.4;margin-bottom:6px}
+  .screen .verse{font-style:italic;color:var(--gold);margin:12px 0 4px;max-width:420px}
+  .screen .ref{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.16em;opacity:.75;margin-bottom:8px}
+  .screen button{font-family:'Cinzel',serif;letter-spacing:.16em;font-size:14px;padding:11px 28px;margin-top:12px;background:none;border:1px solid var(--gold);color:var(--gold);border-radius:2px;cursor:pointer}
+  .screen button:active{background:var(--gold);color:var(--ink)}
+  .fail h2{color:var(--danger)}
+  .small{font-size:13px !important;opacity:.6}
+
+  .setuprow{margin:12px 0}
+  .setuprow .lbl{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.16em;color:var(--gold);margin-bottom:8px}
+  .pillrow{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:460px}
+  .pill{font-family:'Cinzel',serif;font-size:12.5px;letter-spacing:.03em;padding:7px 12px;border:1px solid var(--gold-dim);border-radius:16px;color:var(--parch);cursor:pointer;background:none}
+  .pill.sel{border-color:var(--gold);background:rgba(201,168,76,.18);color:var(--gold)}
+</style>
+</head>
+<body>
+<div id="app">
+  <header><h1>SEVENS OF SCRIPTURE</h1><p>Nine sets of seven — placed rightly, or not at all.</p></header>
+  <div id="hud">
+    <div><span class="h">PROGRESS</span> <span id="placed">0 / 0</span></div>
+    <div id="strikes"><span class="h">STRIKES</span><span></span><span></span><span></span></div>
+  </div>
+  <div id="stage">
+    <div class="screen" id="setup"></div>
+    <div id="qwrap" style="display:none">
+      <div id="namecard">
+        <div class="k" id="kicker">WHAT HAPPENED</div>
+        <div class="n" id="qtext">—</div>
+        <div id="diff">DIFFICULTY 1</div>
+      </div>
+      <div id="qtitle">Which one is this?</div>
+    </div>
+    <div id="opts"></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const sample=(arr,n)=>shuffle(arr).slice(0,n);
+const OPT_COUNT_BY_DIFF={1:3,2:4,3:5};
+
+/* ---------- SETS (each exactly 7 items) — KJV, public domain ---------- */
+const SETS = {
+ seals:{title:"The Seven Seals", ref0:"Revelation 6, 8:1", items:[
+  {l:"First Seal",d:1,clue:"A rider goes forth on a white horse, given a crown, conquering and to conquer",v:"And he that sat on him had a bow; and a crown was given unto him: and he went forth conquering, and to conquer.",ref:"Revelation 6:2"},
+  {l:"Second Seal",d:2,clue:"A rider on a red horse is given power to take peace from the earth",v:"And power was given to him that sat thereon to take peace from the earth, and that they should kill one another: and there was given unto him a great sword.",ref:"Revelation 6:4"},
+  {l:"Third Seal",d:2,clue:"A rider on a black horse holds a pair of balances, and a day's wages buys only a little grain",v:"And I beheld, and lo a black horse; and he that sat on him had a pair of balances in his hand.",ref:"Revelation 6:5"},
+  {l:"Fourth Seal",d:1,clue:"A rider named Death goes forth, with Hell following, given power over a fourth of the earth",v:"And I looked, and behold a pale horse: and his name that sat on him was Death, and Hell followed with him.",ref:"Revelation 6:8"},
+  {l:"Fifth Seal",d:3,clue:"Souls under the altar cry out, How long, and are given white robes and told to rest a little longer",v:"And they cried with a loud voice, saying, How long, O Lord, holy and true, dost thou not judge and avenge our blood?",ref:"Revelation 6:10"},
+  {l:"Sixth Seal",d:2,clue:"A great earthquake strikes, the sun turns black, the moon becomes as blood, and the stars fall",v:"And, lo, there was a great earthquake; and the sun became black as sackcloth of hair, and the moon became as blood.",ref:"Revelation 6:12"},
+  {l:"Seventh Seal",d:3,clue:"There is silence in heaven for about half an hour",v:"And when he had opened the seventh seal, there was silence in heaven about the space of half an hour.",ref:"Revelation 8:1"},
+ ]},
+ trumpets:{title:"The Seven Trumpets", ref0:"Revelation 8-11", items:[
+  {l:"First Trumpet",d:2,clue:"Hail and fire mingled with blood are cast on the earth, burning a third of the trees and all the green grass",v:"There followed hail and fire mingled with blood, and they were cast upon the earth: and the third part of trees was burnt up, and all green grass was burnt up.",ref:"Revelation 8:7"},
+  {l:"Second Trumpet",d:2,clue:"A great mountain burning with fire is cast into the sea, turning a third of it to blood",v:"As it were a great mountain burning with fire was cast into the sea: and the third part of the sea became blood.",ref:"Revelation 8:8"},
+  {l:"Third Trumpet",d:3,clue:"A great star called Wormwood falls on the rivers, making the waters bitter",v:"And the name of the star is called Wormwood: and the third part of the waters became wormwood; and many men died of the waters, because they were made bitter.",ref:"Revelation 8:11"},
+  {l:"Fourth Trumpet",d:3,clue:"A third of the sun, moon, and stars are struck, so a third of the day is without light",v:"And the third part of the sun was smitten, and the third part of the moon, and the third part of the stars.",ref:"Revelation 8:12"},
+  {l:"Fifth Trumpet",d:2,clue:"A star falls and opens the bottomless pit, releasing locusts with power like scorpions to torment men for five months",v:"And there came out of the smoke locusts upon the earth: and unto them was given power, as the scorpions of the earth have power.",ref:"Revelation 9:3"},
+  {l:"Sixth Trumpet",d:3,clue:"Four angels bound at the river Euphrates are loosed, leading a vast army to kill a third of mankind",v:"And the number of the army of the horsemen were two hundred thousand thousand: and I heard the number of them.",ref:"Revelation 9:16"},
+  {l:"Seventh Trumpet",d:1,clue:"Great voices in heaven declare that the kingdoms of this world have become the kingdoms of the Lord",v:"The kingdoms of this world are become the kingdoms of our Lord, and of his Christ; and he shall reign for ever and ever.",ref:"Revelation 11:15"},
+ ]},
+ bowls:{title:"The Seven Bowls (Vials)", ref0:"Revelation 16", items:[
+  {l:"First Bowl",d:2,clue:"A grievous sore falls upon those who bear the mark of the beast",v:"And there fell a noisome and grievous sore upon the men which had the mark of the beast.",ref:"Revelation 16:2"},
+  {l:"Second Bowl",d:2,clue:"The sea becomes as the blood of a dead man, and every living soul in it dies",v:"And every living soul died in the sea.",ref:"Revelation 16:3"},
+  {l:"Third Bowl",d:3,clue:"The rivers and fountains of waters become blood",v:"And the third angel poured out his vial upon the rivers and fountains of waters; and they became blood.",ref:"Revelation 16:4"},
+  {l:"Fourth Bowl",d:2,clue:"The sun is given power to scorch men with fire",v:"And power was given unto him to scorch men with fire.",ref:"Revelation 16:8"},
+  {l:"Fifth Bowl",d:3,clue:"Darkness falls upon the seat of the beast, and men gnaw their tongues for pain",v:"And his kingdom was full of darkness; and they gnawed their tongues for pain.",ref:"Revelation 16:10"},
+  {l:"Sixth Bowl",d:2,clue:"The great river Euphrates is dried up, preparing the way for the kings of the east",v:"And the sixth angel poured out his vial upon the great river Euphrates; and the water thereof was dried up.",ref:"Revelation 16:12"},
+  {l:"Seventh Bowl",d:1,clue:"A voice declares, It is done, and the greatest earthquake since man was on the earth follows",v:"And there came a great voice out of the temple of heaven, from the throne, saying, It is done.",ref:"Revelation 16:17"},
+ ]},
+ feasts:{title:"The Seven Feasts of Israel", ref0:"Leviticus 23", items:[
+  {l:"Passover",d:1,clue:"Kept at evening on the fourteenth day of the first month",v:"In the fourteenth day of the first month at even is the LORD's passover.",ref:"Leviticus 23:5"},
+  {l:"Unleavened Bread",d:2,clue:"Seven days of eating bread without leaven, beginning the day after Passover",v:"On the fifteenth day of the same month is the feast of unleavened bread unto the LORD: seven days ye must eat unleavened bread.",ref:"Leviticus 23:6"},
+  {l:"Firstfruits",d:2,clue:"A sheaf of the first grain of harvest is waved before the Lord",v:"He shall wave the sheaf before the LORD, to be accepted for you.",ref:"Leviticus 23:11"},
+  {l:"Weeks (Pentecost)",d:2,clue:"Counted fifty days from the wave sheaf, marked with a new grain offering",v:"Even unto the morrow after the seventh sabbath shall ye number fifty days; and ye shall offer a new meat offering unto the LORD.",ref:"Leviticus 23:16"},
+  {l:"Trumpets",d:2,clue:"A memorial of trumpet blasts on the first day of the seventh month",v:"In the seventh month, in the first day of the month, shall ye have a sabbath, a memorial of blowing of trumpets.",ref:"Leviticus 23:24"},
+  {l:"Atonement",d:1,clue:"A day of afflicting the soul, when atonement is made once a year",v:"Ye shall afflict your souls, and offer an offering made by fire unto the LORD.",ref:"Leviticus 23:27"},
+  {l:"Tabernacles (Booths)",d:2,clue:"Seven days of dwelling in booths, a feast of ingathering",v:"Ye shall dwell in booths seven days; all that are Israelites born shall dwell in booths.",ref:"Leviticus 23:42"},
+ ]},
+ hates:{title:"Seven Things the Lord Hates", ref0:"Proverbs 6:16-19", items:[
+  {l:"A Proud Look",d:1,clue:"Eyes lifted up in arrogance",v:"A proud look",ref:"Proverbs 6:17"},
+  {l:"A Lying Tongue",d:1,clue:"A tongue that speaks falsehood",v:"A lying tongue",ref:"Proverbs 6:17"},
+  {l:"Hands That Shed Innocent Blood",d:2,clue:"Hands that take the life of the innocent",v:"Hands that shed innocent blood",ref:"Proverbs 6:17"},
+  {l:"A Heart That Devises Wicked Imaginations",d:2,clue:"A heart that plots evil schemes",v:"An heart that deviseth wicked imaginations",ref:"Proverbs 6:18"},
+  {l:"Feet Swift to Run to Mischief",d:3,clue:"Feet quick to hurry toward evil",v:"Feet that be swift in running to mischief",ref:"Proverbs 6:18"},
+  {l:"A False Witness",d:2,clue:"A witness who speaks lies",v:"A false witness that speaketh lies",ref:"Proverbs 6:19"},
+  {l:"One Who Sows Discord",d:2,clue:"One who stirs up strife among brothers",v:"He that soweth discord among brethren",ref:"Proverbs 6:19"},
+ ]},
+ woes:{title:"The Seven Woes", ref0:"Matthew 23", items:[
+  {l:"First Woe",d:2,clue:"Shutting up the kingdom of heaven, neither entering nor letting others enter",v:"Ye shut up the kingdom of heaven against men: for ye neither go in yourselves, neither suffer ye them that are entering to go in.",ref:"Matthew 23:13"},
+  {l:"Second Woe",d:3,clue:"Devouring widows' houses while making long prayers as a pretense",v:"Ye devour widows' houses, and for a pretence make long prayer.",ref:"Matthew 23:14"},
+  {l:"Third Woe",d:2,clue:"Crossing sea and land to win one convert, then making him twice the child of hell",v:"Ye compass sea and land to make one proselyte, and when he is made, ye make him twofold more the child of hell than yourselves.",ref:"Matthew 23:15"},
+  {l:"Fourth Woe",d:3,clue:"Blind guides who swear by the gold of the temple rather than the temple itself",v:"Ye blind guides, which say, Whosoever shall swear by the temple, it is nothing; but whosoever shall swear by the gold of the temple, he is a debtor!",ref:"Matthew 23:16"},
+  {l:"Fifth Woe",d:1,clue:"Tithing the smallest herbs while neglecting judgment, mercy, and faith",v:"Ye pay tithe of mint and anise and cummin, and have omitted the weightier matters of the law, judgment, mercy, and faith.",ref:"Matthew 23:23"},
+  {l:"Sixth Woe",d:2,clue:"Cleaning the outside of the cup while it remains full of greed within",v:"Ye make clean the outside of the cup and of the platter, but within they are full of extortion and excess.",ref:"Matthew 23:25"},
+  {l:"Seventh Woe",d:1,clue:"Appearing beautiful on the outside, like a tomb full of dead men's bones within",v:"Ye are like unto whited sepulchres, which indeed appear beautiful outward, but are within full of dead men's bones.",ref:"Matthew 23:27"},
+ ]},
+ parables:{title:"Seven Parables of Matthew 13", ref0:"Matthew 13", items:[
+  {l:"The Sower",d:1,clue:"Seed falls on the path, on rocky ground, among thorns, and on good soil",v:"Behold, a sower went forth to sow.",ref:"Matthew 13:3"},
+  {l:"The Tares",d:2,clue:"An enemy sows weeds among the wheat, and both are left to grow until harvest",v:"Let both grow together until the harvest.",ref:"Matthew 13:30"},
+  {l:"The Mustard Seed",d:1,clue:"The smallest of seeds grows into a tree where birds come to nest",v:"Which indeed is the least of all seeds: but when it is grown, it is the greatest among herbs.",ref:"Matthew 13:32"},
+  {l:"The Leaven",d:2,clue:"A woman hides yeast in three measures of flour until it spreads through all of it",v:"Which a woman took, and hid in three measures of meal, till the whole was leavened.",ref:"Matthew 13:33"},
+  {l:"The Hidden Treasure",d:1,clue:"A man finds treasure hidden in a field and sells all he has to buy it",v:"For joy thereof goeth and selleth all that he hath, and buyeth that field.",ref:"Matthew 13:44"},
+  {l:"The Pearl of Great Price",d:1,clue:"A merchant seeking fine pearls sells everything to buy one of great value",v:"Who, when he had found one pearl of great price, went and sold all that he had, and bought it.",ref:"Matthew 13:46"},
+  {l:"The Dragnet",d:3,clue:"A net cast into the sea gathers fish of every kind; the good are kept and the bad thrown away",v:"Gathered the good into vessels, but cast the bad away.",ref:"Matthew 13:48"},
+ ]},
+ iam:{title:"The Seven \u201cI Am\u201d Statements", ref0:"Gospel of John", items:[
+  {l:"Bread of Life",d:1,clue:"Whoever comes will never hunger, and whoever believes will never thirst",v:"He that cometh to me shall never hunger; and he that believeth on me shall never thirst.",ref:"John 6:35"},
+  {l:"Light of the World",d:1,clue:"Whoever follows will not walk in darkness",v:"He that followeth me shall not walk in darkness, but shall have the light of life.",ref:"John 8:12"},
+  {l:"The Door",d:2,clue:"By him, if any man enters, he shall be saved",v:"By me if any man enter in, he shall be saved.",ref:"John 10:9"},
+  {l:"The Good Shepherd",d:1,clue:"He lays down his life for the sheep",v:"The good shepherd giveth his life for the sheep.",ref:"John 10:11"},
+  {l:"The Resurrection and the Life",d:1,clue:"Whoever believes, though he dies, shall live",v:"He that believeth in me, though he were dead, yet shall he live.",ref:"John 11:25"},
+  {l:"The Way, the Truth, and the Life",d:1,clue:"No man comes to the Father except through him",v:"No man cometh unto the Father, but by me.",ref:"John 14:6"},
+  {l:"The True Vine",d:2,clue:"Apart from him, the branches can do nothing",v:"For without me ye can do nothing.",ref:"John 15:5"},
+ ]},
+ miracles:{title:"Seven Miracles of John", ref0:"Gospel of John", items:[
+  {l:"Water into Wine",d:1,clue:"Six stone jars of water become the finest wine at a wedding",v:"This beginning of miracles did Jesus in Cana of Galilee, and manifested forth his glory.",ref:"John 2:11"},
+  {l:"Healing the Nobleman's Son",d:3,clue:"A dying boy is healed from a distance, at the very hour his father was told",v:"So the father knew that it was at the same hour, in the which Jesus said unto him, Thy son liveth.",ref:"John 4:53"},
+  {l:"Healing the Paralytic at Bethesda",d:2,clue:"A man lame for thirty-eight years is told to rise, take up his bed, and walk",v:"Rise, take up thy bed, and walk.",ref:"John 5:8"},
+  {l:"Feeding the Five Thousand",d:1,clue:"Five loaves and two small fish feed a great multitude, with twelve baskets left over",v:"They took up of the fragments... twelve baskets.",ref:"John 6:13"},
+  {l:"Walking on Water",d:1,clue:"He comes to the disciples across the sea in a storm, saying, It is I, be not afraid",v:"It is I; be not afraid.",ref:"John 6:20"},
+  {l:"Healing the Man Born Blind",d:2,clue:"Clay made of spit and dust, washed off in a pool, and a man born blind receives sight",v:"He went his way therefore, and washed, and came seeing.",ref:"John 9:7"},
+  {l:"Raising Lazarus",d:1,clue:"Four days in the tomb, then called forth by name to come out",v:"Lazarus, come forth.",ref:"John 11:43"},
+ ]},
+};
+
+let poolKeys=[],deck=[],cur=null,idx=0,strikes=0,stage=0;
+let chosenSet='seals', chosenDiff='mix', chosenCount=5;
+
+function itemsFor(setKey,diff){
+  const s=SETS[setKey];
+  const all=s.items.map(it=>({...it,setKey,setTitle:s.title}));
+  if(diff==='mix')return all;
+  return all.filter(it=>it.d==Number(diff));
+}
+function setupHTML(){
+  return `<h2>SEVENS OF SCRIPTURE</h2>
+    <p>Nine sets of seven, each item placed by its own clue, then sealed with its word.</p>
+    <div class="setuprow"><div class="lbl">WHICH SEVEN</div><div class="pillrow" id="setrow"></div></div>
+    <div class="setuprow"><div class="lbl">DIFFICULTY</div><div class="pillrow" id="diffrow"></div></div>
+    <div class="setuprow"><div class="lbl">HOW MANY</div><div class="pillrow" id="countrow"></div></div>
+    <button id="startbtn">BEGIN</button>
+    <p class="small">Three strikes and the set reshuffles. No labels given away in the clues.</p>`;
+}
+function buildSetup(){
+  const sr=$('setrow');sr.innerHTML='';
+  Object.keys(SETS).forEach(key=>{
+    const p=document.createElement('button');p.className='pill'+(key===chosenSet?' sel':'');
+    p.textContent=SETS[key].title.replace('The ','').replace('Seven ','7 ');
+    p.onclick=()=>{chosenSet=key;buildSetup();};
+    sr.appendChild(p);
+  });
+  const dr=$('diffrow');dr.innerHTML='';
+  [["1","Difficulty 1"],["2","Difficulty 2"],["3","Difficulty 3"],["mix","Mixed"]].forEach(([val,label])=>{
+    const p=document.createElement('button');p.className='pill'+(val===chosenDiff?' sel':'');p.textContent=label;
+    p.onclick=()=>{chosenDiff=val;buildSetup();};
+    dr.appendChild(p);
+  });
+  const cr=$('countrow');cr.innerHTML='';
+  const maxAvail=itemsFor(chosenSet,chosenDiff).length;
+  if(chosenCount>maxAvail||chosenCount<1)chosenCount=maxAvail;
+  for(let n=1;n<=maxAvail;n++){
+    const p=document.createElement('button');p.className='pill'+(n===chosenCount?' sel':'');
+    p.textContent=n;
+    p.onclick=()=>{chosenCount=n;buildSetup();};
+    cr.appendChild(p);
+  }
+}
+function initSetupScreen(){
+  const s=$('setup');s.className='screen';s.innerHTML=setupHTML();
+  buildSetup();
+  $('startbtn').onclick=beginGame;
+}
+function beginGame(){
+  const pool=itemsFor(chosenSet,chosenDiff);
+  const n=Math.min(chosenCount,pool.length);
+  deck=sample(pool,n);idx=0;strikes=0;
+  $('setup').style.display='none';
+  $('qwrap').style.display='block';
+  $('kicker').textContent=SETS[chosenSet].title.toUpperCase();
+  updateHUD();nextItem();
+}
+function updateHUD(){
+  $('placed').textContent=idx+' / '+deck.length;
+  const dots=$('strikes').querySelectorAll('span:not(.h)');
+  dots.forEach((s,i)=>s.className=i<strikes?'x':'');
+}
+function nextItem(){
+  if(idx>=deck.length){win();return;}
+  cur=deck[idx];stage=0;
+  $('qtext').textContent=cur.clue;
+  $('diff').textContent='DIFFICULTY '+cur.d;
+  askWhich();
+}
+function renderOpts(options,correctCheck,onPick){
+  const wrap=$('opts');wrap.innerHTML='';
+  options.forEach(opt=>{
+    const b=document.createElement('button');b.className='opt';
+    b.innerHTML=opt.html!==undefined?opt.html:opt.label;
+    b.onclick=()=>{
+      const ok=correctCheck(opt);
+      b.classList.add(ok?'correct':'wrong');
+      [...wrap.children].forEach(c=>c.disabled=true);
+      setTimeout(()=>onPick(ok),550);
+    };
+    wrap.appendChild(b);
+  });
+}
+function askWhich(){
+  $('qtitle').textContent='Which one is this?';
+  const allLabels=SETS[cur.setKey].items.map(it=>it.l);
+  const options=shuffle(allLabels).map(l=>({label:l,val:l}));
+  renderOpts(options,opt=>opt.val===cur.l,ok=>{
+    if(ok){stage=1;askVerse();} else strike('Not the right one — read the clue again.');
+  });
+}
+function askVerse(){
+  $('qtitle').textContent='Which word of scripture says this?';
+  const setItems=SETS[cur.setKey].items;
+  const nWrong=Math.min((OPT_COUNT_BY_DIFF[cur.d]||4)-1, setItems.length-1);
+  const others=sample(setItems.filter(it=>it.l!==cur.l),nWrong);
+  const options=shuffle([{html:`<b>${cur.ref}</b>${cur.v}`,val:true},
+    ...others.map(o=>({html:`<b>${o.ref}</b>${o.v}`,val:false}))]);
+  renderOpts(options,opt=>opt.val===true,ok=>{
+    if(ok){idx++;updateHUD();nextItem();} else strike('That word belongs to another of the seven.');
+  });
+}
+function strike(msg){
+  strikes++;updateHUD();
+  if(strikes>=3){fail(msg);}
+  else{
+    $('qtitle').textContent=msg+`  (${3-strikes} ${3-strikes===1?'strike':'strikes'} left — try again)`;
+    setTimeout(()=>{ if(stage===0)askWhich(); else askVerse(); },650);
+  }
+}
+function fail(msg){
+  const s=$('setup');s.style.display='flex';s.className='screen fail';
+  $('qwrap').style.display='none';$('opts').innerHTML='';
+  s.innerHTML=`<h2>THE SET IS BROKEN</h2>
+    <p>${msg}</p>
+    <p class="small">Three strikes. The seven will be drawn afresh.</p>
+    <button id="againbtn">BEGIN AGAIN</button>`;
+  $('againbtn').onclick=initSetupScreen;
+}
+function win(){
+  const s=$('setup');s.style.display='flex';s.className='screen';
+  $('qwrap').style.display='none';$('opts').innerHTML='';
+  s.innerHTML=`<h2>WELL DISCERNED</h2>
+    <p>${deck.length} of the ${SETS[chosenSet].title.toLowerCase()}, each rightly known.</p>
+    <p class="verse">"He that hath an ear, let him hear what the Spirit saith."</p>
+    <p class="ref">${SETS[chosenSet].ref0}</p>
+    <button id="againbtn">PLAY AGAIN</button>`;
+  $('againbtn').onclick=initSetupScreen;
+}
+initSetupScreen();
+</script>
+</body>
+</html>

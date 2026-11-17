@@ -521,6 +521,7 @@ body.flowNav .wv-drawer{z-index:67;}
 <div class="wv-viewbar" id="viewbar">
   <div class="wv-viewtabs">
     <button data-view="bible">Bible</button>
+    <button data-view="devotional">Devotional</button>
     <button data-view="mosaic" class="on">Mosaic</button>
     <button data-view="river">River</button>
     <button data-view="voices">Voices</button>     <button data-view="games">Games</button>
@@ -583,6 +584,7 @@ body.flowNav .wv-drawer{z-index:67;}
     <div class="wv-dr-title">MENU</div>
     <div class="wv-dr-modes" id="drNavBtns">
       <button data-nav="bible">Bible</button>
+      <button data-nav="devotional">Devotional</button>
       <button data-nav="mosaic">Mosaic</button>
       <button data-nav="river">River</button>
       <button data-nav="voices">Voices</button>
@@ -4065,7 +4067,7 @@ function showPanel(name){
   if(name === "games") Games.openList(document.getElementById("drGamesList"));
   document.dispatchEvent(new CustomEvent("wv-panel", { detail: name }));
 }
-document.querySelectorAll("#viewbar button").forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));
+document.querySelectorAll("#viewbar button").forEach(b => b.addEventListener("click", () => { if(b.dataset.view === "devotional"){ location.href = "https://verseriver.com/read"; return; } setView(b.dataset.view); }));
 document.querySelectorAll("#drRiverDir button").forEach(b => b.addEventListener("click", () => {
   flowDir = b.dataset.d;
   document.querySelectorAll("#drRiverDir button").forEach(x => x.classList.toggle("on", x === b));
@@ -4078,7 +4080,7 @@ window.addEventListener("resize", () => {
   rvResizeT = setTimeout(() => { if(view === "river"){ buildRiver(); startRiver(); } }, 300);
 });
 document.getElementById("menuBtn").addEventListener("click", () => { showPanel("home"); openDrawer(); });
-document.querySelectorAll("#drNavBtns button").forEach(b => b.addEventListener("click", () => showPanel(b.dataset.nav)));
+document.querySelectorAll("#drNavBtns button").forEach(b => b.addEventListener("click", () => { if(b.dataset.nav === "devotional"){ location.href = "https://verseriver.com/read"; return; } showPanel(b.dataset.nav); }));
 document.querySelectorAll("[data-back]").forEach(b => b.addEventListener("click", () => showPanel("home")));
 document.getElementById("scrim").addEventListener("click", closeDrawer);
 if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => { cards.forEach(fitText); relayoutRiver(); });
