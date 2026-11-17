@@ -521,7 +521,6 @@ body.flowNav .wv-drawer{z-index:67;}
 <div class="wv-viewbar" id="viewbar">
   <div class="wv-viewtabs">
     <button data-view="bible">Bible</button>
-    <button data-view="devotional">Devotional</button>
     <button data-view="mosaic" class="on">Mosaic</button>
     <button data-view="river">River</button>
     <button data-view="voices">Voices</button>     <button data-view="games">Games</button>
@@ -4067,7 +4066,7 @@ function showPanel(name){
   if(name === "games") Games.openList(document.getElementById("drGamesList"));
   document.dispatchEvent(new CustomEvent("wv-panel", { detail: name }));
 }
-document.querySelectorAll("#viewbar button").forEach(b => b.addEventListener("click", () => { if(b.dataset.view === "devotional"){ location.href = "https://verseriver.com/read"; return; } setView(b.dataset.view); }));
+document.querySelectorAll("#viewbar button").forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));
 document.querySelectorAll("#drRiverDir button").forEach(b => b.addEventListener("click", () => {
   flowDir = b.dataset.d;
   document.querySelectorAll("#drRiverDir button").forEach(x => x.classList.toggle("on", x === b));
