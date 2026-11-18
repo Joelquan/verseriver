@@ -516,9 +516,11 @@ body.flowNav .wv-drawer{z-index:67;}
 @keyframes vcHint{0%,100%{transform:translateY(0);opacity:.55}50%{transform:translateY(-5px);opacity:1}}
 .wv-topics{max-width:640px;margin:0 auto;width:100%;}
 .wv-topics.tp-feedmode{display:flex;flex-direction:column;}
-.tp-row{display:block;width:100%;text-align:left;background:transparent;border:0;border-bottom:.5px solid rgba(255,255,255,.08);padding:13px 2px;cursor:pointer;font-family:'Tenor Sans',sans-serif;}
+.tp-row{display:block;width:100%;text-align:left;background:transparent;border:0;border-bottom:.5px solid rgba(255,255,255,.08);padding:13px 2px;cursor:pointer;font-family:'Tenor Sans',sans-serif;position:relative;}
 .tp-name{font-size:17px;color:#fff;}
 .tp-count{float:right;font-size:13px;color:#e8c876;}
+.tp-bar{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:110px;height:4px;background:rgba(232,200,118,.14);border-radius:2px;}
+.tp-barfill{display:block;height:100%;background:linear-gradient(90deg,#c9933a,#e8c876);border-radius:2px;}
 #tpBar{flex:none;padding:0 8px;}
 #tpBar button{background:transparent;border:0;padding:6px 4px;font-family:'Tenor Sans',sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:1.6px;color:#e8c876;cursor:pointer;}
 .tp-feed{flex:1 1 auto;min-height:0;height:auto;overflow-y:auto;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-width:none;outline:none;}
@@ -3044,7 +3046,7 @@ const Topics = (() => {
   function renderList(){
     let html = '<div class="gm-head"><div class="gm-title">TOPICS</div><div class="gm-sub">' + "From the whole Bible, shown in the New King James Version: some topics gather every verse that carries the word, others gather the passages on the subject." + '</div></div>';
     topics().forEach(t => {
-      html += '<button class="tp-row" data-topic="' + t.key + '"><span class="tp-name">' + topicIcon(t.key) + esc(t.name) + '</span><span class="tp-count">' + vcount(t.count) + '</span></button>';
+      html += '<button class="tp-row" data-topic="' + t.key + '"><span class="tp-name">' + topicIcon(t.key) + esc(t.name) + '</span><span class="tp-bar"><span class="tp-barfill" style="width:' + (pos[t.key] !== undefined && t.count > 0 ? Math.min(100, (pos[t.key] + 1) / t.count * 100) : 0) + '%"></span></span><span class="tp-count">' + vcount(t.count) + '</span></button>';
     });
     html += '<div class="tp-foot">' + NKJV_NOTICE + '</div>';
     listEl.innerHTML = html;
@@ -3120,11 +3122,11 @@ const Topics = (() => {
     listEl.style.display = "";
   }
   function open(){
-    if(!listDone) renderList();
+    renderList();
     showListState();
   }
   function showList(){
-    if(!listDone) renderList();
+    renderList();
     showListState();
     sub.textContent = "Choose a topic, then scroll through its verses.";
   }
