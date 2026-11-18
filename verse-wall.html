@@ -519,7 +519,11 @@ body.flowNav .wv-drawer{z-index:67;}
 .tp-row{display:block;width:100%;text-align:left;background:transparent;border:0;border-bottom:.5px solid rgba(255,255,255,.08);padding:13px 2px;cursor:pointer;font-family:'Tenor Sans',sans-serif;position:relative;}
 .tp-name{font-size:17px;color:#fff;}
 .tp-count{float:right;font-size:13px;color:#e8c876;}
-.tp-bar{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:110px;height:4px;background:rgba(232,200,118,.14);border-radius:2px;}
+#tpList{position:relative;}
+#tpList::before,#tpList::after{content:"";position:absolute;top:0;bottom:0;width:1px;background:rgba(232,200,118,.16);pointer-events:none;}
+#tpList::before{left:calc(50% - 48px);}
+#tpList::after{left:calc(50% + 48px);}
+.tp-bar{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:84px;height:4px;background:rgba(232,200,118,.14);border-radius:2px;}
 .tp-barfill{display:block;height:100%;background:linear-gradient(90deg,#c9933a,#e8c876);border-radius:2px;}
 #tpBar{flex:none;padding:0 8px;}
 #tpBar button{background:transparent;border:0;padding:6px 4px;font-family:'Tenor Sans',sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:1.6px;color:#e8c876;cursor:pointer;}
