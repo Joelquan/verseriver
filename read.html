@@ -41,6 +41,11 @@ h2.sec{font-family:Cinzel,serif;font-size:1rem;letter-spacing:.24em;color:#f0d48
 .bub .nm{font-family:Cinzel,serif;font-size:.72rem;letter-spacing:.12em;color:#f0d489;margin-bottom:4px}
 .bub .tx{font-size:1.08rem;line-height:1.5;color:rgba(253,246,227,.92)}
 .bub .src{font-size:.85rem;color:rgba(240,212,137,.6);margin-top:6px;font-style:italic}
+.bub .tx .more{display:none}
+.bub .tx.open .more{display:inline}
+.bub .tx.open .ell{display:none}
+.bub .rmore{display:inline-block;margin-top:7px;background:none;border:none;padding:0;font-family:Cinzel,serif;font-size:.72rem;letter-spacing:.14em;color:#f0d489;cursor:pointer;text-transform:uppercase}
+.bub .rmore:active{opacity:.7}
 .decl{background:rgba(214,178,94,.08);border-left:3px solid #d6b25e;padding:8px 14px;margin:0 0 8px;font-size:1.15rem;line-height:1.45;color:#fdf6e3}
 .decl b{color:#f0d489}
 .prayer{background:rgba(245,227,184,.05);border:1px solid rgba(214,178,94,.2);border-radius:12px;padding:12px 16px;font-size:1.12rem;line-height:1.55;font-style:italic;color:rgba(253,246,227,.92)}
@@ -105,8 +110,16 @@ function render(day){
   document.getElementById("vref").textContent = d.ref + " (KJV)";
   var ch = "";
   d.witnesses.forEach(function(w){
+    var longDM = (w.short === "Darby" || w.short === "Murray") && w.comment.length > 300;
+    var tx = esc(w.comment);
+    if(longDM){
+      var cut = w.comment.lastIndexOf(" ", 260);
+      if(cut < 120) cut = 260;
+      tx = esc(w.comment.slice(0, cut)) + '<span class="ell">&hellip;</span><span class="more">' + esc(w.comment.slice(cut)) + '</span>';
+    }
     ch += '<div class="cmt"><div class="ava">' + esc(initials(w.short === "Sparks" ? "Austin Sparks" : w.name)) + '</div>'
-      + '<div class="bub"><div class="nm">' + esc(w.name) + '</div><div class="tx">' + esc(w.comment) + '</div>'
+      + '<div class="bub"><div class="nm">' + esc(w.name) + '</div><div class="tx">' + tx + '</div>'
+      + (longDM ? '<button class="rmore" type="button">Read more</button>' : '')
       + '<div class="src">' + esc(w.source) + '</div>'
       + '</div></div>';
   });
@@ -131,6 +144,14 @@ document.getElementById("shareBtn").addEventListener("click", function(){
   function done(){ b.textContent = "Link copied"; setTimeout(function(){ b.textContent = "Share this day"; }, 2000); }
   if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).then(done, function(){ prompt("Copy this link:", u); });
   else prompt("Copy this link:", u);
+});
+document.getElementById("comments").addEventListener("click", function(e){
+  var b = e.target && e.target.closest ? e.target.closest(".rmore") : null;
+  if(!b) return;
+  var tx = b.parentNode.querySelector(".tx");
+  if(!tx) return;
+  var open = tx.classList.toggle("open");
+  b.textContent = open ? "Read less" : "Read more";
 });
 render(cur);
 </script>
