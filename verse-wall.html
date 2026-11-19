@@ -2155,25 +2155,7 @@ const Games = (() => {
   const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const skin = id => SKINS.find(s => s.id === id) || SKINS[0];
   const GAMES = [
-    {id:"wsi", title:"Who Said It", desc:"500 voices from Scripture. Name the speaker.", skin:"gold", nq:500, best:"wv-game-best-wsi", kind:"builtin", cats:["all","quiz"]},
-    {id:"where", title:"Where Is It Found", desc:"500 verses. Find where each lives in the Bible.", skin:"ocean", nq:500, best:"wv-game-best-where", kind:"builtin", cats:["all","memory"]},
-    {id:"gen", title:"General Bible Questions", desc:"500 questions drawn from all sixty six books.", skin:"ember", nq:500, best:"wv-game-best-gen", kind:"builtin", cats:["all","quiz"]},
-    {id:"rid", title:"Bible Riddles", desc:"Old riddles from Scripture. Can you solve them?", skin:"forest", nq:50, best:"wv-game-best-rid", kind:"builtin", cats:["all","puzzle"]},
-    {id:"fact", title:"Bible Facts", desc:"500 statements. True or false? Test what you know.", skin:"crimson", nq:500, best:"wv-game-best-fact", kind:"builtin", cats:["all","trivia"]},
     {id:"sort", title:"Verse Sort", desc:"Catch each falling verse in the right bin.", skin:"slate", best:"wv-game-best-sort", kind:"builtin", cats:["all","puzzle"]},
-    {id:"churches", title:"Seven Churches", desc:"SEVEN CHURCHES", skin:"gold", kind:"transported", cats:["all","more-games"], url:"/games/transport/churches.html"},
-    {id:"cleanunclean", title:"Clean & Unclean", desc:"CLEAN & UNCLEAN", skin:"rose", kind:"transported", cats:["all","more-games"], url:"/games/transport/cleanunclean.html"},
-    {id:"creation", title:"Days of Creation", desc:"DAYS OF CREATION", skin:"ocean", kind:"transported", cats:["all","more-games"], url:"/games/transport/creation.html"},
-    {id:"davids-journey-1", title:"David's Journey: The Lord's Anointed", desc:"DAVID'S JOURNEY", skin:"dusk", kind:"transported", cats:["all","more-games"], url:"/games/transport/davids-journey-1.html"},
-    {id:"davids-journey-2", title:"David's Journey II: The Long Road to the Throne", desc:"DAVID'S JOURNEY II", skin:"wine", kind:"transported", cats:["all","more-games"], url:"/games/transport/davids-journey-2.html"},
-    {id:"jesusministry", title:"Jesus' Earthly Ministry", desc:"JESUS' EARTHLY MINISTRY", skin:"olive", kind:"transported", cats:["all","more-games"], url:"/games/transport/jesusministry.html"},
-    {id:"judges", title:"Judges of Israel", desc:"JUDGES OF ISRAEL", skin:"copper", kind:"transported", cats:["all","more-games"], url:"/games/transport/judges.html"},
-    {id:"kingsisrael", title:"Kings of Israel", desc:"KINGS OF ISRAEL", skin:"teal", kind:"transported", cats:["all","more-games"], url:"/games/transport/kingsisrael.html"},
-    {id:"kingsjudah", title:"Kings of Judah", desc:"KINGS OF JUDAH", skin:"charcoal", kind:"transported", cats:["all","more-games"], url:"/games/transport/kingsjudah.html"},
-    {id:"sevens", title:"Sevens of Scripture", desc:"SEVENS OF SCRIPTURE", skin:"sand", kind:"transported", cats:["all","more-games"], url:"/games/transport/sevens.html"},
-    {id:"tabernacle", title:"The Tabernacle", desc:"THE TABERNACLE", skin:"plum", kind:"transported", cats:["all","more-games"], url:"/games/transport/tabernacle.html"},
-    {id:"twelves", title:"Twelves of Scripture", desc:"TWELVES OF SCRIPTURE", skin:"moss", kind:"transported", cats:["all","more-games"], url:"/games/transport/twelves.html"},
-    {id:"tetris", title:"Bible Verse Tetris", desc:"Bible Verse Tetris", skin:"crimson", kind:"transported", cats:["all","more-games"], url:"/games/tetris/tetris.html"},
     {id:"hub", title:"Verseriver Games Hub", desc:"Bible chapter games, from the Verseriver Games hub.", skin:"indigo", kind:"transported", cats:["all","more-games"], url:"/games/index.html"}
   ];
   let R = null, kjvCache = null;
@@ -2291,12 +2273,9 @@ const Games = (() => {
   }
 
   const GAME_CATS = [
-    { id: "all", name: "All Games", ids: ["wsi", "where", "gen", "rid", "fact", "sort", "churches", "cleanunclean", "creation", "davids-journey-1", "davids-journey-2", "jesusministry", "judges", "kingsisrael", "kingsjudah", "sevens", "tabernacle", "twelves", "tetris", "hub"] },
-    { id: "quiz", name: "Quiz", ids: ["wsi", "gen"] },
-    { id: "trivia", name: "Trivia", ids: ["fact"] },
-    { id: "puzzle", name: "Puzzle", ids: ["rid", "sort"] },
-    { id: "memory", name: "Memory", ids: ["where"] },
-    { id: "more-games", name: "More Games", ids: ["churches", "cleanunclean", "creation", "davids-journey-1", "davids-journey-2", "jesusministry", "judges", "kingsisrael", "kingsjudah", "sevens", "tabernacle", "twelves", "tetris", "hub"] }
+    { id: "all", name: "All Games", ids: ["sort", "hub"] },
+    { id: "puzzle", name: "Puzzle", ids: ["sort"] },
+    { id: "more-games", name: "More Games", ids: ["hub"] }
   ];
   let currentCat = "all", gmSavedScroll = 0, gmTimers = [];
   function gmClearTimers(){ gmTimers.forEach(tm => clearTimeout(tm)); gmTimers = []; }
@@ -2782,13 +2761,6 @@ const Games = (() => {
       if(vsCubeEl){ vsCubeEl.remove(); vsCubeEl = null; }
       vsFalling = false;
       vsScore += 100; vsCorrectInLevel++; vsCorrectTotal++;
-      const pileSlab = vsPileEl.lastChild;
-      if(pileSlab){
-        pileSlab.style.transition = "opacity .4s, transform .4s";
-        pileSlab.style.opacity = "0";
-        pileSlab.style.transform = "scale(.9)";
-        setTimeout(() => { if(pileSlab.parentNode) pileSlab.remove(); vsUpdateHUD(); }, 400);
-      }
       vsUpdateHUD();
       setTimeout(() => {
         if(!vsActive) return;
