@@ -4,7 +4,7 @@
 "use strict";
 
 var APPS = [
-  {href:"../verse-wall.html", title:"Verse Wall", art:"img/app-verse-wall.webp",
+  {href:"../verse-wall.html", title:"Verse Bible", art:"img/app-verse-wall.webp",
    kicker:"KJV · 1,000 verses",
    desc:"A living wall of Scripture: a still mosaic that breathes verse by verse, and a river that flows them past. Tap any card to read.",
    meta:"Mosaic · River · Share"},
