@@ -137,7 +137,7 @@ body{font-family:'Tenor Sans',sans-serif;color:#f5e3b8;min-height:100vh;}
  position:sticky;top:var(--wvth,110px);z-index:9;background:#0d0d0d;
  box-shadow:0 1px 0 rgba(201,147,58,.18);}
 .bv-trans button{border:.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:rgba(255,255,255,.6);
- font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:2px;padding:7px 9px;border-radius:999px;cursor:pointer;}
+ font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:2px;padding:7px 14px;border-radius:999px;cursor:pointer;}
 .bv-trans button.on{border-color:#c9933a;background:rgba(201,147,58,.16);color:#e8c876;}
 .bv-chap{padding:16px 22px 8px;}
 .bv-chap h2{font-family:'Cinzel',serif;font-weight:600;font-size:22px;letter-spacing:3px;color:#f5e3b8;text-align:center;margin:6px 0 4px;}
@@ -635,6 +635,13 @@ body.steady #stPSearch{display:flex;}
 .st-mapfull-scroll{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;}
 .st-mapfull-scroll img{display:block;width:100%;height:auto;}
 .st-mapfull-scroll img.zoom{width:1700px;max-width:none;}
+
+/* Joel's ruling (Nov 19, 2026): picker buttons shrink slightly, padding only, font
+   untouched, so all six translations (incl. KJV+) sit on one line at phone widths.
+   The shared style also shrinks Read's five buttons; approved. This override lives
+   here, in a build input, because the first ship edited the staged page directly
+   and a rebuild silently lost it (picker check dropped to 7/9). */
+.bv-trans button{padding:7px 9px;}
 
 </style>
 </head>
@@ -4753,8 +4760,32 @@ window.__wall = { cards, tick, setVerse, fitText, verseRest,
     });
   }
   function hideStPanes(){ Object.keys(ST_PANES).forEach(k => { const el = $(ST_PANES[k]); if(el) el.style.display = "none"; }); }
+  /* The drawer menu lists the current mode's functions. The base page's #drNavBtns is
+     static Read markup and is never re-rendered, so Steady keeps a parallel Study nav
+     in the same drawer home panel and swaps which list is shown with the mode. */
+  let stDrNavBtns = [];
+  function buildStDrawerNav(){
+    const host = $("drNavBtns"); if(!host || $("stDrNavBtns")) return;
+    const wrap = document.createElement("div");
+    wrap.className = "wv-dr-modes"; wrap.id = "stDrNavBtns"; wrap.style.display = "none";
+    [["bible","Bible"],["commentary","Comment"],["dictionary","Lexicon"],["map","Map"],["notes","Notes"],["library","Library"]].forEach(pair => {
+      const b = document.createElement("button");
+      b.textContent = pair[1]; b.dataset.snav = pair[0];
+      b.addEventListener("click", () => { showStudyView(pair[0]); try { closeDrawer(); } catch(_){ } });
+      wrap.appendChild(b); stDrNavBtns.push(b);
+    });
+    host.parentNode.insertBefore(wrap, host.nextSibling);
+  }
+  function syncDrawerNav(){
+    const read = $("drNavBtns"), st = $("stDrNavBtns"); if(!read || !st) return;
+    const study = state.mode === "study";
+    read.style.display = study ? "none" : "";
+    st.style.display = study ? "" : "none";
+    stDrNavBtns.forEach(b => b.classList.toggle("on", study && b.dataset.snav === state.view));
+  }
   function showStudyView(v){
     state.view = v; savePosRec();
+    syncDrawerNav();
     stTabBtns.forEach(b => b.classList.toggle("on", b.dataset.sview === v));
     document.querySelectorAll(".wv-viewtabs > button:not(.st-tab)").forEach(b => b.classList.remove("on"));
     if(v === "bible"){
@@ -4784,6 +4815,7 @@ window.__wall = { cards, tick, setVerse, fitText, verseRest,
     document.querySelectorAll(".wv-viewtabs > button:not(.st-tab)").forEach(b => { b.style.display = "none"; });
     stTabBtns.forEach(b => { b.style.display = ""; });
     syncModeTabs();
+    syncDrawerNav();
     try { closeDrawer(); } catch(_){ }
     showStudyView(state.view || "bible");
     restoreScroll(savedScroll.study != null ? savedScroll.study : savedScroll.read);
@@ -4799,6 +4831,7 @@ window.__wall = { cards, tick, setVerse, fitText, verseRest,
     hideStPanes();
     const res = $("stPSearchRes"); if(res){ res.classList.remove("open"); res.innerHTML = ""; }
     syncModeTabs();
+    syncDrawerNav();
     const target = state.readViewBefore || "mosaic";
     try { setView("mosaic"); if(target !== "mosaic") setView(target); } catch(_){ }
     if(wasStrongs && target === "bible"){ const p = currentPos(); try { Bible.openAt(refOf(p.bi, p.ci, p.vi)); } catch(_){ } }
@@ -5239,6 +5272,7 @@ window.__wall = { cards, tick, setVerse, fitText, verseRest,
   /* ---------- wiring ---------- */
   function init(){
     buildStTabs();
+    buildStDrawerNav();
     document.querySelectorAll("#stModeTabs button").forEach(b => b.addEventListener("click", () => { if(b.dataset.mode === "study") enterStudy(); else exitStudy(); }));
     document.querySelectorAll("#stCommPicker button").forEach(b => b.addEventListener("click", () => { state.comm = b.dataset.comm; savePosRec(); renderCommentary(); }));
     document.querySelectorAll("#stDictPicker button").forEach(b => b.addEventListener("click", () => { state.dict = b.dataset.dict; savePosRec(); syncDictPicker(); }));
@@ -5251,6 +5285,7 @@ window.__wall = { cards, tick, setVerse, fitText, verseRest,
     const mzoom = $("stMapZoom"); if(mzoom) mzoom.addEventListener("click", () => { const fi = $("stMapFullImg"); if(fi) fi.classList.toggle("zoom"); });
     wireNotes();
     syncModeTabs();
+    syncDrawerNav();
     if(state.mode === "study"){ setTimeout(enterStudyForce, 500); }
   }
   function enterStudyForce(){ state.mode = "read"; enterStudy(); }
