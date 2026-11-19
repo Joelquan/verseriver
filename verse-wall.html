@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="referrer" content="no-referrer"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
-<title>Verse Wall</title>
+<title>Verse Bible</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Tenor+Sans&family=Josefin+Sans:wght@200;300;400&family=Cinzel:wght@400;600&family=Playfair+Display:ital,wght@0,500;1,400;1,500&family=Lora:ital,wght@0,400;1,400&family=Great+Vibes&family=Libre+Baskerville:ital,wght@0,400;1,400&display=swap');
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -560,7 +560,7 @@ body.flowNav .wv-drawer{z-index:67;}
 <div class="wv-head">
   <button class="wv-menu" id="menuBtn">&#9776;</button>
   <div class="wv-headmid">
-    <div class="wv-title">VERSE WALL</div>
+    <div class="wv-title">VERSE BIBLE</div>
     <div class="wv-sub" id="filterSub">Every verse keeps its own time. Some ascend, some descend.</div>
   </div>
   <button class="wv-still" id="stillBtn">&#10074;&#10074; Still</button>
@@ -1801,9 +1801,9 @@ const Voices = (() => {
       if(!blob) throw new Error("no blob");
       const file = new File([blob], "verse-wall-quote.png", { type: "image/png" });
       if(navigator.canShare && navigator.canShare({ files: [file] })){
-        await navigator.share({ files: [file], title: "Verse Wall" });
+        await navigator.share({ files: [file], title: "Verse Bible" });
       } else if(navigator.share){
-        await navigator.share({ title: "Verse Wall", text: shareText(q) });
+        await navigator.share({ title: "Verse Bible", text: shareText(q) });
       } else {
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob); a.download = "verse-wall-quote.png";
