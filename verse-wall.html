@@ -635,6 +635,31 @@ body.steady #stPSearch{display:flex;}
 .st-mapfull-scroll{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;}
 .st-mapfull-scroll img{display:block;width:100%;height:auto;}
 .st-mapfull-scroll img.zoom{width:1700px;max-width:none;}
+/* ---- Notes full-screen editor (Joel, Nov 19, 2026: "let the note typing area be
+   full screen"). Same overlay pattern as .st-mapfull: fixed, inset 0, z-index 200,
+   papyrus. Typing happens here; the panel box is the tap target that opens it. ---- */
+.st-notefull{position:fixed;inset:0;z-index:200;background:#f5edd8;flex-direction:column;}
+.st-notefull-bar{display:flex;gap:8px;align-items:center;padding:10px 12px;flex-shrink:0;}
+.st-notefull-ref{flex:1;font-family:'Cinzel',serif;font-size:13px;letter-spacing:1.5px;color:#7c5f21;}
+.st-notefull-bar button{border:.5px solid #c9b586;background:#efe3c8;color:#2e2417;font-family:'Tenor Sans',sans-serif;font-size:13px;letter-spacing:1px;padding:10px 22px;border-radius:999px;cursor:pointer;}
+.st-notefull-box{flex:1;width:100%;box-sizing:border-box;background:#fdfaf1;border:none;border-top:1px solid #c9b586;border-bottom:1px solid #c9b586;color:#2e2417;font-family:'Tenor Sans',sans-serif;font-size:16px;line-height:1.6;padding:14px 16px;outline:none;resize:none;}
+.st-notefull-saved{padding:8px 16px 12px;margin-top:0;}
+#stNoteAdd{padding:10px 16px;font-size:16px;line-height:1;}
+/* ---- Note attachments (Joel, Nov 19, 2026): images and files ride with the note.
+   Stored inline in the note record as data URLs; caps in steady.js. ---- */
+.st-atts{display:flex;flex-direction:column;gap:8px;}
+.st-atts:empty{display:none;}
+#stNoteAtts{margin-top:10px;}
+.st-notefull-atts{overflow:auto;flex-shrink:0;max-height:32vh;padding:10px 12px 2px;}
+.st-notefull-atts:empty{padding:0;}
+.st-att{display:flex;align-items:center;gap:10px;border:.5px solid #c9b586;background:#efe3c8;border-radius:10px;padding:8px 10px;}
+.st-att img{width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid #c9b586;flex-shrink:0;background:#fdfaf1;}
+.st-att.st-att-imgfull{flex-direction:column;align-items:stretch;}
+.st-att.st-att-imgfull img{width:100%;height:auto;max-height:300px;object-fit:contain;}
+.st-att-meta{flex:1;min-width:0;}
+.st-att-name{font-family:'Tenor Sans',sans-serif;font-size:13px;color:#2e2417;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.st-att-size{font-family:'Tenor Sans',sans-serif;font-size:11px;color:#7a6748;margin-top:2px;}
+.st-att-x{flex-shrink:0;border:.5px solid #c9b586;background:#f5edd8;color:#2e2417;font-family:'Tenor Sans',sans-serif;font-size:15px;line-height:1;width:30px;height:30px;border-radius:999px;cursor:pointer;padding:0;}
 
 /* Joel's ruling (Nov 19, 2026): picker buttons shrink slightly, padding only, font
    untouched, so all six translations (incl. KJV+) sit on one line at phone widths.
@@ -744,7 +769,15 @@ body.steady #stPSearch{display:flex;}
   <div class="st-commLabel" id="stNoteRef" style="margin-top:0"></div>
   <textarea class="st-note" id="stNoteBox" placeholder="Write your note on this verse..."></textarea>
   <div class="st-saved" id="stNoteSaved"></div>
+  <div class="st-atts" id="stNoteAtts"></div>
   <p class="st-line">Your notes stay on this device only. Only you can see them. If you clear your browser or change phones, they are gone.</p>
+  <div class="st-notefull" id="stNoteFull" style="display:none">
+    <div class="st-notefull-bar"><span class="st-notefull-ref" id="stNoteFullRef"></span><button id="stNoteAdd" type="button" aria-label="Add an image or a file">+</button><button id="stNoteDone" type="button">Done</button></div>
+    <textarea class="st-notefull-box" id="stNoteFullBox" placeholder="Write your note on this verse..."></textarea>
+    <div class="st-atts st-notefull-atts" id="stNoteFullAtts"></div>
+    <input type="file" id="stNoteFile" accept="image/*,.pdf,.txt,.md,.doc,.docx,.odt,.rtf" multiple style="display:none">
+    <div class="st-saved st-notefull-saved" id="stNoteFullSaved"></div>
+  </div>
 </div>
 <div class="st-pane" id="stLib" style="display:none">
   <div class="st-head">LIBRARY</div>
@@ -5159,20 +5192,140 @@ window.__wall = { cards, tick, setVerse, fitText, verseRest,
     const box = $("stNoteBox"); box.value = cur ? cur.text : "";
     box.dataset.forKey = noteKey(v);
     $("stNoteSaved").textContent = "";
+    renderAttsInto($("stNoteAtts"), cur && cur.atts ? cur.atts : [], false, true);
+  }
+  /* Attachments ride inside the note record as data URLs (Joel, Nov 19, 2026).
+     Caps keep the device store safe: 2 MB per file, 4 MB per note. Older
+     text-only records have no atts field and read as an empty list. */
+  const ATT_MAX_FILE = 2 * 1024 * 1024;
+  const ATT_MAX_TOTAL = 4 * 1024 * 1024;
+  function fmtSize(n){ n = +n || 0; if(n < 1024) return n + " B"; if(n < 1048576) return Math.round(n / 1024) + " KB"; return (n / 1048576).toFixed(1) + " MB"; }
+  function isImageAtt(a){ return !!(a && typeof a.type === "string" && a.type.indexOf("image/") === 0 && a.data); }
+  function renderAttsInto(el, atts, editable, large){
+    if(!el) return;
+    el.innerHTML = "";
+    (atts || []).forEach((a, i) => {
+      const row = document.createElement("div");
+      const imgFull = large && isImageAtt(a);
+      row.className = "st-att" + (imgFull ? " st-att-imgfull" : "");
+      if(isImageAtt(a)){ const im = document.createElement("img"); im.src = a.data; im.alt = a.name || ""; row.appendChild(im); }
+      const meta = document.createElement("div"); meta.className = "st-att-meta";
+      const nm = document.createElement("div"); nm.className = "st-att-name"; nm.textContent = a.name || "File";
+      const sz = document.createElement("div"); sz.className = "st-att-size"; sz.textContent = fmtSize(a.size);
+      meta.appendChild(nm); meta.appendChild(sz); row.appendChild(meta);
+      if(editable){
+        const x = document.createElement("button"); x.type = "button"; x.className = "st-att-x"; x.textContent = "\u00D7";
+        x.setAttribute("aria-label", "Remove attachment");
+        x.addEventListener("click", () => removeAttachment(i));
+        row.appendChild(x);
+      }
+      el.appendChild(row);
+    });
+  }
+  function saveNoteText(text, key, ref, savedEl, atts){
+    const all = notesStore();
+    const hasAtts = !!(atts && atts.length);
+    if(text.trim() || hasAtts){
+      const rec = {ref: ref, text: text, ts: Date.now()};
+      if(hasAtts) rec.atts = atts;
+      all[key] = rec;
+    } else delete all[key];
+    /* store.set swallows quota errors; attachments can be large, so this write
+       is done directly and verified, and a failure is said out loud. */
+    let ok = true;
+    try { localStorage.setItem("vw-steady-notes", JSON.stringify(all)); } catch(_){ ok = false; }
+    if(ok){ const back = notesStore(); ok = hasAtts || text.trim() ? !!(back[key] && back[key].ts === (all[key] || {}).ts) : !(key in back); }
+    if(savedEl) savedEl.textContent = ok ? "Saved" : "Not saved: storage is full";
+    return ok;
+  }
+  function debounceNoteSave(getText, key, ref, savedEl, getAtts){
+    clearTimeout(noteDeb);
+    noteDeb = setTimeout(() => saveNoteText(getText(), key, ref, savedEl, getAtts ? getAtts() : undefined), 300);
+  }
+  /* Full-screen note editor (Joel, Nov 19, 2026): tapping the panel box opens the
+     typing area full screen, on the .st-mapfull overlay pattern. Same store, same
+     key, same record shape; the editor saves against the verse it was opened for. */
+  let noteEdit = null;
+  function openNoteEditor(){
+    if(noteEdit) return;
+    const fbox = $("stNoteFullBox"); if(!fbox) return;
+    const box = $("stNoteBox");
+    const v = verseInView();
+    noteEdit = {key: (box && box.dataset.forKey) || noteKey(v), ref: refOf(v.bi, v.ci, v.vi), atts: []};
+    const cur = notesStore()[noteEdit.key];
+    if(cur && cur.atts) { try { noteEdit.atts = JSON.parse(JSON.stringify(cur.atts)); } catch(_){ noteEdit.atts = []; } }
+    renderAttsInto($("stNoteFullAtts"), noteEdit.atts, true, false);
+    fbox.value = box ? box.value : "";
+    const refEl = $("stNoteFullRef"); if(refEl) refEl.textContent = noteEdit.ref;
+    const fsaved = $("stNoteFullSaved"); if(fsaved) fsaved.textContent = "";
+    $("stNoteFull").style.display = "flex";
+    if(box && document.activeElement === box){ try{ box.blur(); }catch(_){ } }
+    setTimeout(() => { try{ fbox.focus(); }catch(_){ } }, 60);
+  }
+  function closeNoteEditor(){
+    if(!noteEdit) return;
+    clearTimeout(noteDeb);
+    const ed = noteEdit;
+    const fbox = $("stNoteFullBox");
+    if(fbox) saveNoteText(fbox.value, ed.key, ed.ref, null, ed.atts);
+    $("stNoteFull").style.display = "none";
+    noteEdit = null;
+    renderNotes();
+    const box = $("stNoteBox");
+    if(box && box.value.trim()) $("stNoteSaved").textContent = "Saved";
+  }
+  function removeAttachment(idx){
+    if(!noteEdit) return;
+    noteEdit.atts.splice(idx, 1);
+    renderAttsInto($("stNoteFullAtts"), noteEdit.atts, true, false);
+    const fbox = $("stNoteFullBox");
+    saveNoteText(fbox ? fbox.value : "", noteEdit.key, noteEdit.ref, $("stNoteFullSaved"), noteEdit.atts);
+  }
+  function wireNoteFiles(){
+    const add = $("stNoteAdd"); const inp = $("stNoteFile");
+    if(add && inp) add.addEventListener("click", () => { inp.click(); });
+    if(!inp) return;
+    inp.addEventListener("change", () => {
+      const files = Array.prototype.slice.call(inp.files || []);
+      inp.value = "";
+      const ed = noteEdit;
+      if(!ed || !files.length) return;
+      const savedEl = $("stNoteFullSaved");
+      let total = ed.atts.reduce((s, a) => s + (+a.size || 0), 0);
+      files.forEach(f => {
+        if(f.size > ATT_MAX_FILE){ if(savedEl) savedEl.textContent = "Too large (2 MB max): " + f.name; return; }
+        if(total + f.size > ATT_MAX_TOTAL){ if(savedEl) savedEl.textContent = "Note attachments full (4 MB max)"; return; }
+        total += f.size;
+        const rd = new FileReader();
+        rd.onload = () => {
+          if(noteEdit !== ed) return;
+          ed.atts.push({name: f.name || "File", type: f.type || "", size: f.size, data: String(rd.result || "")});
+          renderAttsInto($("stNoteFullAtts"), ed.atts, true, false);
+          const fbox = $("stNoteFullBox");
+          saveNoteText(fbox ? fbox.value : "", ed.key, ed.ref, savedEl, ed.atts);
+        };
+        rd.onerror = () => { if(savedEl && noteEdit === ed) savedEl.textContent = "Could not read " + f.name; };
+        rd.readAsDataURL(f);
+      });
+    });
   }
   function wireNotes(){
     const box = $("stNoteBox"); if(!box) return;
     box.addEventListener("input", () => {
-      clearTimeout(noteDeb);
-      noteDeb = setTimeout(() => {
-        const v = verseInView(); const all = notesStore();
-        const text = box.value;
-        if(text.trim()) all[noteKey(v)] = {ref: refOf(v.bi, v.ci, v.vi), text: text, ts: Date.now()};
-        else delete all[noteKey(v)];
-        store.set("vw-steady-notes", all);
-        $("stNoteSaved").textContent = "Saved";
-      }, 300);
+      const v = verseInView(); const k = noteKey(v);
+      debounceNoteSave(() => box.value, k, refOf(v.bi, v.ci, v.vi), $("stNoteSaved"),
+        () => { const c = notesStore()[k]; return c && c.atts ? c.atts : []; });
     });
+    box.addEventListener("pointerdown", e => { e.preventDefault(); openNoteEditor(); });
+    box.addEventListener("focus", () => { openNoteEditor(); });
+    const fbox = $("stNoteFullBox");
+    if(fbox) fbox.addEventListener("input", () => {
+      if(!noteEdit) return;
+      const ed = noteEdit;
+      debounceNoteSave(() => fbox.value, ed.key, ed.ref, $("stNoteFullSaved"), () => ed.atts);
+    });
+    const done = $("stNoteDone"); if(done) done.addEventListener("click", closeNoteEditor);
+    wireNoteFiles();
   }
 
   /* ---------- Library: notes, highlights, bookmarks together ---------- */
@@ -5180,7 +5333,7 @@ window.__wall = { cards, tick, setVerse, fitText, verseRest,
     const body = $("stLibBody"); if(!body) return;
     const items = [];
     const notes = notesStore();
-    Object.keys(notes).forEach(k => { const n = notes[k]; if(n && n.text && n.text.trim()) items.push({kind:"Note", ref:n.ref, snippet:n.text, ord:0, key:k}); });
+    Object.keys(notes).forEach(k => { const n = notes[k]; if(!n) return; const na = n.atts && n.atts.length ? n.atts.length : 0; if((n.text && n.text.trim()) || na) items.push({kind:"Note", ref:n.ref, snippet:n.text || "", attLabel: na ? na + (na === 1 ? " attachment: " : " attachments: ") + n.atts.map(a => a.name || "File").join(", ") : "", ord:0, key:k}); });
     let hls = {}; try { hls = JSON.parse(localStorage.getItem("wv-bible-hl") || "{}") || {}; } catch(_){ }
     Object.keys(hls).forEach(k => { const parts = k.split("|"); if(parts.length === 4) items.push({kind:"Highlight", ref: refOf(+parts[1], +parts[2], +parts[3]) + " \u00B7 " + String(parts[0]).toUpperCase(), snippet:"", ord:1, code:parts[0], bi:+parts[1], ci:+parts[2], vi:+parts[3]}); });
     let bms = []; try { bms = JSON.parse(localStorage.getItem("wv-bible-bm") || "[]") || []; } catch(_){ }
@@ -5190,7 +5343,7 @@ window.__wall = { cards, tick, setVerse, fitText, verseRest,
     body.innerHTML = "";
     items.forEach(it => {
       const b = document.createElement("button"); b.className = "st-libitem";
-      b.innerHTML = '<span class="k">' + esc(it.kind) + '</span><span class="r">' + esc(it.ref) + '</span>' + (it.snippet ? '<span class="s">' + esc(it.snippet.length > 140 ? it.snippet.slice(0, 140) + "..." : it.snippet) + "</span>" : "");
+      b.innerHTML = '<span class="k">' + esc(it.kind) + '</span><span class="r">' + esc(it.ref) + '</span>' + (it.snippet ? '<span class="s">' + esc(it.snippet.length > 140 ? it.snippet.slice(0, 140) + "..." : it.snippet) + "</span>" : "") + (it.attLabel ? '<span class="s">' + esc(it.attLabel) + "</span>" : "");
       b.addEventListener("click", () => {
         const r = parseRef(it.ref.split(" \u00B7 ")[0]);
         if(r){ state.lastVerse = r; showStudyView("bible"); try { Bible.openAt(refOf(r.bi, r.ci, r.vi)); } catch(_){ } if(state.strongs){ state.strongsFor = ""; setTimeout(renderStrongs, 400); } }
