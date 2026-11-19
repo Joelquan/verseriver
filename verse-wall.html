@@ -2155,8 +2155,13 @@ const Games = (() => {
   const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const skin = id => SKINS.find(s => s.id === id) || SKINS[0];
   const GAMES = [
+    {id:"wsi", title:"Who Said It", desc:"500 voices from Scripture. Name the speaker.", skin:"gold", nq:500, best:"wv-game-best-wsi", kind:"builtin", cats:["all","quiz"]},
+    {id:"where", title:"Where Is It Found", desc:"500 verses. Find where each lives in the Bible.", skin:"ocean", nq:500, best:"wv-game-best-where", kind:"builtin", cats:["all","memory"]},
+    {id:"gen", title:"General Bible Questions", desc:"500 questions drawn from all sixty six books.", skin:"ember", nq:500, best:"wv-game-best-gen", kind:"builtin", cats:["all","quiz"]},
+    {id:"rid", title:"Bible Riddles", desc:"Old riddles from Scripture. Can you solve them?", skin:"forest", nq:50, best:"wv-game-best-rid", kind:"builtin", cats:["all","puzzle"]},
+    {id:"fact", title:"Bible Facts", desc:"500 statements. True or false? Test what you know.", skin:"crimson", nq:500, best:"wv-game-best-fact", kind:"builtin", cats:["all","trivia"]},
     {id:"sort", title:"Verse Sort", desc:"Catch each falling verse in the right bin.", skin:"slate", best:"wv-game-best-sort", kind:"builtin", cats:["all","puzzle"]},
-    {id:"hub", title:"Verseriver Games Hub", desc:"Bible chapter games, from the Verseriver Games hub.", skin:"indigo", kind:"transported", cats:["all","more-games"], url:"/games/index.html"}
+    {id:"hub", title:"Verseriver Games Hub", desc:"Bible chapter games, from the Verseriver Games hub.", skin:"indigo", kind:"transported", cats:["all","more-games"], url:"https://verseriver-games.vercel.app/"}
   ];
   let R = null, kjvCache = null;
   function gnq(id){ const g = gdef(id); return (g && g.nq) || 50; }
@@ -2273,8 +2278,11 @@ const Games = (() => {
   }
 
   const GAME_CATS = [
-    { id: "all", name: "All Games", ids: ["sort", "hub"] },
-    { id: "puzzle", name: "Puzzle", ids: ["sort"] },
+    { id: "all", name: "All Games", ids: ["wsi", "where", "gen", "rid", "fact", "sort", "hub"] },
+    { id: "quiz", name: "Quiz", ids: ["wsi", "gen"] },
+    { id: "trivia", name: "Trivia", ids: ["fact"] },
+    { id: "puzzle", name: "Puzzle", ids: ["rid", "sort"] },
+    { id: "memory", name: "Memory", ids: ["where"] },
     { id: "more-games", name: "More Games", ids: ["hub"] }
   ];
   let currentCat = "all", gmSavedScroll = 0, gmTimers = [];
