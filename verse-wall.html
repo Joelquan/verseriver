@@ -137,7 +137,7 @@ body{font-family:'Tenor Sans',sans-serif;color:#f5e3b8;min-height:100vh;}
  position:sticky;top:var(--wvth,110px);z-index:9;background:#0d0d0d;
  box-shadow:0 1px 0 rgba(201,147,58,.18);}
 .bv-trans button{border:.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:rgba(255,255,255,.6);
- font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:2px;padding:7px 14px;border-radius:999px;cursor:pointer;}
+ font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:2px;padding:7px 9px;border-radius:999px;cursor:pointer;}
 .bv-trans button.on{border-color:#c9933a;background:rgba(201,147,58,.16);color:#e8c876;}
 .bv-chap{padding:16px 22px 8px;}
 .bv-chap h2{font-family:'Cinzel',serif;font-weight:600;font-size:22px;letter-spacing:3px;color:#f5e3b8;text-align:center;margin:6px 0 4px;}
@@ -555,16 +555,18 @@ body.flowNav .wv-drawer{z-index:67;}
 .vc-load{padding:44px 20px;text-align:center;color:#cfe0f4;font-family:'Cormorant Garamond',Georgia,serif;font-size:19px;}
 </style>
 <style id="steady-css">
-/* Verse Steady (Study mode) — additive styles. Blue family only in Steady:
-   #021024 bg, #052659 surfaces, #5483B3 borders, #7DA0CA accents, #C1E8FF text. */
+/* Verse Steady (Study mode) — additive styles. Color law (Joel, Nov 19, 2026):
+   shared chrome keeps the blue family (#021024, #052659, #5483B3, #7DA0CA, #C1E8FF);
+   the Bible panel is NOT recolored (it is the Read Bible exactly);
+   the study tool panes (Comment, Lexicon, Map, Notes, Library) are papyrus:
+   paper #f5edd8, raised #efe3c8, border #c9b586, ink #2e2417, muted #7a6748, bronze #7c5f21. */
 /* ---- drawer mode tabs (Chrome-like) ---- */
 .wv-dr-modetabs{display:flex;gap:6px;margin:12px 0 2px;padding:0 2px;}
 .wv-dr-modetabs button{flex:1;border:.5px solid rgba(255,255,255,.18);border-bottom:none;border-radius:10px 10px 0 0;background:rgba(255,255,255,.04);color:rgba(255,255,255,.55);font-family:'Tenor Sans',sans-serif;font-size:12px;letter-spacing:1.5px;padding:9px 4px 8px;cursor:pointer;}
 .wv-dr-modetabs button.on{background:rgba(201,147,58,.20);color:#e8c876;border-color:rgba(201,147,58,.5);}
 body.steady .wv-dr-modetabs button{border-color:#5483B3;color:#7DA0CA;background:#021024;}
 body.steady .wv-dr-modetabs button.on{background:#052659;color:#C1E8FF;border-color:#5483B3;box-shadow:inset 0 0 0 1px #5483B3;}
-/* ---- Steady global recolor ---- */
-body.steady{background:#021024;}
+/* ---- Steady chrome recolor (shared chrome only; never the Bible panel) ---- */
 body.steady .wv-title{color:#C1E8FF;}
 body.steady .wv-sub{color:#7DA0CA;}
 body.steady .wv-menu,body.steady .wv-still{border-color:#5483B3;color:#C1E8FF;background:#052659;}
@@ -580,69 +582,9 @@ body.steady .wv-drawer{background:#052659;}
 body.steady .wv-dr-title{color:#7DA0CA;}
 body.steady .wv-dr-sub{color:#7DA0CA;}
 body.steady .wv-drawer button{border-color:#5483B3;color:#C1E8FF;}
-/* ---- Bible panel in Steady (overrides day theme too) ---- */
-body.steady .wv-bible{background:#021024;}
-body.steady .wv-bible .bv-bar button{color:#C1E8FF;border-color:#5483B3;background:#052659;}
-body.steady .wv-bible .bv-loc{color:#C1E8FF;}
-body.steady #bvChap h2{color:#C1E8FF;}
-body.steady #bvChap .bv-p,body.steady .wv-bible.day #bvChap .bv-p{color:#C1E8FF;}
-body.steady #bvChap .bv-vn{color:#7DA0CA;}
-body.steady #bvChap .bv-sech{color:#7DA0CA;}
-body.steady #bvChap .bv-trname{color:#7DA0CA;}
-body.steady #bvChap .bv-copy{color:#7DA0CA;}
-body.steady .bv-trans{background:transparent;box-shadow:none;}
-body.steady .bv-trans button{border-color:#5483B3;background:#052659;color:#7DA0CA;}
-body.steady .bv-trans button.on{border-color:#C1E8FF;background:#052659;color:#C1E8FF;}
-body.steady .bv-search input{background:#052659;border-color:#5483B3;color:#C1E8FF;}
-body.steady .bv-search input::placeholder{color:#7DA0CA;}
-body.steady .bv-search button{background:#052659;border-color:#5483B3;color:#C1E8FF;}
-body.steady .bv-sres .bv-scount{color:#7DA0CA;}
-body.steady .bv-sres .bv-sitem{background:#052659;border-color:#5483B3;}
-body.steady .bv-sres .bv-sref{color:#7DA0CA;}
-body.steady .bv-sres .bv-stext{color:#C1E8FF;}
-body.steady .bv-sres mark{background:rgba(125,160,202,.4);color:#C1E8FF;border-radius:2px;}
-body.steady .bv-foot button{color:#C1E8FF;border-color:#5483B3;background:#052659;}
-/* ---- Bible working overlays in Steady: picker, action sheet, verse-selection bar ---- */
-body.steady .bv-pick{background:#052659;border-color:#5483B3;color:#C1E8FF;}
-body.steady .bv-pick h3{color:#7DA0CA;}
-body.steady .bv-pick .bv-books button,body.steady .bv-pick .bv-chaps button{border-color:#5483B3;color:#C1E8FF;background:#021024;}
-body.steady .bv-pickclose{color:#C1E8FF;border-color:#5483B3;}
-body.steady .bv-act-card{background:#052659;border-color:#5483B3;}
-body.steady .bv-act-ref{color:#7DA0CA;}
-body.steady .bv-act-text{color:#C1E8FF;}
-body.steady .bv-act-row button{border-color:#5483B3;color:#C1E8FF;background:#021024;}
-body.steady .bv-act-sw button{border-color:#5483B3;}
-body.steady .bv-act-sw button.on{box-shadow:0 0 0 2px #7DA0CA;}
-body.steady .bv-ctog{background:#052659;border-color:#5483B3;color:#C1E8FF;}
-body.steady .bv-ctog button{border-color:#5483B3;color:#C1E8FF;background:#021024;}
-body.steady .bv-ctog-chips span{border-color:#5483B3;color:#C1E8FF;}
-body.steady .bv-toast{background:#052659;color:#C1E8FF;border:1px solid #5483B3;}
-/* The overlays carry their own .day variants; in Steady those lose to the blue set too. */
-body.steady .bv-pick.day h3{color:#7DA0CA;}
-body.steady .bv-pick.day .bv-books button,body.steady .bv-pick.day .bv-chaps button{background:#021024;border-color:#5483B3;color:#C1E8FF;}
-body.steady .bv-pick.day .bv-pickclose{background:#052659;border-color:#5483B3;color:#C1E8FF;}
-body.steady .bv-pick.day .bv-back{border-color:#5483B3;color:#C1E8FF;}
-body.steady .bv-pick.day .bv-row .bv-lab{color:#7DA0CA;}
-body.steady .bv-pick.day .bv-step button{border-color:#5483B3;background:#052659;color:#C1E8FF;}
-body.steady .bv-pick.day .bv-step .bv-fsval{color:#C1E8FF;}
-body.steady .bv-pick.day .bv-seg{border-color:#5483B3;}
-body.steady .bv-pick.day .bv-seg button{color:#7DA0CA;}
-body.steady .bv-pick.day .bv-seg button.on{background:#052659;color:#C1E8FF;}
-body.steady .bv-pick.day .bv-li{background:#052659;border-color:#5483B3;}
-body.steady .bv-pick.day .bv-li .bv-lref{color:#7DA0CA;}
-body.steady .bv-pick.day .bv-li .bv-ltext{color:#C1E8FF;}
-body.steady .bv-pick.day .bv-li .bv-lx{color:#7DA0CA;}
-body.steady .bv-pick.day .bv-empty{color:#7DA0CA;}
-body.steady .bv-pick.day .bv-clear{border-color:#5483B3;color:#C1E8FF;}
-body.steady .bv-act.day .bv-act-card{background:#052659;border-top-color:#5483B3;}
-body.steady .bv-act.day .bv-act-ref{color:#7DA0CA;}
-body.steady .bv-act.day .bv-act-text{color:#C1E8FF;}
-body.steady .bv-act.day .bv-act-sw span{color:#7DA0CA;}
-body.steady .bv-act.day .bv-act-row button{border-color:#5483B3;background:#021024;color:#C1E8FF;}
-body.steady .bv-ctog.day .bv-chip{border-color:#5483B3;background:#052659;color:#C1E8FF;}
-body.steady .bv-ctog.day .bv-chip.on{border-color:#C1E8FF;background:#052659;color:#C1E8FF;}
-body.steady .bv-ctog.day .bv-ctog-txt{color:#7DA0CA;}
-body.steady .bv-ctog.day .bv-dot{border-color:#5483B3;}
+/* ---- Bible panel in Steady: NO recolor (Joel's ruling, Nov 19, 2026).
+   The Study Bible is the Read Bible exactly: same structure, behavior, and
+   color. The only Bible-side difference is the KJV+ picker option. ---- */
 /* ---- Strong's words ---- */
 .st-w.tagged{border-bottom:1px dotted #7DA0CA;cursor:pointer;}
 .st-w.picked{background:rgba(84,131,179,.35);border-radius:3px;}
@@ -652,44 +594,44 @@ body.steady .st-transnote{display:block;}
 #stPSearch{display:none;}
 body.steady #stPSearch{display:flex;}
 /* ---- Study panes ---- */
-.st-pane{max-width:640px;margin:0 auto;padding:14px 16px 34px;color:#C1E8FF;background:#021024;min-height:60vh;box-sizing:border-box;}
-.st-head{font-family:'Cinzel',serif;font-size:13px;letter-spacing:2px;color:#7DA0CA;margin:2px 0 10px;}
+.st-pane{max-width:640px;margin:0 auto;padding:14px 16px 34px;color:#2e2417;background:#f5edd8;min-height:60vh;box-sizing:border-box;}
+.st-head{font-family:'Cinzel',serif;font-size:13px;letter-spacing:2px;color:#7c5f21;margin:2px 0 10px;}
 .st-picker{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px;}
-.st-picker button{border:.5px solid #5483B3;background:#052659;color:#7DA0CA;font-family:'Tenor Sans',sans-serif;font-size:12px;letter-spacing:1px;padding:8px 12px;border-radius:999px;cursor:pointer;}
-.st-picker button.on{color:#C1E8FF;border-color:#C1E8FF;}
-.st-picker-label{font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:1.5px;color:#7DA0CA;text-transform:uppercase;margin:10px 0 6px;}
-.st-pane .bv-p{color:#C1E8FF;}
-.st-commLabel{font-family:'Cinzel',serif;font-size:13px;letter-spacing:1.5px;color:#7DA0CA;margin:16px 0 6px;}
-.st-csec{font-family:'Cormorant Garamond',serif;font-size:19px;color:#C1E8FF;margin:12px 0 4px;}
-.st-from,.st-credit{font-family:'Tenor Sans',sans-serif;font-size:11px;color:#7DA0CA;line-height:1.6;margin-top:14px;}
-.st-fail{font-family:'Tenor Sans',sans-serif;font-size:14px;color:#C1E8FF;background:#052659;border:1px solid #5483B3;border-radius:10px;padding:14px;text-align:center;}
-.st-fail button{display:block;margin:10px auto 0;border:.5px solid #5483B3;background:#021024;color:#C1E8FF;font-family:'Tenor Sans',sans-serif;font-size:12px;letter-spacing:1px;padding:8px 16px;border-radius:999px;cursor:pointer;}
-.st-empty{font-family:'Tenor Sans',sans-serif;font-size:14px;color:#7DA0CA;text-align:center;padding:18px 8px;line-height:1.6;}
+.st-picker button{border:.5px solid #c9b586;background:#efe3c8;color:#5a4a26;font-family:'Tenor Sans',sans-serif;font-size:12px;letter-spacing:1px;padding:8px 12px;border-radius:999px;cursor:pointer;}
+.st-picker button.on{color:#2e2417;border-color:#8a6d2f;background:#e9d9ae;}
+.st-picker-label{font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:1.5px;color:#7a6748;text-transform:uppercase;margin:10px 0 6px;}
+.st-pane .bv-p{color:#2e2417;}
+.st-commLabel{font-family:'Cinzel',serif;font-size:13px;letter-spacing:1.5px;color:#7c5f21;margin:16px 0 6px;}
+.st-csec{font-family:'Cormorant Garamond',serif;font-size:19px;color:#2e2417;margin:12px 0 4px;}
+.st-from,.st-credit{font-family:'Tenor Sans',sans-serif;font-size:11px;color:#7a6748;line-height:1.6;margin-top:14px;}
+.st-fail{font-family:'Tenor Sans',sans-serif;font-size:14px;color:#2e2417;background:#efe3c8;border:1px solid #c9b586;border-radius:10px;padding:14px;text-align:center;}
+.st-fail button{display:block;margin:10px auto 0;border:.5px solid #c9b586;background:#f5edd8;color:#2e2417;font-family:'Tenor Sans',sans-serif;font-size:12px;letter-spacing:1px;padding:8px 16px;border-radius:999px;cursor:pointer;}
+.st-empty{font-family:'Tenor Sans',sans-serif;font-size:14px;color:#7a6748;text-align:center;padding:18px 8px;line-height:1.6;}
 .st-field{display:flex;gap:8px;margin:0 0 12px;}
-.st-field input{flex:1;background:#052659;border:.5px solid #5483B3;border-radius:12px;color:#C1E8FF;font-family:'Tenor Sans',sans-serif;font-size:15px;padding:11px 13px;outline:none;}
-.st-field input::placeholder{color:#7DA0CA;font-style:italic;}
-.st-field button{flex-shrink:0;border:.5px solid #5483B3;background:#052659;color:#C1E8FF;border-radius:12px;padding:0 16px;font-family:'Tenor Sans',sans-serif;font-size:13px;cursor:pointer;}
-.st-entry .st-key{font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:2px;color:#7DA0CA;}
-.st-entry .st-headword{font-family:'Cormorant Garamond',serif;font-size:24px;color:#C1E8FF;margin-right:8px;}
-.st-entry .st-translit{font-family:'Cormorant Garamond',serif;font-size:17px;font-style:italic;color:#7DA0CA;}
-.st-entry .st-def{font-family:'Cormorant Garamond',serif;font-size:19px;line-height:1.85;color:#C1E8FF;white-space:pre-line;margin-top:6px;}
+.st-field input{flex:1;background:#fdfaf1;border:.5px solid #c9b586;border-radius:12px;color:#2e2417;font-family:'Tenor Sans',sans-serif;font-size:15px;padding:11px 13px;outline:none;}
+.st-field input::placeholder{color:#a08c5f;font-style:italic;}
+.st-field button{flex-shrink:0;border:.5px solid #c9b586;background:#efe3c8;color:#2e2417;border-radius:12px;padding:0 16px;font-family:'Tenor Sans',sans-serif;font-size:13px;cursor:pointer;}
+.st-entry .st-key{font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:2px;color:#7c5f21;}
+.st-entry .st-headword{font-family:'Cormorant Garamond',serif;font-size:24px;color:#2e2417;margin-right:8px;}
+.st-entry .st-translit{font-family:'Cormorant Garamond',serif;font-size:17px;font-style:italic;color:#7a6748;}
+.st-entry .st-def{font-family:'Cormorant Garamond',serif;font-size:19px;line-height:1.85;color:#2e2417;white-space:pre-line;margin-top:6px;}
 .st-cands{list-style:none;margin:0;padding:0;}
-.st-cands li{border:.5px solid #5483B3;background:#052659;border-radius:10px;padding:11px 13px;margin:0 0 8px;cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:16px;color:#C1E8FF;}
-.st-cands li .k{font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:1.5px;color:#7DA0CA;margin-right:8px;}
-.st-cands li .g{color:#7DA0CA;font-size:14px;}
-.st-note{width:100%;box-sizing:border-box;min-height:150px;background:#052659;border:1px solid #5483B3;border-radius:10px;color:#C1E8FF;font-family:'Tenor Sans',sans-serif;font-size:15px;line-height:1.6;padding:12px;outline:none;resize:vertical;}
-.st-saved{font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:1.5px;color:#7DA0CA;min-height:16px;margin-top:6px;text-transform:uppercase;}
-.st-line{font-family:'Tenor Sans',sans-serif;font-size:12px;color:#7DA0CA;line-height:1.6;margin-top:12px;}
-.st-libitem{display:block;width:100%;text-align:left;border:.5px solid #5483B3;background:#052659;border-radius:10px;padding:11px 13px;margin:0 0 8px;cursor:pointer;box-sizing:border-box;}
-.st-libitem .k{font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:2px;color:#7DA0CA;text-transform:uppercase;display:block;margin-bottom:3px;}
-.st-libitem .r{font-family:'Cinzel',serif;font-size:13px;letter-spacing:1px;color:#C1E8FF;display:block;margin-bottom:3px;}
-.st-libitem .s{font-family:'Cormorant Garamond',serif;font-size:16px;line-height:1.5;color:#C1E8FF;display:block;}
-.st-mapsel{width:100%;box-sizing:border-box;background:#052659;border:.5px solid #5483B3;border-radius:12px;color:#C1E8FF;font-family:'Tenor Sans',sans-serif;font-size:14px;padding:11px 12px;margin:0 0 12px;outline:none;}
-.st-mapimg{width:100%;height:auto;display:block;background:#fff;border:1px solid #5483B3;border-radius:12px;cursor:pointer;}
-.st-mapcap{font-family:'Cinzel',serif;font-size:13px;letter-spacing:1px;color:#C1E8FF;margin-top:10px;line-height:1.5;}
-.st-mapfull{position:fixed;inset:0;z-index:200;background:#021024;flex-direction:column;}
+.st-cands li{border:.5px solid #c9b586;background:#efe3c8;border-radius:10px;padding:11px 13px;margin:0 0 8px;cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:16px;color:#2e2417;}
+.st-cands li .k{font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:1.5px;color:#7c5f21;margin-right:8px;}
+.st-cands li .g{color:#7a6748;font-size:14px;}
+.st-note{width:100%;box-sizing:border-box;min-height:150px;background:#fdfaf1;border:1px solid #c9b586;border-radius:10px;color:#2e2417;font-family:'Tenor Sans',sans-serif;font-size:15px;line-height:1.6;padding:12px;outline:none;resize:vertical;}
+.st-saved{font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:1.5px;color:#7a6748;min-height:16px;margin-top:6px;text-transform:uppercase;}
+.st-line{font-family:'Tenor Sans',sans-serif;font-size:12px;color:#7a6748;line-height:1.6;margin-top:12px;}
+.st-libitem{display:block;width:100%;text-align:left;border:.5px solid #c9b586;background:#efe3c8;border-radius:10px;padding:11px 13px;margin:0 0 8px;cursor:pointer;box-sizing:border-box;}
+.st-libitem .k{font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:2px;color:#7c5f21;text-transform:uppercase;display:block;margin-bottom:3px;}
+.st-libitem .r{font-family:'Cinzel',serif;font-size:13px;letter-spacing:1px;color:#2e2417;display:block;margin-bottom:3px;}
+.st-libitem .s{font-family:'Cormorant Garamond',serif;font-size:16px;line-height:1.5;color:#2e2417;display:block;}
+.st-mapsel{width:100%;box-sizing:border-box;background:#efe3c8;border:.5px solid #c9b586;border-radius:12px;color:#2e2417;font-family:'Tenor Sans',sans-serif;font-size:14px;padding:11px 12px;margin:0 0 12px;outline:none;}
+.st-mapimg{width:100%;height:auto;display:block;background:#fff;border:1px solid #c9b586;border-radius:12px;cursor:pointer;}
+.st-mapcap{font-family:'Cinzel',serif;font-size:13px;letter-spacing:1px;color:#2e2417;margin-top:10px;line-height:1.5;}
+.st-mapfull{position:fixed;inset:0;z-index:200;background:#f5edd8;flex-direction:column;}
 .st-mapfull-bar{display:flex;gap:8px;padding:10px 12px;flex-shrink:0;}
-.st-mapfull-bar button{flex:1;border:.5px solid #5483B3;background:#052659;color:#C1E8FF;font-family:'Tenor Sans',sans-serif;font-size:13px;letter-spacing:1px;padding:10px;border-radius:999px;cursor:pointer;}
+.st-mapfull-bar button{flex:1;border:.5px solid #c9b586;background:#efe3c8;color:#2e2417;font-family:'Tenor Sans',sans-serif;font-size:13px;letter-spacing:1px;padding:10px;border-radius:999px;cursor:pointer;}
 .st-mapfull-scroll{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;}
 .st-mapfull-scroll img{display:block;width:100%;height:auto;}
 .st-mapfull-scroll img.zoom{width:1700px;max-width:none;}
@@ -4964,7 +4906,7 @@ window.__wall = { cards, tick, setVerse, fitText, verseRest,
     const host = $("bvTrans"); if(!host) return;
     if(host.querySelector(".st-trbtn")) return;
     const b = document.createElement("button");
-    b.textContent = "KJV Strong\u2019s"; b.className = "st-trbtn" + (state.strongs ? " on" : "");
+    b.textContent = "KJV+"; b.className = "st-trbtn" + (state.strongs ? " on" : "");
     b.addEventListener("click", async () => {
       if(state.strongs) return;
       const kjvBtn = Array.prototype.find.call(host.querySelectorAll("button:not(.st-trbtn)"), x => x.textContent === "KJV");
