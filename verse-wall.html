@@ -554,6 +554,143 @@ body.flowNav .wv-drawer{z-index:67;}
 .tp-end-btn{display:block;width:min(280px,80%);margin:14px auto 0;padding:12px;background:rgba(201,147,58,.12);border:.5px solid rgba(201,147,58,.5);border-radius:16px;color:#e8c876;font-family:'Tenor Sans',sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:1.6px;cursor:pointer;}
 .vc-load{padding:44px 20px;text-align:center;color:#cfe0f4;font-family:'Cormorant Garamond',Georgia,serif;font-size:19px;}
 </style>
+<style id="steady-css">
+/* Verse Steady (Study mode) — additive styles. Blue family only in Steady:
+   #021024 bg, #052659 surfaces, #5483B3 borders, #7DA0CA accents, #C1E8FF text. */
+/* ---- drawer mode tabs (Chrome-like) ---- */
+.wv-dr-modetabs{display:flex;gap:6px;margin:12px 0 2px;padding:0 2px;}
+.wv-dr-modetabs button{flex:1;border:.5px solid rgba(255,255,255,.18);border-bottom:none;border-radius:10px 10px 0 0;background:rgba(255,255,255,.04);color:rgba(255,255,255,.55);font-family:'Tenor Sans',sans-serif;font-size:12px;letter-spacing:1.5px;padding:9px 4px 8px;cursor:pointer;}
+.wv-dr-modetabs button.on{background:rgba(201,147,58,.20);color:#e8c876;border-color:rgba(201,147,58,.5);}
+body.steady .wv-dr-modetabs button{border-color:#5483B3;color:#7DA0CA;background:#021024;}
+body.steady .wv-dr-modetabs button.on{background:#052659;color:#C1E8FF;border-color:#5483B3;box-shadow:inset 0 0 0 1px #5483B3;}
+/* ---- Steady global recolor ---- */
+body.steady{background:#021024;}
+body.steady .wv-title{color:#C1E8FF;}
+body.steady .wv-sub{color:#7DA0CA;}
+body.steady .wv-menu,body.steady .wv-still{border-color:#5483B3;color:#C1E8FF;background:#052659;}
+body.steady .wv-viewtabs{background:#052659;border-color:#5483B3;}
+body.steady .wv-viewtabs button{color:#7DA0CA;}
+body.steady .wv-viewtabs button.on{background:#052659;color:#C1E8FF;box-shadow:inset 0 0 0 1px #5483B3;}
+@media (max-width:520px){ body.steady .wv-viewtabs button{font-size:8px;letter-spacing:0;padding:7px 0;} }
+body.steady .wv-drawer{background:#052659;}
+body.steady .wv-dr-title{color:#7DA0CA;}
+body.steady .wv-dr-sub{color:#7DA0CA;}
+body.steady .wv-drawer button{border-color:#5483B3;color:#C1E8FF;}
+/* ---- Bible panel in Steady (overrides day theme too) ---- */
+body.steady .wv-bible{background:#021024;}
+body.steady .wv-bible .bv-bar button{color:#C1E8FF;border-color:#5483B3;background:#052659;}
+body.steady .wv-bible .bv-loc{color:#C1E8FF;}
+body.steady #bvChap h2{color:#C1E8FF;}
+body.steady #bvChap .bv-p,body.steady .wv-bible.day #bvChap .bv-p{color:#C1E8FF;}
+body.steady #bvChap .bv-vn{color:#7DA0CA;}
+body.steady #bvChap .bv-sech{color:#7DA0CA;}
+body.steady #bvChap .bv-trname{color:#7DA0CA;}
+body.steady #bvChap .bv-copy{color:#7DA0CA;}
+body.steady .bv-trans{background:transparent;box-shadow:none;}
+body.steady .bv-trans button{border-color:#5483B3;background:#052659;color:#7DA0CA;}
+body.steady .bv-trans button.on{border-color:#C1E8FF;background:#052659;color:#C1E8FF;}
+body.steady .bv-search input{background:#052659;border-color:#5483B3;color:#C1E8FF;}
+body.steady .bv-search input::placeholder{color:#7DA0CA;}
+body.steady .bv-search button{background:#052659;border-color:#5483B3;color:#C1E8FF;}
+body.steady .bv-sres .bv-scount{color:#7DA0CA;}
+body.steady .bv-sres .bv-sitem{background:#052659;border-color:#5483B3;}
+body.steady .bv-sres .bv-sref{color:#7DA0CA;}
+body.steady .bv-sres .bv-stext{color:#C1E8FF;}
+body.steady .bv-sres mark{background:rgba(125,160,202,.4);color:#C1E8FF;border-radius:2px;}
+body.steady .bv-foot button{color:#C1E8FF;border-color:#5483B3;background:#052659;}
+/* ---- Bible working overlays in Steady: picker, action sheet, verse-selection bar ---- */
+body.steady .bv-pick{background:#052659;border-color:#5483B3;color:#C1E8FF;}
+body.steady .bv-pick h3{color:#7DA0CA;}
+body.steady .bv-pick .bv-books button,body.steady .bv-pick .bv-chaps button{border-color:#5483B3;color:#C1E8FF;background:#021024;}
+body.steady .bv-pickclose{color:#C1E8FF;border-color:#5483B3;}
+body.steady .bv-act-card{background:#052659;border-color:#5483B3;}
+body.steady .bv-act-ref{color:#7DA0CA;}
+body.steady .bv-act-text{color:#C1E8FF;}
+body.steady .bv-act-row button{border-color:#5483B3;color:#C1E8FF;background:#021024;}
+body.steady .bv-act-sw button{border-color:#5483B3;}
+body.steady .bv-act-sw button.on{box-shadow:0 0 0 2px #7DA0CA;}
+body.steady .bv-ctog{background:#052659;border-color:#5483B3;color:#C1E8FF;}
+body.steady .bv-ctog button{border-color:#5483B3;color:#C1E8FF;background:#021024;}
+body.steady .bv-ctog-chips span{border-color:#5483B3;color:#C1E8FF;}
+body.steady .bv-toast{background:#052659;color:#C1E8FF;border:1px solid #5483B3;}
+/* The overlays carry their own .day variants; in Steady those lose to the blue set too. */
+body.steady .bv-pick.day h3{color:#7DA0CA;}
+body.steady .bv-pick.day .bv-books button,body.steady .bv-pick.day .bv-chaps button{background:#021024;border-color:#5483B3;color:#C1E8FF;}
+body.steady .bv-pick.day .bv-pickclose{background:#052659;border-color:#5483B3;color:#C1E8FF;}
+body.steady .bv-pick.day .bv-back{border-color:#5483B3;color:#C1E8FF;}
+body.steady .bv-pick.day .bv-row .bv-lab{color:#7DA0CA;}
+body.steady .bv-pick.day .bv-step button{border-color:#5483B3;background:#052659;color:#C1E8FF;}
+body.steady .bv-pick.day .bv-step .bv-fsval{color:#C1E8FF;}
+body.steady .bv-pick.day .bv-seg{border-color:#5483B3;}
+body.steady .bv-pick.day .bv-seg button{color:#7DA0CA;}
+body.steady .bv-pick.day .bv-seg button.on{background:#052659;color:#C1E8FF;}
+body.steady .bv-pick.day .bv-li{background:#052659;border-color:#5483B3;}
+body.steady .bv-pick.day .bv-li .bv-lref{color:#7DA0CA;}
+body.steady .bv-pick.day .bv-li .bv-ltext{color:#C1E8FF;}
+body.steady .bv-pick.day .bv-li .bv-lx{color:#7DA0CA;}
+body.steady .bv-pick.day .bv-empty{color:#7DA0CA;}
+body.steady .bv-pick.day .bv-clear{border-color:#5483B3;color:#C1E8FF;}
+body.steady .bv-act.day .bv-act-card{background:#052659;border-top-color:#5483B3;}
+body.steady .bv-act.day .bv-act-ref{color:#7DA0CA;}
+body.steady .bv-act.day .bv-act-text{color:#C1E8FF;}
+body.steady .bv-act.day .bv-act-sw span{color:#7DA0CA;}
+body.steady .bv-act.day .bv-act-row button{border-color:#5483B3;background:#021024;color:#C1E8FF;}
+body.steady .bv-ctog.day .bv-chip{border-color:#5483B3;background:#052659;color:#C1E8FF;}
+body.steady .bv-ctog.day .bv-chip.on{border-color:#C1E8FF;background:#052659;color:#C1E8FF;}
+body.steady .bv-ctog.day .bv-ctog-txt{color:#7DA0CA;}
+body.steady .bv-ctog.day .bv-dot{border-color:#5483B3;}
+/* ---- Strong's words ---- */
+.st-w.tagged{border-bottom:1px dotted #7DA0CA;cursor:pointer;}
+.st-w.picked{background:rgba(84,131,179,.35);border-radius:3px;}
+/* ---- Steady explainer lines ---- */
+.st-transnote{display:none;font-family:'Tenor Sans',sans-serif;font-size:12px;color:#7DA0CA;text-align:center;padding:2px 16px 6px;line-height:1.5;}
+body.steady .st-transnote{display:block;}
+#stPSearch{display:none;}
+body.steady #stPSearch{display:flex;}
+/* ---- Study panes ---- */
+.st-pane{max-width:640px;margin:0 auto;padding:14px 16px 34px;color:#C1E8FF;background:#021024;min-height:60vh;box-sizing:border-box;}
+.st-head{font-family:'Cinzel',serif;font-size:13px;letter-spacing:2px;color:#7DA0CA;margin:2px 0 10px;}
+.st-picker{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px;}
+.st-picker button{border:.5px solid #5483B3;background:#052659;color:#7DA0CA;font-family:'Tenor Sans',sans-serif;font-size:12px;letter-spacing:1px;padding:8px 12px;border-radius:999px;cursor:pointer;}
+.st-picker button.on{color:#C1E8FF;border-color:#C1E8FF;}
+.st-picker-label{font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:1.5px;color:#7DA0CA;text-transform:uppercase;margin:10px 0 6px;}
+.st-pane .bv-p{color:#C1E8FF;}
+.st-commLabel{font-family:'Cinzel',serif;font-size:13px;letter-spacing:1.5px;color:#7DA0CA;margin:16px 0 6px;}
+.st-csec{font-family:'Cormorant Garamond',serif;font-size:19px;color:#C1E8FF;margin:12px 0 4px;}
+.st-from,.st-credit{font-family:'Tenor Sans',sans-serif;font-size:11px;color:#7DA0CA;line-height:1.6;margin-top:14px;}
+.st-fail{font-family:'Tenor Sans',sans-serif;font-size:14px;color:#C1E8FF;background:#052659;border:1px solid #5483B3;border-radius:10px;padding:14px;text-align:center;}
+.st-fail button{display:block;margin:10px auto 0;border:.5px solid #5483B3;background:#021024;color:#C1E8FF;font-family:'Tenor Sans',sans-serif;font-size:12px;letter-spacing:1px;padding:8px 16px;border-radius:999px;cursor:pointer;}
+.st-empty{font-family:'Tenor Sans',sans-serif;font-size:14px;color:#7DA0CA;text-align:center;padding:18px 8px;line-height:1.6;}
+.st-field{display:flex;gap:8px;margin:0 0 12px;}
+.st-field input{flex:1;background:#052659;border:.5px solid #5483B3;border-radius:12px;color:#C1E8FF;font-family:'Tenor Sans',sans-serif;font-size:15px;padding:11px 13px;outline:none;}
+.st-field input::placeholder{color:#7DA0CA;font-style:italic;}
+.st-field button{flex-shrink:0;border:.5px solid #5483B3;background:#052659;color:#C1E8FF;border-radius:12px;padding:0 16px;font-family:'Tenor Sans',sans-serif;font-size:13px;cursor:pointer;}
+.st-entry .st-key{font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:2px;color:#7DA0CA;}
+.st-entry .st-headword{font-family:'Cormorant Garamond',serif;font-size:24px;color:#C1E8FF;margin-right:8px;}
+.st-entry .st-translit{font-family:'Cormorant Garamond',serif;font-size:17px;font-style:italic;color:#7DA0CA;}
+.st-entry .st-def{font-family:'Cormorant Garamond',serif;font-size:19px;line-height:1.85;color:#C1E8FF;white-space:pre-line;margin-top:6px;}
+.st-cands{list-style:none;margin:0;padding:0;}
+.st-cands li{border:.5px solid #5483B3;background:#052659;border-radius:10px;padding:11px 13px;margin:0 0 8px;cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:16px;color:#C1E8FF;}
+.st-cands li .k{font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:1.5px;color:#7DA0CA;margin-right:8px;}
+.st-cands li .g{color:#7DA0CA;font-size:14px;}
+.st-note{width:100%;box-sizing:border-box;min-height:150px;background:#052659;border:1px solid #5483B3;border-radius:10px;color:#C1E8FF;font-family:'Tenor Sans',sans-serif;font-size:15px;line-height:1.6;padding:12px;outline:none;resize:vertical;}
+.st-saved{font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:1.5px;color:#7DA0CA;min-height:16px;margin-top:6px;text-transform:uppercase;}
+.st-line{font-family:'Tenor Sans',sans-serif;font-size:12px;color:#7DA0CA;line-height:1.6;margin-top:12px;}
+.st-libitem{display:block;width:100%;text-align:left;border:.5px solid #5483B3;background:#052659;border-radius:10px;padding:11px 13px;margin:0 0 8px;cursor:pointer;box-sizing:border-box;}
+.st-libitem .k{font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:2px;color:#7DA0CA;text-transform:uppercase;display:block;margin-bottom:3px;}
+.st-libitem .r{font-family:'Cinzel',serif;font-size:13px;letter-spacing:1px;color:#C1E8FF;display:block;margin-bottom:3px;}
+.st-libitem .s{font-family:'Cormorant Garamond',serif;font-size:16px;line-height:1.5;color:#C1E8FF;display:block;}
+.st-mapsel{width:100%;box-sizing:border-box;background:#052659;border:.5px solid #5483B3;border-radius:12px;color:#C1E8FF;font-family:'Tenor Sans',sans-serif;font-size:14px;padding:11px 12px;margin:0 0 12px;outline:none;}
+.st-mapimg{width:100%;height:auto;display:block;background:#fff;border:1px solid #5483B3;border-radius:12px;cursor:pointer;}
+.st-mapcap{font-family:'Cinzel',serif;font-size:13px;letter-spacing:1px;color:#C1E8FF;margin-top:10px;line-height:1.5;}
+.st-mapfull{position:fixed;inset:0;z-index:200;background:#021024;flex-direction:column;}
+.st-mapfull-bar{display:flex;gap:8px;padding:10px 12px;flex-shrink:0;}
+.st-mapfull-bar button{flex:1;border:.5px solid #5483B3;background:#052659;color:#C1E8FF;font-family:'Tenor Sans',sans-serif;font-size:13px;letter-spacing:1px;padding:10px;border-radius:999px;cursor:pointer;}
+.st-mapfull-scroll{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;}
+.st-mapfull-scroll img{display:block;width:100%;height:auto;}
+.st-mapfull-scroll img.zoom{width:1700px;max-width:none;}
+
+</style>
 </head>
 <body>
 <div class="wv-top">
@@ -585,7 +722,10 @@ body.flowNav .wv-drawer{z-index:67;}
     <button class="bv-sbtn" id="bvSearchBtn" aria-label="Search the Bible">&#8981;</button>
     <button class="bv-sbtn" id="bvListenBtn" aria-label="Listen to this chapter">&#9654;</button>
   </div>
+  <div class="bv-search" id="stPSearch"><input type="text" id="stPSearchInp" placeholder="Type what you are looking for." autocomplete="off"><button id="stPSearchBtn" aria-label="Search the Bible">&#8981;</button></div>
+  <div class="bv-sres" id="stPSearchRes"></div>
   <div class="bv-trans" id="bvTrans"></div>
+  <div class="st-transnote" id="stTransNote">The same Bible as reading. In Steady the KJV Strong’s joins, making six.<span id="stStrongsNote" style="display:none"><br>Words with a dotted line under them can be tapped to look them up. Words in italics were supplied by the translators.</span></div>
   <div class="bv-chap" id="bvChap"></div>
   <div class="bv-foot" id="bvFoot">
     <button id="bvPrev">&#10094; Previous</button>
@@ -610,6 +750,55 @@ body.flowNav .wv-drawer{z-index:67;}
   <div class="tp-feed" id="tpFeed" tabindex="0" style="display:none"></div>
   <div id="tpProg" style="display:none"><div id="tpProgFill"></div></div>
 </div>
+<div class="st-pane" id="stComm" style="display:none">
+  <div class="st-head">COMMENTARY</div>
+  <div class="st-picker-label">Commentary</div>
+  <div class="st-picker" id="stCommPicker">
+    <button data-comm="henry">Matthew Henry</button>
+    <button data-comm="darby">Darby</button>
+  </div>
+  <div id="stCommBody"></div>
+</div>
+<div class="st-pane" id="stDict" style="display:none">
+  <div class="st-head">DICTIONARY</div>
+  <div class="st-picker-label">Dictionary</div>
+  <div class="st-picker" id="stDictPicker">
+    <button data-dict="strongs-hebrew">Strong's Hebrew</button>
+    <button data-dict="strongs-greek">Strong's Greek</button>
+    <button data-dict="easton">Easton</button>
+  </div>
+  <div class="st-field">
+    <input type="text" id="stDictInp" autocomplete="off">
+    <button id="stDictGo">Look up</button>
+  </div>
+  <div id="stDictBody"></div>
+  <p class="st-credit">Dictionary data: STEP Bible (Tyndale House), CC BY 4.0.<br>Easton data: NEUU Bible Dictionary Dataset, CC BY 4.0.</p>
+</div>
+<div class="st-pane" id="stMap" style="display:none">
+  <div class="st-head">MAP</div>
+  <div class="st-picker-label">Map</div>
+  <select id="stMapPick" class="st-mapsel" aria-label="Choose a map"></select>
+  <img id="stMapImg" class="st-mapimg" alt="">
+  <div class="st-mapcap" id="stMapCap"></div>
+  <p class="st-line">Tap the map to see it full screen.</p>
+  <p class="st-credit">Maps: Biblica, Inc., CC BY-SA 4.0.</p>
+  <div class="st-mapfull" id="stMapFull" style="display:none">
+    <div class="st-mapfull-bar"><button id="stMapZoom" type="button">Zoom</button><button id="stMapClose" type="button">Close</button></div>
+    <div class="st-mapfull-scroll"><img id="stMapFullImg" alt=""></div>
+  </div>
+</div>
+<div class="st-pane" id="stNotes" style="display:none">
+  <div class="st-head">NOTES</div>
+  <div class="st-commLabel" id="stNoteRef" style="margin-top:0"></div>
+  <textarea class="st-note" id="stNoteBox" placeholder="Write your note on this verse..."></textarea>
+  <div class="st-saved" id="stNoteSaved"></div>
+  <p class="st-line">Your notes stay on this device only. Only you can see them. If you clear your browser or change phones, they are gone.</p>
+</div>
+<div class="st-pane" id="stLib" style="display:none">
+  <div class="st-head">LIBRARY</div>
+  <div id="stLibBody"></div>
+</div>
+
 <div class="bv-pick" id="bvPick">
   <button class="bv-pickclose" id="bvPickClose">&#10005;</button>
   <div id="bvPickBody"></div>
@@ -635,6 +824,8 @@ body.flowNav .wv-drawer{z-index:67;}
 <aside class="wv-drawer" id="drawer">
   <div class="dr-panel" id="drHome">
     <div class="wv-dr-title">MENU</div>
+    <div class="wv-dr-modetabs" id="stModeTabs" role="tablist"><button data-mode="read" class="on">Read</button><button data-mode="study">Study</button></div>
+    <div class="wv-dr-sub">Steady: study tools for this passage.</div>
     <div class="wv-dr-modes" id="drNavBtns">
       <button data-nav="bible">Bible</button>
       <button data-nav="devotional">Devotional</button>
@@ -4548,6 +4739,566 @@ document.getElementById("scrim").addEventListener("click", closeDrawer);
 if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => { cards.forEach(fitText); relayoutRiver(); });
 window.__wall = { cards, tick, setVerse, fitText, verseRest,
   setRest(ms){ REST_MIN = 0; REST_MAX = ms; } };
+</script>
+<script id="steady-js">
+"use strict";
+/* Verse Steady (Study mode) — additive module for the Verse Bible page.
+   Engine patterns borrowed from our own e-Sword app (~/workspace/work/verse-bible-esword/app/index.html):
+   token joining, suffixed Strong's key resolution, commentary rendering, dictionary shards.
+   Skin is this page's own. Nothing on the reading side is changed. */
+(function(){
+  const DATA = "https://data.2.28.199.78.sslip.io";
+  const BOOKS = [["genesis", "Genesis", 50], ["exodus", "Exodus", 40], ["leviticus", "Leviticus", 27], ["numbers", "Numbers", 36], ["deuteronomy", "Deuteronomy", 34], ["joshua", "Joshua", 24], ["judges", "Judges", 21], ["ruth", "Ruth", 4], ["1samuel", "1 Samuel", 31], ["2samuel", "2 Samuel", 24], ["1kings", "1 Kings", 22], ["2kings", "2 Kings", 25], ["1chronicles", "1 Chronicles", 29], ["2chronicles", "2 Chronicles", 36], ["ezra", "Ezra", 10], ["nehemiah", "Nehemiah", 13], ["esther", "Esther", 10], ["job", "Job", 42], ["psalms", "Psalms", 150], ["proverbs", "Proverbs", 31], ["ecclesiastes", "Ecclesiastes", 12], ["songofsolomon", "Song of Solomon", 8], ["isaiah", "Isaiah", 66], ["jeremiah", "Jeremiah", 52], ["lamentations", "Lamentations", 5], ["ezekiel", "Ezekiel", 48], ["daniel", "Daniel", 12], ["hosea", "Hosea", 14], ["joel", "Joel", 3], ["amos", "Amos", 9], ["obadiah", "Obadiah", 1], ["jonah", "Jonah", 4], ["micah", "Micah", 7], ["nahum", "Nahum", 3], ["habakkuk", "Habakkuk", 3], ["zephaniah", "Zephaniah", 3], ["haggai", "Haggai", 2], ["zechariah", "Zechariah", 14], ["malachi", "Malachi", 4], ["matthew", "Matthew", 28], ["mark", "Mark", 16], ["luke", "Luke", 24], ["john", "John", 21], ["acts", "Acts", 28], ["romans", "Romans", 16], ["1corinthians", "1 Corinthians", 16], ["2corinthians", "2 Corinthians", 13], ["galatians", "Galatians", 6], ["ephesians", "Ephesians", 6], ["philippians", "Philippians", 4], ["colossians", "Colossians", 4], ["1thessalonians", "1 Thessalonians", 5], ["2thessalonians", "2 Thessalonians", 3], ["1timothy", "1 Timothy", 6], ["2timothy", "2 Timothy", 4], ["titus", "Titus", 3], ["philemon", "Philemon", 1], ["hebrews", "Hebrews", 13], ["james", "James", 5], ["1peter", "1 Peter", 5], ["2peter", "2 Peter", 3], ["1john", "1 John", 5], ["2john", "2 John", 1], ["3john", "3 John", 1], ["jude", "Jude", 1], ["revelation", "Revelation", 22]];
+  const PLATES = [{"code": "OT001", "title": "OT Historical Context: Physical Geography of the Ancient Near East", "file": "ot001.webp"}, {"code": "OT012", "title": "Pentateuch: Abraham's Journey to Canaan", "file": "ot012.webp"}, {"code": "OT015", "title": "Pentateuch: The Boundaries of the Promised Land", "file": "ot015.webp"}, {"code": "OT030", "title": "Pentateuch: Potential Routes of the Exodus", "file": "ot030.webp"}, {"code": "OT031", "title": "Pentateuch: The Exodus: From Egypt to Elim", "file": "ot031.webp"}, {"code": "OT032", "title": "Pentateuch: The Exodus: From Elim to Mount Sinai", "file": "ot032.webp"}, {"code": "OT036", "title": "Pentateuch: Wandering in the Wilderness", "file": "ot036.webp"}, {"code": "OT051", "title": "Historical: Overview of Joshua’s Conquests", "file": "ot051.webp"}, {"code": "OT053", "title": "Historical: Canaan Overview", "file": "ot053.webp"}, {"code": "OT054", "title": "Historical: Judah and Simeon", "file": "ot054.webp"}, {"code": "OT055", "title": "Historical: Dan, Ephraim, and Benjamin", "file": "ot055.webp"}, {"code": "OT056", "title": "Historical: Reuben and Gad", "file": "ot056.webp"}, {"code": "OT057", "title": "Historical: Issachar and Zebulun", "file": "ot057.webp"}, {"code": "OT058", "title": "Historical: Northern Tribes", "file": "ot058.webp"}, {"code": "OT117", "title": "Historical: The Districts of Israel", "file": "ot117.webp"}, {"code": "OT125", "title": "Historical: Rehoboam, Jeroboam, and the Divided Kingdom", "file": "ot125.webp"}, {"code": "OT155", "title": "Historical: Exile to Babylon", "file": "ot155.webp"}, {"code": "OT161", "title": "Historical: The Return from Babylon", "file": "ot161.webp"}, {"code": "OT165", "title": "Historical: City Plan: Jerusalem Rebuilt by Nehemiah", "file": "ot165.webp"}, {"code": "NT001", "title": "The Life of Jesus: The Roman Empire in the Time of Jesus", "file": "nt001.webp"}, {"code": "NT002", "title": "The Life of Jesus: Herod the Great's Kingdom", "file": "nt002.webp"}, {"code": "NT003", "title": "The Life of Jesus: Political Division of the Levant in the Time of Jesus", "file": "nt003.webp"}, {"code": "NT005", "title": "The Life of Jesus: Galilee in Jesus' Time", "file": "nt005.webp"}, {"code": "NT006", "title": "The Life of Jesus: Judea in Jesus' Time", "file": "nt006.webp"}, {"code": "NT007", "title": "The Life of Jesus: City Plan: Jerusalem in the Time of Jesus", "file": "nt007.webp"}, {"code": "NT008", "title": "The Life of Jesus: Herod's Temple Mount", "file": "nt008.webp"}, {"code": "NT024", "title": "Paul and the Early Church: Overview of Paul's Journeys", "file": "nt024.webp"}, {"code": "NT039", "title": "Paul and the Early Church: Paul's First Missionary Journey (Part 1)", "file": "nt039.webp"}, {"code": "NT040", "title": "Paul and the Early Church: Paul's First Missionary Journey (Part 2)", "file": "nt040.webp"}, {"code": "NT041", "title": "Paul and the Early Church: Paul's Second Missionary Journey (Part 1)", "file": "nt041.webp"}, {"code": "NT042", "title": "Paul and the Early Church: Paul's Second Missionary Journey (Part 2)", "file": "nt042.webp"}, {"code": "NT043", "title": "Paul and the Early Church: Paul's Second Missionary Journey (Part 3)", "file": "nt043.webp"}, {"code": "NT044", "title": "Paul and the Early Church: End of Paul's Second Missionary Journey and Beginning of his Third", "file": "nt044.webp"}, {"code": "NT045", "title": "Paul and the Early Church: Paul's Third Missionary Journey (Part 1)", "file": "nt045.webp"}, {"code": "NT046", "title": "Paul and the Early Church: Paul's Third Missionary Journey (Part 2)", "file": "nt046.webp"}, {"code": "NT048", "title": "Paul and the Early Church: Paul's Journey to Rome (Part 1)", "file": "nt048.webp"}, {"code": "NT049", "title": "Paul and the Early Church: Paul's Journey to Rome (Part 2)", "file": "nt049.webp"}];
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  const store = {
+    get(k, d){ try { const v = localStorage.getItem(k); if(v == null) return d; try { return JSON.parse(v); } catch(_){ return v; } } catch(_){ return d; } },
+    set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(_){ } }
+  };
+  const FAIL_LINE = "This could not be loaded. Check your connection and try again.";
+  function failHtml(){ return '<div class="st-fail">' + FAIL_LINE + '<button data-retry="1">Try again</button></div>'; }
+
+  /* ---------- state ---------- */
+  const posRec = Object.assign({view:"bible", comm:"henry", dict:"strongs-hebrew", lastKey:"", lastDict:""}, store.get("vw-steady-pos", {}));
+  const state = { mode: store.get("vw-steady-mode", "read"), view: posRec.view || "bible",
+    comm: posRec.comm || "henry", dict: posRec.dict || "strongs-hebrew", mapPlate: posRec.mapPlate || "",
+    strongs: false, strongsFor: "", renderingStrongs: false, lastVerse: null, readViewBefore: "mosaic" };
+  function savePosRec(){ posRec.view = state.view; posRec.comm = state.comm; posRec.dict = state.dict; posRec.mapPlate = state.mapPlate; store.set("vw-steady-pos", posRec); }
+  function currentPos(){ const p = store.get("wv-bible-pos", null); if(p && +p.bi >= 0) return {bi:+p.bi, ci:+p.ci, vi:+p.vi || 0}; return {bi:0, ci:0, vi:0}; }
+  function refOf(bi, ci, vi){ return BOOKS[bi][1] + " " + (ci + 1) + ":" + (vi + 1); }
+  function verseInView(){ if(state.lastVerse) return state.lastVerse; const p = currentPos(); return {bi:p.bi, ci:p.ci, vi:0}; }
+  function parseRef(ref){ const m = /^(.+) (\d+):(\d+)$/.exec(ref || ""); if(!m) return null; const bi = BOOKS.findIndex(b => b[1] === m[1]); if(bi < 0) return null; return {bi:bi, ci:+m[2] - 1, vi:+m[3] - 1}; }
+
+  /* ---------- verse tracking (the verse the reader last tapped) ---------- */
+  document.addEventListener("click", e => {
+    const p = e.target && e.target.closest ? e.target.closest("#bvChap p[data-vi]") : null;
+    if(p){ const cp = currentPos(); state.lastVerse = {bi:cp.bi, ci:cp.ci, vi:+p.dataset.vi}; }
+  }, true);
+  const actObs = new MutationObserver(() => {
+    const act = $("bvAct"); if(act && act.classList.contains("open")){
+      const r = parseRef(($("bvActRef") || {}).textContent || ""); if(r) state.lastVerse = r;
+    }
+  });
+  if($("bvAct")) actObs.observe($("bvAct"), {attributes:true, attributeFilter:["class"]});
+
+  /* ---------- fetch helper ---------- */
+  const jsonCache = new Map();
+  function fetchJson(url){
+    if(!jsonCache.has(url)){
+      const p = fetch(url).then(r => (r.ok ? r.json() : null)).catch(() => null);
+      p.then(v => { if(v == null) jsonCache.delete(url); });   /* failures are not cached, so Try again can recover */
+      jsonCache.set(url, p);
+    }
+    return jsonCache.get(url);
+  }
+
+  /* ---------- mode tabs and view tabs ---------- */
+  const READ_PANES = ["mosaic","river","biblepane","gamespane","voicespane","topicspane"];
+  const ST_PANES = {commentary:"stComm", dictionary:"stDict", map:"stMap", notes:"stNotes", library:"stLib"};
+  let stTabBtns = [];
+  function buildStTabs(){
+    const bar = document.querySelector(".wv-viewtabs"); if(!bar) return;
+    [["bible","Bible"],["commentary","Commentary"],["dictionary","Dictionary"],["map","Map"],["notes","Notes"],["library","Library"]].forEach(pair => {
+      const b = document.createElement("button");
+      b.textContent = pair[1]; b.className = "st-tab"; b.dataset.sview = pair[0]; b.style.display = "none";
+      b.addEventListener("click", () => showStudyView(pair[0]));
+      bar.appendChild(b); stTabBtns.push(b);
+    });
+  }
+  function hideStPanes(){ Object.keys(ST_PANES).forEach(k => { const el = $(ST_PANES[k]); if(el) el.style.display = "none"; }); }
+  function showStudyView(v){
+    state.view = v; savePosRec();
+    stTabBtns.forEach(b => b.classList.toggle("on", b.dataset.sview === v));
+    document.querySelectorAll(".wv-viewtabs > button:not(.st-tab)").forEach(b => b.classList.remove("on"));
+    if(v === "bible"){
+      hideStPanes();
+      try { setView("bible"); } catch(_){ }
+      READ_PANES.forEach(id => { const el = $(id); if(el) el.style.display = (id === "biblepane") ? "" : "none"; });
+      if(state.strongs) setTimeout(renderStrongs, 60);
+    } else {
+      READ_PANES.forEach(id => { const el = $(id); if(el) el.style.display = "none"; });
+      hideStPanes();
+      const el = $(ST_PANES[v]); if(el) el.style.display = "";
+      window.scrollTo(0, 0);
+      if(v === "commentary") renderCommentary();
+      else if(v === "dictionary") renderDictionaryHome();
+      else if(v === "map") showMap();
+      else if(v === "notes") renderNotes();
+      else if(v === "library") renderLibrary();
+    }
+  }
+  function enterStudy(){
+    if(state.mode === "study") return;
+    const on = document.querySelector(".wv-viewtabs > button.on:not(.st-tab)");
+    state.readViewBefore = on ? (on.dataset.view || "mosaic") : "mosaic";
+    state.mode = "study"; store.set("vw-steady-mode", "study");
+    document.body.classList.add("steady");
+    document.querySelectorAll(".wv-viewtabs > button:not(.st-tab)").forEach(b => { b.style.display = "none"; });
+    stTabBtns.forEach(b => { b.style.display = ""; });
+    syncModeTabs();
+    try { closeDrawer(); } catch(_){ }
+    showStudyView(state.view || "bible");
+  }
+  function exitStudy(){
+    if(state.mode !== "study") return;
+    const wasStrongs = state.strongs; state.strongs = false; state.strongsFor = "";
+    state.mode = "read"; store.set("vw-steady-mode", "read");
+    document.body.classList.remove("steady");
+    stTabBtns.forEach(b => { b.style.display = "none"; });
+    document.querySelectorAll(".wv-viewtabs > button:not(.st-tab)").forEach(b => { b.style.display = ""; });
+    hideStPanes();
+    const res = $("stPSearchRes"); if(res){ res.classList.remove("open"); res.innerHTML = ""; }
+    syncModeTabs();
+    const target = state.readViewBefore || "mosaic";
+    try { setView("mosaic"); if(target !== "mosaic") setView(target); } catch(_){ }
+    if(wasStrongs && target === "bible"){ const p = currentPos(); try { Bible.openAt(refOf(p.bi, p.ci, p.vi)); } catch(_){ } }
+  }
+  function syncModeTabs(){
+    document.querySelectorAll("#stModeTabs button").forEach(b => b.classList.toggle("on", b.dataset.mode === state.mode));
+  }
+  /* Leaving Study cleanly if a drawer navigation button is tapped while in Study. */
+  document.addEventListener("click", e => {
+    if(state.mode === "study" && e.target && e.target.closest && e.target.closest("#drNavBtns, #drModes")) exitStudy();
+  }, true);
+
+  /* ---------- Strong's tagged Bible (e-Sword token rules) ---------- */
+  const CLOSE_CHARS = ",.;:!?%)]}\u201D\u2019\"";
+  const OPEN_CHARS = "([{\"\u201C\u2018";
+  const NO_SPACE_AFTER = OPEN_CHARS + "\u2014";
+  const NO_SPACE_BEFORE = CLOSE_CHARS + "\u2014";
+  function cleanTokenText(s){
+    let out = String(s).replace(/\s*\u2014\s*/g, "\u2014");
+    for(const c of CLOSE_CHARS) out = out.split(" " + c).join(c);
+    for(const c of OPEN_CHARS) out = out.split(c + " ").join(c);
+    return out.replace(/\s+/g, " ").trim();
+  }
+  function spaceBefore(prevSurface, curSurface){
+    if(!prevSurface || !curSurface) return false;
+    if(NO_SPACE_AFTER.includes(prevSurface[prevSurface.length - 1])) return false;
+    if(NO_SPACE_BEFORE.includes(curSurface[0])) return false;
+    return true;
+  }
+  function joinTokens(tokens){
+    const out = []; let prev = null;
+    for(const tok of tokens){
+      const surface = cleanTokenText(tok[0]);
+      const sb = prev === null ? false : spaceBefore(prev, surface);
+      out.push({surface:surface, strongs: tok[1] ? String(tok[1]).split(" ") : [], italic: tok[2] === 1, spaceBefore: sb});
+      prev = surface;
+    }
+    return out;
+  }
+  async function renderStrongs(){
+    if(state.mode !== "study" || !state.strongs || state.renderingStrongs) return;
+    const p = currentPos(); const key = p.bi + "|" + p.ci;
+    if(state.strongsFor === key && $("bvChap") && $("bvChap").querySelector(".st-w")) return;
+    state.renderingStrongs = true;
+    const slug = BOOKS[p.bi][0];
+    const data = await fetchJson(DATA + "/bible-strongs/" + slug + ".json");
+    state.renderingStrongs = false;
+    if(state.mode !== "study" || !state.strongs) return;
+    const chap = $("bvChap"); if(!chap) return;
+    if(!data || !data.chapters || !data.chapters[p.ci]){
+      chap.innerHTML = failHtml();
+      chap.querySelector("[data-retry]").addEventListener("click", () => { state.strongsFor = ""; renderStrongs(); });
+      return;
+    }
+    const verses = data.chapters[p.ci];
+    let h = "<h2>" + esc(BOOKS[p.bi][1] + " " + (p.ci + 1)) + "</h2>";
+    h += '<div class="bv-trname">King James Version with Strong\u2019s</div>';
+    verses.forEach((v, i) => {
+      const toks = joinTokens(v);
+      h += '<p class="bv-p" data-vi="' + i + '"><span class="bv-vn">' + (i + 1) + "</span>";
+      h += toks.map(t => {
+        const inner = t.italic ? "<i>" + esc(t.surface) + "</i>" : esc(t.surface);
+        if(t.strongs.length) return (t.spaceBefore ? " " : "") + '<span class="st-w tagged" data-nums="' + esc(t.strongs.join(" ")) + '" data-vi="' + i + '">' + inner + "</span>";
+        return (t.spaceBefore ? " " : "") + '<span class="st-w">' + inner + "</span>";
+      }).join("");
+      h += "</p>";
+    });
+    chap.innerHTML = h;
+    state.strongsFor = key;
+    const loc = $("bvLoc"); if(loc) loc.textContent = BOOKS[p.bi][1] + " " + (p.ci + 1);
+  }
+  /* The page re-renders the plain chapter on navigation; if Strong's is on, put the tagged text back. */
+  const chapObs = new MutationObserver(() => {
+    if(state.mode === "study" && state.strongs && !state.renderingStrongs){
+      const chap = $("bvChap");
+      if(chap && !chap.querySelector(".st-w")){ clearTimeout(chapObs._t); chapObs._t = setTimeout(renderStrongs, 200); }
+    }
+  });
+  if($("bvChap")) chapObs.observe($("bvChap"), {childList:true});
+  /* Word tap: opens the Dictionary. Verse tap still records the verse (capture listener above). */
+  document.addEventListener("click", e => {
+    if(state.mode !== "study" || !state.strongs) return;
+    const w = e.target && e.target.closest ? e.target.closest(".st-w.tagged") : null;
+    if(!w) return;
+    e.stopPropagation();
+    document.querySelectorAll(".st-w.picked").forEach(x => x.classList.remove("picked"));
+    w.classList.add("picked");
+    const cp = currentPos();
+    state.lastVerse = {bi:cp.bi, ci:cp.ci, vi:+w.dataset.vi};
+    const nums = (w.dataset.nums || "").split(" ").filter(Boolean);
+    showStudyView("dictionary");
+    openStrongsNumbers(nums, w.textContent, refOf(cp.bi, cp.ci, +w.dataset.vi));
+  }, true);
+  /* Translation row: add the sixth, KJV Strong's, and watch for plain choices. */
+  function ensureStrongsBtn(){
+    const host = $("bvTrans"); if(!host) return;
+    if(host.querySelector(".st-trbtn")) return;
+    const b = document.createElement("button");
+    b.textContent = "KJV Strong\u2019s"; b.className = "st-trbtn" + (state.strongs ? " on" : "");
+    b.addEventListener("click", async () => {
+      if(state.strongs) return;
+      const kjvBtn = Array.prototype.find.call(host.querySelectorAll("button:not(.st-trbtn)"), x => x.textContent === "KJV");
+      if(kjvBtn && !kjvBtn.classList.contains("on")){ kjvBtn.click(); await new Promise(r => setTimeout(r, 350)); }
+      state.strongs = true; state.strongsFor = "";
+      host.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
+      const note = $("stStrongsNote"); if(note) note.style.display = "";
+      renderStrongs();
+    });
+    host.appendChild(b);
+  }
+  const transObs = new MutationObserver(() => { if(state.mode === "study") ensureStrongsBtn(); });
+  if($("bvTrans")) transObs.observe($("bvTrans"), {childList:true});
+  document.addEventListener("click", e => {
+    if(state.mode !== "study" || !state.strongs) return;
+    const host = $("bvTrans"); if(!host || !host.contains(e.target)) return;
+    const btn = e.target.closest("button"); if(!btn || btn.classList.contains("st-trbtn")) return;
+    state.strongs = false; state.strongsFor = "";
+    const note = $("stStrongsNote"); if(note) note.style.display = "none";
+    const sb = host.querySelector(".st-trbtn"); if(sb) sb.classList.remove("on");
+  }, true);
+
+  /* ---------- Panel search: the page's own search pattern, in the open ---------- */
+  const searchIdxCache = {};
+  async function buildPanelIndex(code){
+    if(searchIdxCache[code]) return searchIdxCache[code];
+    const r = await fetch("bible-data/" + code + ".json").catch(() => null);
+    if(!r || !r.ok) return null;
+    const d = await r.json().catch(() => null);
+    if(!d || !d.books) return null;
+    const idx = [];
+    d.books.forEach((b, bi) => (b.c || []).forEach((ch, ci) => { if(Array.isArray(ch)) ch.forEach((v, vi) => { if(v) idx.push({bi:bi, ci:ci, vi:vi, t:v}); }); }));
+    searchIdxCache[code] = idx;
+    return idx;
+  }
+  function panelCode(){ if(state.strongs) return "kjv"; try { return localStorage.getItem("wv-bible-tr") || "kjv"; } catch(_){ return "kjv"; } }
+  let pDeb = null;
+  async function runPanelSearch(){
+    const inp = $("stPSearchInp"), box = $("stPSearchRes"); if(!inp || !box) return;
+    const q = inp.value.trim().toLowerCase();
+    if(q.length < 2){ box.classList.remove("open"); box.innerHTML = ""; return; }
+    const code = panelCode();
+    const idx = await buildPanelIndex(code);
+    if(!idx){ box.innerHTML = failHtml(); box.classList.add("open"); const rb = box.querySelector("[data-retry]"); if(rb) rb.addEventListener("click", runPanelSearch); return; }
+    const out = [];
+    for(let i = 0; i < idx.length; i++){ if(idx[i].t.toLowerCase().indexOf(q) >= 0){ out.push(idx[i]); if(out.length >= 120) break; } }
+    box.innerHTML = "";
+    const c = document.createElement("div"); c.className = "bv-scount";
+    c.textContent = out.length ? (out.length + (out.length >= 120 ? "+" : "") + " results in " + code.toUpperCase()) : ("No results in " + code.toUpperCase());
+    box.appendChild(c);
+    const rx = new RegExp("(" + q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "ig");
+    out.forEach(en => {
+      const ref = refOf(en.bi, en.ci, en.vi);
+      let snip = en.t;
+      const at = snip.toLowerCase().indexOf(q);
+      if(snip.length > 130 && at > 60) snip = "..." + snip.slice(at - 40, at + 90) + "...";
+      else if(snip.length > 130) snip = snip.slice(0, 130) + "...";
+      const b = document.createElement("button"); b.className = "bv-sitem";
+      const r = document.createElement("div"); r.className = "bv-sref"; r.textContent = ref;
+      const t = document.createElement("div"); t.className = "bv-stext";
+      t.innerHTML = esc(snip).replace(rx, "<mark>$1</mark>");
+      b.appendChild(r); b.appendChild(t);
+      b.addEventListener("click", () => {
+        state.lastVerse = {bi:en.bi, ci:en.ci, vi:en.vi};
+        box.classList.remove("open"); box.innerHTML = ""; inp.value = "";
+        try { Bible.openAt(ref); } catch(_){ }
+        if(state.strongs){ state.strongsFor = ""; setTimeout(renderStrongs, 400); }
+      });
+      box.appendChild(b);
+    });
+    box.classList.add("open");
+  }
+  /* In Steady the Bible bar's magnifier focuses this panel search instead of the drawer search. */
+  document.addEventListener("click", e => {
+    if(state.mode !== "study") return;
+    if(e.target && e.target.closest && e.target.closest("#bvSearchBtn")){
+      e.preventDefault(); e.stopPropagation();
+      const inp = $("stPSearchInp"); if(inp){ inp.focus(); inp.scrollIntoView({block:"center"}); }
+    }
+  }, true);
+
+  /* ---------- Commentary: Matthew Henry and Darby only ---------- */
+  function mdEmph(s){ return esc(s).replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>").replace(/\*([^*]+)\*/g, "<i>$1</i>"); }
+  async function renderCommentary(){
+    const body = $("stCommBody"); if(!body) return;
+    document.querySelectorAll("#stCommPicker button").forEach(b => b.classList.toggle("on", b.dataset.comm === state.comm));
+    const p = currentPos(); const slug = BOOKS[p.bi][0]; const ch = p.ci + 1; const bname = BOOKS[p.bi][1];
+    body.innerHTML = '<p class="st-empty">Loading commentary on ' + esc(bname) + " " + ch + "...</p>";
+    const data = await fetchJson(DATA + "/commentary/" + state.comm + "/" + slug + ".json");
+    if(state.view !== "commentary") return;
+    if(!data){ body.innerHTML = failHtml(); const rb = body.querySelector("[data-retry]"); if(rb) rb.addEventListener("click", renderCommentary); return; }
+    let h = "";
+    if(state.comm === "darby"){
+      const secs = (data.sections || []).filter(s => ch >= s.from && ch <= s.to);
+      secs.sort((a, b) => (b.intro ? 1 : 0) - (a.intro ? 1 : 0));
+      if(!secs.length) h = '<p class="st-empty">Darby has no section covering ' + esc(bname) + " " + ch + ".</p>";
+      secs.forEach(s => {
+        const range = s.from === s.to ? (bname + " " + s.from) : (bname + " " + s.from + "\u2013" + s.to);
+        const head = s.intro ? ("Introduction to " + bname) : (s.from === 1 && s.to === BOOKS[p.bi][2] && s.title === bname ? ("Darby on " + bname + " \u2014 the whole book in one view") : ("Darby on " + range));
+        h += '<div class="st-commLabel">' + esc(head) + "</div>";
+        (s.blocks || []).forEach(blk => { h += blk.k === "h" ? '<h4 class="st-csec">' + esc(blk.t) + "</h4>" : '<p class="bv-p">' + esc(blk.t) + "</p>"; });
+      });
+      h += '<p class="st-from">John Nelson Darby, Synopsis of the Books of the Bible. Public domain.</p>';
+    } else {
+      const segs = (data.chapters || {})[String(ch)] || [];
+      if(!segs.length) h = '<p class="st-empty">Matthew Henry has no notes on ' + esc(bname) + " " + ch + " in this edition.</p>";
+      segs.forEach(s => {
+        const lab = s.a === 0 ? (bname + " " + ch + " \u2014 Introduction") : (s.a === s.b ? (bname + " " + ch + ":" + s.a) : (bname + " " + ch + ":" + s.a + "\u2013" + s.b));
+        h += '<div class="st-commLabel">' + esc(lab) + '</div><p class="bv-p">' + mdEmph(s.t) + "</p>";
+      });
+      h += '<p class="st-from">Matthew Henry, Commentary on the Whole Bible (Complete). Public domain.</p>';
+    }
+    body.innerHTML = h;
+  }
+
+  /* ---------- Dictionary: Strong's Hebrew, Strong's Greek, Easton ---------- */
+  const dictIndexCache = new Map();
+  async function ensureDictIndex(id){
+    if(dictIndexCache.has(id)) return dictIndexCache.get(id);
+    const file = id === "easton" ? "easton/words.json" : id + "/index.json";
+    const rows = await fetchJson(DATA + "/dictionaries/" + file);
+    dictIndexCache.set(id, rows);
+    return rows;
+  }
+  const keyInt = k => { const m = /^[HG](\d+)/.exec(k || ""); return m ? Number(m[1]) : NaN; };
+  const shardNameForKey = key => { const n = keyInt(key); const start = Math.floor((n - 1) / 500) * 500 + 1; return "r-" + start + "-" + (start + 499) + ".json"; };
+  function renderDictEntry(dictId, key, entry){
+    const body = $("stDictBody"); if(!body) return;
+    let h = '<div class="st-entry"><div><span class="st-key">' + esc(key) + '</span></div><div><span class="st-headword">' + esc(entry.w || key) + "</span>";
+    if(entry.t) h += '<span class="st-translit">' + esc(entry.t) + "</span>";
+    h += "</div>";
+    /* HELD: for Strong's Hebrew, entry.d (the short definition, TBESH Meaning column,
+       derived from the Abridged BDB) is never rendered in this build. Joel rules before promotion. */
+    if(dictId !== "strongs-hebrew" && entry.d) h += '<div class="st-def">' + esc(entry.d) + "</div>";
+    h += "</div>";
+    body.innerHTML = h;
+    posRec.lastKey = key; posRec.lastDict = dictId; savePosRec();
+  }
+  async function openLexiconEntry(dictId, key){
+    const body = $("stDictBody"); if(!body) return;
+    body.innerHTML = '<p class="st-empty">Looking it up...</p>';
+    const shard = await fetchJson(DATA + "/dictionaries/" + dictId + "/" + shardNameForKey(key));
+    if(!shard){ body.innerHTML = failHtml(); const rb = body.querySelector("[data-retry]"); if(rb) rb.addEventListener("click", () => openLexiconEntry(dictId, key)); return; }
+    const entry = shard[key];
+    if(!entry){ body.innerHTML = '<p class="st-empty">No entry for ' + esc(key) + " in this dictionary.</p>"; return; }
+    renderDictEntry(dictId, key, entry);
+  }
+  function showDictCandidates(dictId, numberStr, cands){
+    const body = $("stDictBody"); if(!body) return;
+    let h = '<p class="st-empty" style="text-align:left;padding:6px 0;">Strong\u2019s ' + esc(numberStr) + " covers more than one word. Pick the entry that fits your verse:</p><ul class=\"st-cands\">";
+    cands.forEach(r => {
+      h += '<li data-key="' + esc(r[0]) + '"><span class="k">' + esc(r[0]) + "</span><b>" + esc(r[1] || "") + "</b> " + esc(r[2] || "");
+      if(dictId !== "strongs-hebrew" && r[3]) h += '<br><span class="g">' + esc(r[3]) + "</span>";
+      h += "</li>";
+    });
+    h += "</ul>";
+    body.innerHTML = h;
+    body.querySelectorAll("li[data-key]").forEach(li => li.addEventListener("click", () => openLexiconEntry(dictId, li.dataset.key)));
+  }
+  async function openStrongsNumbers(numbers, surface, refText){
+    const body = $("stDictBody"); if(!body) return;
+    for(const num of numbers){
+      const lexId = num[0] === "H" ? "strongs-hebrew" : "strongs-greek";
+      state.dict = lexId; savePosRec(); syncDictPicker();
+      body.innerHTML = '<p class="st-empty">Looking it up...</p>';
+      const rows = await ensureDictIndex(lexId);
+      if(!rows){ body.innerHTML = failHtml(); const rb = body.querySelector("[data-retry]"); if(rb) rb.addEventListener("click", () => openStrongsNumbers(numbers, surface, refText)); return; }
+      const n = keyInt(num);
+      const cands = rows.filter(r => keyInt(r[0]) === n);
+      if(cands.length === 1) await openLexiconEntry(lexId, cands[0][0]);
+      else if(cands.length > 1) showDictCandidates(lexId, num, cands);
+      else body.innerHTML = '<p class="st-empty">The word "' + esc(surface || "") + '" at ' + esc(refText || "") + " carries Strong\u2019s " + esc(num) + ", which this brief Strong\u2019s edition does not cover.</p>";
+      if(numbers.length > 1 && num !== numbers[numbers.length - 1]){
+        const div = document.createElement("div"); div.style.marginTop = "18px"; body.appendChild(div);
+      }
+    }
+  }
+  async function openEastonEntry(word){
+    const body = $("stDictBody"); if(!body) return;
+    body.innerHTML = '<p class="st-empty">Looking it up...</p>';
+    const rows = await ensureDictIndex("easton");
+    if(!rows){ body.innerHTML = failHtml(); const rb = body.querySelector("[data-retry]"); if(rb) rb.addEventListener("click", () => openEastonEntry(word)); return; }
+    const q = String(word || "").trim().toLowerCase();
+    let found = rows.find(r => r[0].toLowerCase() === q);
+    if(!found){
+      const near = rows.filter(r => r[0].toLowerCase().indexOf(q) === 0).slice(0, 12);
+      if(near.length){
+        let h = '<p class="st-empty" style="text-align:left;padding:6px 0;">No exact entry for "' + esc(word) + '". Near matches:</p><ul class="st-cands">';
+        near.forEach(r => { h += '<li data-key="' + esc(r[0]) + '" data-shard="' + esc(r[1]) + '"><b>' + esc(r[0]) + "</b></li>"; });
+        h += "</ul>"; body.innerHTML = h;
+        body.querySelectorAll("li[data-key]").forEach(li => li.addEventListener("click", () => openEastonShard(li.dataset.key, li.dataset.shard)));
+        return;
+      }
+      body.innerHTML = '<p class="st-empty">No entry for "' + esc(word) + '" in Easton.</p>'; return;
+    }
+    openEastonShard(found[0], found[1]);
+  }
+  async function openEastonShard(key, shardIdx){
+    const body = $("stDictBody"); if(!body) return;
+    const shard = await fetchJson(DATA + "/dictionaries/easton/e-" + shardIdx + ".json");
+    if(!shard){ body.innerHTML = failHtml(); const rb = body.querySelector("[data-retry]"); if(rb) rb.addEventListener("click", () => openEastonShard(key, shardIdx)); return; }
+    const entry = shard[key];
+    if(!entry){ body.innerHTML = '<p class="st-empty">No entry for "' + esc(key) + '" in Easton.</p>'; return; }
+    renderDictEntry("easton", key, typeof entry === "string" ? {w:key, d:entry} : {w:key, d:entry.b || entry.d || ""});
+  }
+  function syncDictPicker(){
+    document.querySelectorAll("#stDictPicker button").forEach(b => b.classList.toggle("on", b.dataset.dict === state.dict));
+    const inp = $("stDictInp"); if(!inp) return;
+    inp.placeholder = state.dict === "easton" ? "Word" : "Strong\u2019s number (like H1234 or G3056), from a word you tap";
+  }
+  function renderDictionaryHome(){
+    syncDictPicker();
+    const body = $("stDictBody"); if(!body) return;
+    if(body.dataset.filled) return;
+    if(posRec.lastKey){ body.dataset.filled = "1"; if(posRec.lastDict === "easton") openEastonEntry(posRec.lastKey); else if(posRec.lastKey) openLexiconEntry(posRec.lastDict || state.dict, posRec.lastKey); return; }
+    body.innerHTML = '<p class="st-empty">Tap a word with a dotted line under it in the KJV Strong\u2019s text, and its entry opens here. Or look a word or number up above.</p>';
+    body.dataset.filled = "1";
+  }
+  async function dictLookup(){
+    const inp = $("stDictInp"); if(!inp) return;
+    const q = inp.value.trim(); if(!q) return;
+    if(state.dict === "easton"){ openEastonEntry(q); return; }
+    const m = /^([HGhg])\s*(\d+)\s*([A-Za-z])?$/.exec(q);
+    if(!m){ $("stDictBody").innerHTML = '<p class="st-empty">Type a Strong\u2019s number, like H1234 or G3056.</p>'; return; }
+    const num = m[1].toUpperCase() + m[2];
+    if(m[3]){ openLexiconEntry(state.dict, num + m[3].toUpperCase()); return; }
+    openStrongsNumbers([num], "", "");
+  }
+
+  /* ---------- Notes: plain text, tied to the verse in view, on this device only ---------- */
+  function notesStore(){ return store.get("vw-steady-notes", {}); }
+  function noteKey(v){ return v.bi + "|" + v.ci + "|" + v.vi; }
+  let noteDeb = null;
+  function renderNotes(){
+    const v = verseInView(); const ref = refOf(v.bi, v.ci, v.vi);
+    $("stNoteRef").textContent = ref;
+    const all = notesStore(); const cur = all[noteKey(v)];
+    const box = $("stNoteBox"); box.value = cur ? cur.text : "";
+    box.dataset.forKey = noteKey(v);
+    $("stNoteSaved").textContent = "";
+  }
+  function wireNotes(){
+    const box = $("stNoteBox"); if(!box) return;
+    box.addEventListener("input", () => {
+      clearTimeout(noteDeb);
+      noteDeb = setTimeout(() => {
+        const v = verseInView(); const all = notesStore();
+        const text = box.value;
+        if(text.trim()) all[noteKey(v)] = {ref: refOf(v.bi, v.ci, v.vi), text: text, ts: Date.now()};
+        else delete all[noteKey(v)];
+        store.set("vw-steady-notes", all);
+        $("stNoteSaved").textContent = "Saved";
+      }, 300);
+    });
+  }
+
+  /* ---------- Library: notes, highlights, bookmarks together ---------- */
+  async function renderLibrary(){
+    const body = $("stLibBody"); if(!body) return;
+    const items = [];
+    const notes = notesStore();
+    Object.keys(notes).forEach(k => { const n = notes[k]; if(n && n.text && n.text.trim()) items.push({kind:"Note", ref:n.ref, snippet:n.text, ord:0, key:k}); });
+    let hls = {}; try { hls = JSON.parse(localStorage.getItem("wv-bible-hl") || "{}") || {}; } catch(_){ }
+    Object.keys(hls).forEach(k => { const parts = k.split("|"); if(parts.length === 4) items.push({kind:"Highlight", ref: refOf(+parts[1], +parts[2], +parts[3]) + " \u00B7 " + String(parts[0]).toUpperCase(), snippet:"", ord:1, code:parts[0], bi:+parts[1], ci:+parts[2], vi:+parts[3]}); });
+    let bms = []; try { bms = JSON.parse(localStorage.getItem("wv-bible-bm") || "[]") || []; } catch(_){ }
+    bms.forEach(bm => { if(bm && bm.ref) items.push({kind:"Bookmark", ref: bm.ref + " \u00B7 " + String(bm.code || "").toUpperCase(), snippet: bm.text || "", ord:2, code:bm.code, bi:bm.bi, ci:bm.ci, vi:bm.vi}); });
+    if(!items.length){ body.innerHTML = '<p class="st-empty">Your saved notes, highlights, and bookmarks gather here.</p>'; return; }
+    items.sort((a, b) => (a.ord - b.ord) || a.ref.localeCompare(b.ref));
+    body.innerHTML = "";
+    items.forEach(it => {
+      const b = document.createElement("button"); b.className = "st-libitem";
+      b.innerHTML = '<span class="k">' + esc(it.kind) + '</span><span class="r">' + esc(it.ref) + '</span>' + (it.snippet ? '<span class="s">' + esc(it.snippet.length > 140 ? it.snippet.slice(0, 140) + "..." : it.snippet) + "</span>" : "");
+      b.addEventListener("click", () => {
+        const r = parseRef(it.ref.split(" \u00B7 ")[0]);
+        if(r){ state.lastVerse = r; showStudyView("bible"); try { Bible.openAt(refOf(r.bi, r.ci, r.vi)); } catch(_){ } if(state.strongs){ state.strongsFor = ""; setTimeout(renderStrongs, 400); } }
+      });
+      it._btn = b;
+      body.appendChild(b);
+    });
+    /* Fill highlight verse text where the translation file is already in hand. */
+    const hlItems = items.filter(i => i.kind === "Highlight" && i.code);
+    const codes = Array.from(new Set(hlItems.map(i => i.code)));
+    for(const code of codes){
+      const idx = await buildPanelIndex(code).catch(() => null);
+      if(!idx) continue;
+      const map = {}; idx.forEach(e => { map[e.bi + "|" + e.ci + "|" + e.vi] = e.t; });
+      hlItems.filter(i => i.code === code).forEach(i => {
+        const t = map[i.bi + "|" + i.ci + "|" + i.vi];
+        if(t && i._btn && !i._btn.querySelector(".s")){
+          const s = document.createElement("span"); s.className = "s"; s.textContent = t.length > 140 ? t.slice(0, 140) + "..." : t;
+          i._btn.appendChild(s);
+        }
+      });
+    }
+  }
+
+  /* ---------- Map: Biblica Open Bible Maps plates, whole and unmodified (CC BY-SA 4.0) ----------
+     Plate images load only when this panel opens: no src is set before showMap runs. */
+  let mapBuilt = false;
+  function buildMapPicker(){
+    const sel = $("stMapPick"); if(!sel || mapBuilt) return;
+    PLATES.forEach(p => {
+      const o = document.createElement("option");
+      o.value = p.code; o.textContent = p.title;
+      sel.appendChild(o);
+    });
+    sel.addEventListener("change", () => setMapPlate(sel.value));
+    mapBuilt = true;
+  }
+  function setMapPlate(code){
+    const p = PLATES.find(x => x.code === code) || PLATES[0]; if(!p) return;
+    state.mapPlate = p.code; savePosRec();
+    const sel = $("stMapPick"); if(sel) sel.value = p.code;
+    const img = $("stMapImg"); if(img){ img.src = "maps/" + p.file; img.alt = p.title; }
+    const cap = $("stMapCap"); if(cap) cap.textContent = p.title;
+  }
+  function showMap(){
+    buildMapPicker();
+    const img = $("stMapImg");
+    if(img && !img.getAttribute("src")) setMapPlate(state.mapPlate || (PLATES[0] && PLATES[0].code));
+  }
+  function openMapFull(){
+    const img = $("stMapImg"); if(!img || !img.getAttribute("src")) return;
+    const fi = $("stMapFullImg"); fi.src = img.getAttribute("src"); fi.alt = img.alt || "";
+    fi.classList.remove("zoom");
+    $("stMapFull").style.display = "flex";
+  }
+  function closeMapFull(){ $("stMapFull").style.display = "none"; }
+
+  /* ---------- wiring ---------- */
+  function init(){
+    buildStTabs();
+    document.querySelectorAll("#stModeTabs button").forEach(b => b.addEventListener("click", () => { if(b.dataset.mode === "study") enterStudy(); else exitStudy(); }));
+    document.querySelectorAll("#stCommPicker button").forEach(b => b.addEventListener("click", () => { state.comm = b.dataset.comm; savePosRec(); renderCommentary(); }));
+    document.querySelectorAll("#stDictPicker button").forEach(b => b.addEventListener("click", () => { state.dict = b.dataset.dict; savePosRec(); syncDictPicker(); }));
+    const dgo = $("stDictGo"); if(dgo) dgo.addEventListener("click", dictLookup);
+    const dinp = $("stDictInp"); if(dinp) dinp.addEventListener("keydown", e => { if(e.key === "Enter") dictLookup(); });
+    const sinp = $("stPSearchInp"); if(sinp){ sinp.addEventListener("input", () => { clearTimeout(pDeb); pDeb = setTimeout(runPanelSearch, 280); }); }
+    const sbtn = $("stPSearchBtn"); if(sbtn) sbtn.addEventListener("click", runPanelSearch);
+    const mimg = $("stMapImg"); if(mimg) mimg.addEventListener("click", openMapFull);
+    const mclose = $("stMapClose"); if(mclose) mclose.addEventListener("click", closeMapFull);
+    const mzoom = $("stMapZoom"); if(mzoom) mzoom.addEventListener("click", () => { const fi = $("stMapFullImg"); if(fi) fi.classList.toggle("zoom"); });
+    wireNotes();
+    syncModeTabs();
+    if(state.mode === "study"){ setTimeout(enterStudyForce, 500); }
+  }
+  function enterStudyForce(){ state.mode = "read"; enterStudy(); }
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
+})();
+
 </script>
 </body>
 </html>
