@@ -571,7 +571,11 @@ body.steady .wv-menu,body.steady .wv-still{border-color:#5483B3;color:#C1E8FF;ba
 body.steady .wv-viewtabs{background:#052659;border-color:#5483B3;}
 body.steady .wv-viewtabs button{color:#7DA0CA;}
 body.steady .wv-viewtabs button.on{background:#052659;color:#C1E8FF;box-shadow:inset 0 0 0 1px #5483B3;}
-@media (max-width:520px){ body.steady .wv-viewtabs button{font-size:8px;letter-spacing:0;padding:7px 0;} }
+/* Seamless toggle (Joel, Nov 19, 2026): NO font-size, letter-spacing, or padding
+   override on the viewtab buttons in Steady, at any width. The Study buttons inherit
+   the base button geometry exactly (11px/1.6px/7px 6px; 10px/.5px/7px 1px under
+   520px), so the bar, the buttons, and the sticky header keep identical boxes in
+   both modes; only the labels and the colors change. */
 body.steady .wv-drawer{background:#052659;}
 body.steady .wv-dr-title{color:#7DA0CA;}
 body.steady .wv-dr-sub{color:#7DA0CA;}
@@ -4799,7 +4803,7 @@ window.__wall = { cards, tick, setVerse, fitText, verseRest,
   let stTabBtns = [];
   function buildStTabs(){
     const bar = document.querySelector(".wv-viewtabs"); if(!bar) return;
-    [["bible","Bible"],["commentary","Commentary"],["dictionary","Dictionary"],["map","Map"],["notes","Notes"],["library","Library"]].forEach(pair => {
+    [["bible","Bible"],["commentary","Comment"],["dictionary","Lexicon"],["map","Map"],["notes","Notes"],["library","Library"]].forEach(pair => {
       const b = document.createElement("button");
       b.textContent = pair[1]; b.className = "st-tab"; b.dataset.sview = pair[0]; b.style.display = "none";
       b.addEventListener("click", () => showStudyView(pair[0]));
@@ -4830,6 +4834,7 @@ window.__wall = { cards, tick, setVerse, fitText, verseRest,
   }
   function enterStudy(){
     if(state.mode === "study") return;
+    savedScroll.read = window.scrollY;
     const on = document.querySelector(".wv-viewtabs > button.on:not(.st-tab)");
     state.readViewBefore = on ? (on.dataset.view || "mosaic") : "mosaic";
     state.mode = "study"; store.set("vw-steady-mode", "study");
@@ -4839,9 +4844,11 @@ window.__wall = { cards, tick, setVerse, fitText, verseRest,
     syncModeTabs();
     try { closeDrawer(); } catch(_){ }
     showStudyView(state.view || "bible");
+    restoreScroll(savedScroll.study != null ? savedScroll.study : savedScroll.read);
   }
   function exitStudy(){
     if(state.mode !== "study") return;
+    savedScroll.study = window.scrollY;
     const wasStrongs = state.strongs; state.strongs = false; state.strongsFor = "";
     state.mode = "read"; store.set("vw-steady-mode", "read");
     document.body.classList.remove("steady");
@@ -4853,6 +4860,15 @@ window.__wall = { cards, tick, setVerse, fitText, verseRest,
     const target = state.readViewBefore || "mosaic";
     try { setView("mosaic"); if(target !== "mosaic") setView(target); } catch(_){ }
     if(wasStrongs && target === "bible"){ const p = currentPos(); try { Bible.openAt(refOf(p.bi, p.ci, p.vi)); } catch(_){ } }
+    restoreScroll(savedScroll.read);
+  }
+  /* Seamless toggle: each mode keeps its own scroll place, restored on return,
+     so switching modes never throws the reader back to the top. */
+  const savedScroll = { read: null, study: null };
+  function restoreScroll(y){
+    if(y == null) return;
+    const go = () => window.scrollTo(0, y);
+    go(); requestAnimationFrame(go); setTimeout(go, 250);
   }
   function syncModeTabs(){
     document.querySelectorAll("#stModeTabs button").forEach(b => b.classList.toggle("on", b.dataset.mode === state.mode));
