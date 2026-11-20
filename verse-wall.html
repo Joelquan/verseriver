@@ -34,10 +34,6 @@ body{font-family:'Tenor Sans',sans-serif;color:#f5e3b8;min-height:100vh;}
  border-bottom:.5px solid rgba(201,147,58,.14);}
 .wv-title{font-family:'Cinzel',serif;font-size:16px;font-weight:600;letter-spacing:4px;color:#f5e3b8;}
 .wv-sub{font-family:'Cormorant Garamond',serif;font-size:12px;color:rgba(255,255,255,.38);margin-top:3px;}
-.wv-still{flex-shrink:0;padding:8px 15px;border-radius:20px;border:.5px solid rgba(255,255,255,.14);
- background:rgba(255,255,255,.03);color:rgba(255,255,255,.55);font-size:10px;font-family:'Tenor Sans',sans-serif;
- letter-spacing:.6px;cursor:pointer;}
-.wv-still.on{border-color:#c9933a;background:rgba(201,147,58,.14);color:#c9933a;}
 .wv-menu{flex-shrink:0;width:38px;height:38px;border-radius:50%;border:.5px solid rgba(255,255,255,.14);
  background:rgba(255,255,255,.03);color:rgba(245,227,184,.85);font-size:16px;cursor:pointer;margin-right:11px;}
 .wv-headmid{flex:1;min-width:0;}
@@ -565,14 +561,19 @@ body.flowNav .wv-drawer{z-index:67;}
 .wv-dr-modetabs button{flex:1;border:.5px solid rgba(255,255,255,.18);border-bottom:none;border-radius:10px 10px 0 0;background:rgba(255,255,255,.04);color:rgba(255,255,255,.55);font-family:'Tenor Sans',sans-serif;font-size:12px;letter-spacing:1.5px;padding:9px 4px 8px;cursor:pointer;}
 .wv-dr-modetabs button.on{background:rgba(201,147,58,.20);color:#e8c876;border-color:rgba(201,147,58,.5);}
 body.steady .wv-dr-modetabs button{border-color:#5483B3;color:#7DA0CA;background:#021024;}
-body.steady .wv-dr-modetabs button.on{background:#052659;color:#C1E8FF;border-color:#5483B3;box-shadow:inset 0 0 0 1px #5483B3;}
+body.steady .wv-dr-modetabs button.on{background:rgba(84,131,179,.5);color:#C1E8FF;border-color:#5483B3;box-shadow:inset 0 0 0 1px #7DA0CA;}
 /* ---- Steady chrome recolor (shared chrome only; never the Bible panel) ---- */
 body.steady .wv-title{color:#C1E8FF;}
 body.steady .wv-sub{color:#7DA0CA;}
-body.steady .wv-menu,body.steady .wv-still{border-color:#5483B3;color:#C1E8FF;background:#052659;}
+body.steady .wv-menu{border-color:#5483B3;color:#C1E8FF;background:#052659;}
 body.steady .wv-viewtabs{background:#052659;border-color:#5483B3;}
 body.steady .wv-viewtabs button{color:#7DA0CA;}
-body.steady .wv-viewtabs button.on{background:#052659;color:#C1E8FF;box-shadow:inset 0 0 0 1px #5483B3;}
+/* Active-header highlight (Joel's phone report, Nov 19, 2026): the .on fill was
+   #052659, the same as the bar's own background, so the active Study header showed
+   no highlight while Read's gold wash showed plainly. The fill is now a visibly
+   lighter blue from the family, with the ring kept; same for the drawer mode tabs.
+   Colors only: no geometry changes (the seamless check measures the boxes). */
+body.steady .wv-viewtabs button.on{background:rgba(84,131,179,.5);color:#C1E8FF;box-shadow:inset 0 0 0 1px #7DA0CA;}
 /* Seamless toggle (Joel, Nov 19, 2026): NO font-size, letter-spacing, or padding
    override on the viewtab buttons in Steady, at any width. The Study buttons inherit
    the base button geometry exactly (11px/1.6px/7px 6px; 10px/.5px/7px 1px under
@@ -669,6 +670,93 @@ body.steady #stPSearch{display:flex;}
 .bv-trans button{padding:7px 9px;}
 
 </style>
+<style id="plan-css">
+/* Plan (Joel's settled design, Nov 19, 2026): a reading plan that belongs to the
+   Bible and sits in the Bible area header in Read and Study alike.
+   Skin is the Bible area's own: the control row reuses .bv-trans wholesale, the
+   overlay reuses .bv-pick, headings and chips copy the picker's values.
+   Labels and numbers only in the Plan UI (no explanations rule). */
+/* ---- the translation selection: hidden until the one tap target opens it ---- */
+#bvTrans{display:none;position:static;box-shadow:none;}
+#bvTrans.open{display:flex;}
+/* ---- the control row: translation target + Plan, two controls, nothing more ---- */
+#plCtl{justify-content:stretch;}
+#plTrBtn{flex:1;border-color:#c9933a;background:rgba(201,147,58,.16);color:#e8c876;}
+#plPlanBtn{flex-shrink:0;}
+.wv-bible.day #plTrBtn{border-color:#a5762a;background:rgba(165,118,42,.18);color:#7a5410;}
+/* ---- Study search duplicate (Joel, Nov 19, 2026): in Study the Bible bar's
+   magnifier only focuses the open panel search box on the same panel, so the two
+   controls duplicate one search. The magnifier is hidden in Study only; in Read
+   it is the pane's only search entry and stays. The panel search box never goes. */
+body.steady #bvSearchBtn{display:none;}
+/* ---- Plan overlay (the .bv-pick pattern) ---- */
+.pl-num{font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:2px;color:#c9933a;text-transform:uppercase;margin:2px 4px 8px;}
+.pl-planrow{display:block;width:100%;text-align:left;margin:0 0 8px;padding:13px 14px;border-radius:10px;box-sizing:border-box;
+  border:.5px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03);cursor:pointer;}
+.pl-planrow .pl-ref{font-family:'Cinzel',serif;font-size:13px;letter-spacing:2px;color:#e8c876;display:block;margin-bottom:4px;}
+.pl-planrow .pl-sub{font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:1.5px;color:rgba(255,255,255,.5);display:block;}
+.pl-goals{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;padding:4px 0 10px;}
+.pl-goals button{border:.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:rgba(255,255,255,.6);
+  font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:2px;padding:7px 14px;border-radius:999px;cursor:pointer;}
+.pl-goals button.on{border-color:#c9933a;background:rgba(201,147,58,.16);color:#e8c876;}
+.pl-start{display:block;width:100%;padding:13px;border-radius:12px;border:.5px solid rgba(201,147,58,.4);background:rgba(201,147,58,.08);
+  color:#e8c876;font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-top:6px;}
+.pl-era{font-family:'Cinzel',serif;font-size:12.5px;font-weight:600;letter-spacing:2.5px;color:#c9933a;margin:1.4em 4px .7em;text-transform:uppercase;}
+.pl-row{display:flex;align-items:center;gap:8px;margin:0 0 8px;}
+.pl-row .pl-ref{flex:1;text-align:left;padding:12px 14px;border-radius:10px;border:.5px solid rgba(255,255,255,.09);
+  background:rgba(255,255,255,.03);color:rgba(245,227,184,.9);font-family:'Cormorant Garamond',serif;font-size:17px;cursor:pointer;}
+.pl-row .pl-ref.done{opacity:.5;}
+.pl-done{flex-shrink:0;width:42px;height:42px;border-radius:50%;border:.5px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.03);color:rgba(255,255,255,.35);font-size:16px;cursor:pointer;padding:0;}
+.pl-done.on{border-color:#c9933a;background:rgba(201,147,58,.2);color:#e8c876;}
+.pl-bar2{display:flex;gap:8px;margin-top:16px;}
+.pl-bar2 button{flex:1;padding:11px;border-radius:999px;border:.5px solid rgba(255,255,255,.14);background:transparent;
+  color:rgba(255,255,255,.6);font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;}
+/* ---- Custom editor ---- */
+.pl-nameinp{width:100%;box-sizing:border-box;background:rgba(255,255,255,.04);border:.5px solid rgba(201,147,58,.35);border-radius:12px;
+  color:#f5e3b8;font-family:'Cinzel',serif;font-size:15px;letter-spacing:1.5px;padding:11px 13px;outline:none;margin:0 0 6px;}
+.pl-prof{border:.5px solid rgba(255,255,255,.09);border-radius:10px;margin:0 0 8px;background:rgba(255,255,255,.02);}
+.pl-profhead{display:flex;gap:8px;align-items:center;padding:8px 10px;}
+.pl-profname{flex:1;min-width:0;background:transparent;border:none;border-bottom:.5px solid rgba(255,255,255,.14);color:#e8c876;
+  font-family:'Cormorant Garamond',serif;font-size:17px;padding:6px 2px;outline:none;}
+.pl-profcount{font-family:'Tenor Sans',sans-serif;font-size:11px;color:#c9933a;flex-shrink:0;}
+.pl-proftog{flex-shrink:0;width:36px;height:36px;border-radius:50%;border:.5px solid rgba(255,255,255,.14);background:rgba(255,255,255,.03);color:#e8c876;font-size:15px;cursor:pointer;padding:0;}
+.pl-profbody{display:none;padding:4px 10px 12px;}
+.pl-prof.open .pl-profbody{display:block;}
+.pl-days{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;}
+.pl-days button{border:.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:rgba(255,255,255,.6);
+  font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:1px;padding:7px 11px;border-radius:999px;cursor:pointer;}
+.pl-days button.on{border-color:#c9933a;background:rgba(201,147,58,.16);color:#e8c876;}
+.pl-books{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.pl-books button{padding:10px 6px;border-radius:10px;border:.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);
+  color:rgba(245,227,184,.88);font-family:'Cormorant Garamond',serif;font-size:15px;cursor:pointer;}
+.pl-books button.on{border-color:#c9933a;background:rgba(201,147,58,.16);color:#e8c876;}
+/* ---- day theme (copies .bv-pick.day) ---- */
+.pl-pick.day{background:rgba(247,240,222,.98);}
+.pl-pick.day h3{color:#8a5f16;}
+.pl-pick.day .pl-num{color:#9a6b1f;}
+.pl-pick.day .pl-planrow{background:rgba(255,255,255,.55);border-color:rgba(154,107,31,.25);}
+.pl-pick.day .pl-planrow .pl-ref{color:#7a5410;}
+.pl-pick.day .pl-planrow .pl-sub{color:rgba(92,63,14,.6);}
+.pl-pick.day .pl-goals button{border-color:rgba(154,107,31,.3);background:rgba(255,255,255,.4);color:rgba(92,63,14,.65);}
+.pl-pick.day .pl-goals button.on{border-color:#a5762a;background:rgba(165,118,42,.18);color:#7a5410;}
+.pl-pick.day .pl-start{border-color:rgba(154,107,31,.4);background:rgba(165,118,42,.12);color:#7a5410;}
+.pl-pick.day .pl-era{color:#8a5f16;}
+.pl-pick.day .pl-row .pl-ref{background:rgba(255,255,255,.55);border-color:rgba(154,107,31,.25);color:#3a2c14;}
+.pl-pick.day .pl-done{border-color:rgba(154,107,31,.35);background:rgba(255,255,255,.5);color:rgba(92,63,14,.4);}
+.pl-pick.day .pl-done.on{border-color:#a5762a;background:rgba(165,118,42,.22);color:#7a5410;}
+.pl-pick.day .pl-bar2 button{border-color:rgba(154,107,31,.4);color:#7a5410;}
+.pl-pick.day .pl-nameinp{background:rgba(255,255,255,.6);border-color:rgba(154,107,31,.45);color:#2c2318;}
+.pl-pick.day .pl-prof{border-color:rgba(154,107,31,.25);background:rgba(255,255,255,.35);}
+.pl-pick.day .pl-profname{color:#7a5410;border-bottom-color:rgba(154,107,31,.3);}
+.pl-pick.day .pl-profcount{color:#9a6b1f;}
+.pl-pick.day .pl-proftog{border-color:rgba(154,107,31,.35);background:rgba(255,255,255,.5);color:#7a5410;}
+.pl-pick.day .pl-days button{border-color:rgba(154,107,31,.3);background:rgba(255,255,255,.4);color:rgba(92,63,14,.65);}
+.pl-pick.day .pl-days button.on{border-color:#a5762a;background:rgba(165,118,42,.18);color:#7a5410;}
+.pl-pick.day .pl-books button{background:rgba(255,255,255,.6);border-color:rgba(154,107,31,.3);color:#3a2c14;}
+.pl-pick.day .pl-books button.on{border-color:#a5762a;background:rgba(165,118,42,.2);color:#7a5410;}
+
+</style>
 </head>
 <body>
 <div class="wv-top">
@@ -678,7 +766,6 @@ body.steady #stPSearch{display:flex;}
     <div class="wv-title">VERSE BIBLE</div>
     <div class="wv-sub" id="filterSub">Every verse keeps its own time. Some ascend, some descend.</div>
   </div>
-  <button class="wv-still" id="stillBtn">&#10074;&#10074; Still</button>
 </div>
 <div class="wv-viewbar" id="viewbar">
   <div class="wv-viewtabs">
@@ -702,6 +789,7 @@ body.steady #stPSearch{display:flex;}
   </div>
   <div class="bv-search" id="stPSearch"><input type="text" id="stPSearchInp" placeholder="Type what you are looking for." autocomplete="off"><button id="stPSearchBtn" aria-label="Search the Bible">&#8981;</button></div>
   <div class="bv-sres" id="stPSearchRes"></div>
+  <div class="bv-trans" id="plCtl"><button id="plTrBtn">KJV</button><button id="plPlanBtn">Plan</button></div>
   <div class="bv-trans" id="bvTrans"></div>
   <div class="bv-chap" id="bvChap"></div>
   <div class="bv-foot" id="bvFoot">
@@ -784,6 +872,11 @@ body.steady #stPSearch{display:flex;}
   <div id="stLibBody"></div>
 </div>
 
+<div class="bv-pick pl-pick" id="plPick">
+  <button class="bv-pickclose" id="plClose" aria-label="Close">&#10005;</button>
+  <div id="plBody"></div>
+</div>
+
 <div class="bv-pick" id="bvPick">
   <button class="bv-pickclose" id="bvPickClose">&#10005;</button>
   <div id="bvPickBody"></div>
@@ -842,7 +935,6 @@ body.steady #stPSearch{display:flex;}
   <div class="dr-panel" id="drMosaic" style="display:none">
     <button class="wv-dr-back" data-back>&#8592; Menu</button>
     <div class="wv-dr-title">MOSAIC</div>
-    <button class="wv-dr-bible" id="drStillBtn">Still / Resume</button>
     <div id="drFilterHostM"></div>
   </div>
   <div class="dr-panel" id="drRiver" style="display:none">
@@ -1137,7 +1229,6 @@ const STYLES = ["wv-fade"];
 const rand = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
 const pick = a => a[Math.floor(Math.random()*a.length)];
 let REST_MIN = 8000, REST_MAX = 16000;
-let pausedAll = false;
 const cards = [];
 let heldCard = null;
 const mosaic = document.getElementById("mosaic");
@@ -1230,7 +1321,7 @@ function scheduleSettle(c){ c.timer = setTimeout(() => { c.phase = "rest"; play(
 function tick(c){
   clearTimeout(c.timer); c.timer = null; c.exitAt = undefined;
   if(c.river) return;
-  if(pausedAll || c.held || c.pinned) return;
+  if(c.held || c.pinned) return;
   if(c.rock){ // rocks in running water: the verse arrives once, then never moves again
     if(c.phase === "enter") c.timer = setTimeout(() => { c.phase = "rest"; play(c, "none"); c.timer = null; }, 680);
     return;
@@ -1513,14 +1604,6 @@ document.getElementById("ovOptPic").addEventListener("click", async () => {
   ovToast("Image downloaded");
 });
 overlay.addEventListener("click", e => { if(e.target === overlay) closeVerse(); });
-const stillBtn = document.getElementById("stillBtn");
-stillBtn.addEventListener("click", () => {
-  pausedAll = !pausedAll;
-  stillBtn.classList.toggle("on", pausedAll);
-  stillBtn.innerHTML = pausedAll ? "&#9654; Resume" : "&#10074;&#10074; Still";
-  if(pausedAll){ cards.forEach(c => { clearTimeout(c.timer); c.timer = null; }); }
-  else { cards.forEach(c => { if(!c.held && !c.pinned && !c.timer) tick(c); }); }
-});
 SLOTS.forEach(makeCard);
 // Every verse keeps its own time: stagger the opening deal so tiles never march together
 cards.forEach(c => {
@@ -1759,7 +1842,7 @@ function riverLoop(now){
   if(!riverOn) return;
   const dt = Math.min(0.06, (now - riverLast) / 1000 || 0);
   riverLast = now;
-  riverStep(dt, !pausedAll);
+  riverStep(dt, true);
   riverRaf = requestAnimationFrame(riverLoop);
 }
 function startRiver(){
@@ -2085,9 +2168,11 @@ const Voices = (() => {
   return { open, openList, setEra };
 })();
 
-/* ---------------- Region ambience: a hymn and the river, looping ---------------- */
+/* ---------------- Region ambience: the river, looping ----------------
+   The Voices hymn track was removed at Joel's order (Nov 19, 2026): no piano
+   under the Voices. The river track is untouched. */
 const Amb = (() => {
-  const TRACKS = { voices: ["audio/i-surrender-all.mp3", 0.5], river: ["audio/river-stream.mp3", 0.95] };
+  const TRACKS = { river: ["audio/river-stream.mp3", 0.95] };
   const au = new Audio(); au.loop = true; au.preload = "auto";
   let want = null;
   function start(){
@@ -4691,7 +4776,6 @@ document.querySelectorAll("#drRiverDir button").forEach(b => b.addEventListener(
   document.querySelectorAll("#drRiverDir button").forEach(x => x.classList.toggle("on", x === b));
   if(view === "river"){ buildRiver(); startRiver(); }
 }));
-document.getElementById("drStillBtn").addEventListener("click", () => document.getElementById("stillBtn").click());
 let rvResizeT = null;
 window.addEventListener("resize", () => {
   if(rvResizeT) clearTimeout(rvResizeT);
@@ -5421,6 +5505,300 @@ window.__wall = { cards, tick, setVerse, fitText, verseRest,
     if(state.mode === "study"){ setTimeout(enterStudyForce, 500); }
   }
   function enterStudyForce(){ state.mode = "read"; enterStudy(); }
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
+})();
+
+</script>
+<script id="plan-js">
+"use strict";
+/* Plan (Joel's settled design, Nov 19, 2026): reading plans that belong to the
+   Bible, present with the Bible in Read and Study. The engine copies Verse
+   Reader's goal engine (~/workspace/ts-spaces/verse-reader/server/src/actions.ts):
+   a goal of goalMonths x 30 days; each day the unread chapters are divided by the
+   sittings left on the plan's rhythm days, whole chapters, the remainder adding
+   one to the earliest sittings; the day's portion is snapshotted and stays steady
+   all day; missed chapters roll forward because position advances only on finish;
+   past the goal date, portions are sized from the next 30 days of sittings; only
+   the active plan calculates; a finished sequence begins again with its count
+   banked. State lives in localStorage under "vw-plan", shaped to move to a
+   server later. Labels and numbers only in the UI. */
+(function(){
+  const BOOKS = [["genesis", "Genesis", 50], ["exodus", "Exodus", 40], ["leviticus", "Leviticus", 27], ["numbers", "Numbers", 36], ["deuteronomy", "Deuteronomy", 34], ["joshua", "Joshua", 24], ["judges", "Judges", 21], ["ruth", "Ruth", 4], ["1samuel", "1 Samuel", 31], ["2samuel", "2 Samuel", 24], ["1kings", "1 Kings", 22], ["2kings", "2 Kings", 25], ["1chronicles", "1 Chronicles", 29], ["2chronicles", "2 Chronicles", 36], ["ezra", "Ezra", 10], ["nehemiah", "Nehemiah", 13], ["esther", "Esther", 10], ["job", "Job", 42], ["psalms", "Psalms", 150], ["proverbs", "Proverbs", 31], ["ecclesiastes", "Ecclesiastes", 12], ["songofsolomon", "Song of Solomon", 8], ["isaiah", "Isaiah", 66], ["jeremiah", "Jeremiah", 52], ["lamentations", "Lamentations", 5], ["ezekiel", "Ezekiel", 48], ["daniel", "Daniel", 12], ["hosea", "Hosea", 14], ["joel", "Joel", 3], ["amos", "Amos", 9], ["obadiah", "Obadiah", 1], ["jonah", "Jonah", 4], ["micah", "Micah", 7], ["nahum", "Nahum", 3], ["habakkuk", "Habakkuk", 3], ["zephaniah", "Zephaniah", 3], ["haggai", "Haggai", 2], ["zechariah", "Zechariah", 14], ["malachi", "Malachi", 4], ["matthew", "Matthew", 28], ["mark", "Mark", 16], ["luke", "Luke", 24], ["john", "John", 21], ["acts", "Acts", 28], ["romans", "Romans", 16], ["1corinthians", "1 Corinthians", 16], ["2corinthians", "2 Corinthians", 13], ["galatians", "Galatians", 6], ["ephesians", "Ephesians", 6], ["philippians", "Philippians", 4], ["colossians", "Colossians", 4], ["1thessalonians", "1 Thessalonians", 5], ["2thessalonians", "2 Thessalonians", 3], ["1timothy", "1 Timothy", 6], ["2timothy", "2 Timothy", 4], ["titus", "Titus", 3], ["philemon", "Philemon", 1], ["hebrews", "Hebrews", 13], ["james", "James", 5], ["1peter", "1 Peter", 5], ["2peter", "2 Peter", 3], ["1john", "1 John", 5], ["2john", "2 John", 1], ["3john", "3 John", 1], ["jude", "Jude", 1], ["revelation", "Revelation", 22]];
+  const PDATA = {"eras": ["Creation and the Patriarchs", "Exodus and the Law", "The Conquest and Judges", "The Kingdom", "Exile", "Return", "The Life of Christ", "The Early Church"], "blocks": [["Genesis", 1, 11, 0], ["Job", 1, 42, 0], ["Genesis", 12, 50, 0], ["Exodus", 1, 40, 1], ["Leviticus", 1, 27, 1], ["Numbers", 1, 36, 1], ["Deuteronomy", 1, 34, 1], ["Joshua", 1, 24, 2], ["Judges", 1, 21, 2], ["Ruth", 1, 4, 2], ["1 Samuel", 1, 31, 3], ["2 Samuel", 1, 24, 3], ["Psalms", 1, 72, 3], ["1 Chronicles", 1, 29, 3], ["1 Kings", 1, 11, 3], ["Proverbs", 1, 31, 3], ["Ecclesiastes", 1, 12, 3], ["Song of Solomon", 1, 8, 3], ["Psalms", 73, 89, 3], ["1 Kings", 12, 22, 3], ["2 Chronicles", 1, 36, 3], ["Obadiah", 1, 1, 3], ["Joel", 1, 3, 3], ["Jonah", 1, 4, 3], ["Amos", 1, 9, 3], ["Hosea", 1, 14, 3], ["Isaiah", 1, 39, 3], ["Micah", 1, 7, 3], ["2 Kings", 1, 17, 3], ["2 Kings", 18, 25, 4], ["Nahum", 1, 3, 4], ["Zephaniah", 1, 3, 4], ["Jeremiah", 1, 52, 4], ["Habakkuk", 1, 3, 4], ["Lamentations", 1, 5, 4], ["Isaiah", 40, 66, 4], ["Ezekiel", 1, 48, 4], ["Daniel", 1, 12, 4], ["Psalms", 90, 106, 4], ["Ezra", 1, 10, 5], ["Nehemiah", 1, 13, 5], ["Esther", 1, 10, 5], ["Psalms", 107, 150, 5], ["Haggai", 1, 2, 5], ["Zechariah", 1, 14, 5], ["Malachi", 1, 4, 5], ["Luke", 1, 1, 6], ["Matthew", 1, 1, 6], ["Luke", 2, 2, 6], ["Matthew", 2, 2, 6], ["John", 1, 1, 6], ["Mark", 1, 1, 6], ["Matthew", 3, 7, 6], ["Mark", 2, 3, 6], ["Luke", 3, 6, 6], ["John", 2, 5, 6], ["Matthew", 8, 12, 6], ["Mark", 4, 6, 6], ["Luke", 7, 9, 6], ["John", 6, 7, 6], ["Matthew", 13, 19, 6], ["Mark", 7, 10, 6], ["Luke", 10, 17, 6], ["John", 8, 11, 6], ["Matthew", 20, 25, 6], ["Mark", 11, 13, 6], ["Luke", 18, 21, 6], ["John", 12, 17, 6], ["Matthew", 26, 28, 6], ["Mark", 14, 16, 6], ["Luke", 22, 24, 6], ["John", 18, 21, 6], ["Acts", 1, 12, 7], ["James", 1, 5, 7], ["Acts", 13, 14, 7], ["Galatians", 1, 6, 7], ["Acts", 15, 18, 7], ["1 Thessalonians", 1, 5, 7], ["2 Thessalonians", 1, 3, 7], ["1 Corinthians", 1, 16, 7], ["2 Corinthians", 1, 13, 7], ["Acts", 19, 20, 7], ["Romans", 1, 16, 7], ["Acts", 21, 28, 7], ["Ephesians", 1, 6, 7], ["Philippians", 1, 4, 7], ["Colossians", 1, 4, 7], ["Philemon", 1, 1, 7], ["Hebrews", 1, 13, 7], ["1 Timothy", 1, 6, 7], ["Titus", 1, 3, 7], ["1 Peter", 1, 5, 7], ["2 Timothy", 1, 4, 7], ["2 Peter", 1, 3, 7], ["Jude", 1, 1, 7], ["1 John", 1, 5, 7], ["2 John", 1, 1, 7], ["3 John", 1, 1, 7], ["Revelation", 1, 22, 7]], "profiles": [["gospels-romans", "The Gospels to Romans", ["Matthew", "Mark", "Luke", "John", "Acts", "Romans"], [0, 1, 2, 3, 4, 5, 6], false], ["psalms-proverbs", "Psalms and Proverbs", ["Job", "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon"], [0, 1, 2, 3, 4, 5, 6], false], ["epistles", "The Epistles", ["1 Corinthians", "2 Corinthians", "Galatians", "Ephesians", "Philippians", "Colossians", "Philemon"], [0, 1, 2, 3, 4, 5, 6], false], ["first-seven", "The First Seven", ["Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy", "Joshua", "Judges"], [4], false], ["three-ts", "The Three T's", ["1 Thessalonians", "2 Thessalonians", "1 Timothy", "2 Timothy", "Titus"], [0, 6], false], ["prophets", "The Prophets", ["Isaiah", "Jeremiah", "Lamentations", "Ezekiel", "Daniel", "Hosea", "Joel", "Amos", "Obadiah", "Jonah", "Micah", "Nahum", "Habakkuk", "Zephaniah", "Haggai", "Zechariah", "Malachi"], [6], false], ["ruth-esther", "Ruth to Esther", ["Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings", "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther"], [5], false], ["writings-john", "The Writings of John", ["John", "1 John", "2 John", "3 John"], [0], false], ["corinthians-revelation", "1 Corinthians to Revelation", ["1 Corinthians", "2 Corinthians", "Galatians", "Ephesians", "Philippians", "Colossians", "1 Thessalonians", "2 Thessalonians", "1 Timothy", "2 Timothy", "Titus", "Philemon", "Hebrews", "James", "1 Peter", "2 Peter", "1 John", "2 John", "3 John", "Jude", "Revelation"], [1, 3, 5], true]]};
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  const ALL_DAYS = [0,1,2,3,4,5,6];
+  const DAY_LETTERS = ["S","M","T","W","T","F","S"];
+  const PLAN_IDS = ["custom","chrono","through"];
+  const PLAN_NAMES = {custom:"Custom", chrono:"Chronological", through:"Through the Bible"};
+  const CHAPS = {}; BOOKS.forEach(b => { CHAPS[b[1]] = b[2]; });
+
+  /* ---------- dates (reader-local YYYY-MM-DD, as in Verse Reader) ---------- */
+  function dstr(d){ return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  function todayStr(){ return dstr(new Date()); }
+  function parseD(s){ const p = s.split("-"); return new Date(+p[0], +p[1] - 1, +p[2], 12); }
+  function addDays(s, n){ const d = parseD(s); d.setDate(d.getDate() + n); return dstr(d); }
+  function diffDays(a, b){ return Math.round((parseD(b) - parseD(a)) / 86400000); }
+  function sittings(fromS, toS, days){
+    let n = 0, d = fromS, guard = 0;
+    while(d <= toS && guard++ < 500){ if(days.indexOf(parseD(d).getDay()) >= 0) n++; d = addDays(d, 1); }
+    return n;
+  }
+
+  /* ---------- sequences ---------- */
+  function seqThrough(){ const out = []; BOOKS.forEach(b => { for(let c = 1; c <= b[2]; c++) out.push({b:b[1], c:c}); }); return out; }
+  function seqChrono(){ const out = []; PDATA.blocks.forEach(bl => { for(let c = bl[1]; c <= bl[2]; c++) out.push({b:bl[0], c:c, era:bl[3]}); }); return out; }
+  function seqProfile(p){ const out = []; p.books.forEach(name => { const n = CHAPS[name] || 0; for(let c = 1; c <= n; c++) out.push({b:name, c:c}); }); return out; }
+  const SEQ_CACHE = {};
+  function seqOf(planId, unit){
+    if(planId === "custom") return seqProfile(unit);
+    if(!SEQ_CACHE[planId]) SEQ_CACHE[planId] = planId === "chrono" ? seqChrono() : seqThrough();
+    return SEQ_CACHE[planId];
+  }
+  function daysOf(planId, unit){ return planId === "custom" ? unit.days : ALL_DAYS; }
+  function unitsOf(planId, plan){ return planId === "custom" ? plan.profiles : [plan]; }
+  const keyOf = it => it.b + "|" + it.c;
+  function prefixLen(seq, rec){ let i = 0; while(i < seq.length && rec[keyOf(seq[i])]) i++; return i; }
+
+  /* ---------- state ---------- */
+  function defaultState(){
+    return { v:1, active:null, plans:{
+      custom:{ started:false, name:"Custom", goalMonths:3, startDate:null,
+        profiles: PDATA.profiles.map(p => ({key:p[0], name:p[1], books:p[2].slice(), days:p[3].slice(), eve:!!p[4], rec:{}, banked:0, snaps:{}})) },
+      chrono:{ started:false, goalMonths:3, startDate:null, rec:{}, banked:0, snaps:{} },
+      through:{ started:false, goalMonths:3, startDate:null, rec:{}, banked:0, snaps:{} }
+    }};
+  }
+  let S = null;
+  function loadState(){
+    try { const raw = localStorage.getItem("vw-plan"); if(raw){ const p = JSON.parse(raw); if(p && p.plans && p.plans.custom && p.plans.chrono && p.plans.through) return p; } } catch(_){ }
+    return defaultState();
+  }
+  function saveState(){ try { localStorage.setItem("vw-plan", JSON.stringify(S)); } catch(_){ } }
+  S = loadState();
+
+  function totalOf(planId){ const plan = S.plans[planId]; return unitsOf(planId, plan).reduce((s, u) => s + seqOf(planId, u).length, 0); }
+  function doneOf(planId){ const plan = S.plans[planId]; return unitsOf(planId, plan).reduce((s, u) => s + (u.banked || 0) + Object.keys(u.rec || {}).length, 0); }
+  function nameOf(planId){ return planId === "custom" ? (S.plans.custom.name || "Custom") : PLAN_NAMES[planId]; }
+  function goalLabel(m){ return m + (m === 1 ? " month" : " months"); }
+
+  /* ---------- the goal engine (copied behavior) ---------- */
+  function unitPortion(planId, plan, unit){
+    const t = todayStr();
+    const seq = seqOf(planId, unit);
+    const pos = prefixLen(seq, unit.rec);
+    const remaining = seq.length - pos;
+    if(remaining <= 0) return {start:pos, count:0};
+    const snap = unit.snaps[t];
+    if(snap) return snap;
+    const days = daysOf(planId, unit);
+    const goalEnd = addDays(plan.startDate, plan.goalMonths * 30 - 1);
+    let count = 0, s = 0;
+    if(t <= goalEnd) s = sittings(t, goalEnd, days);
+    if(s > 0){ const base = Math.floor(remaining / s); count = base + (remaining % s > 0 ? 1 : 0); }
+    else { const s2 = Math.max(1, sittings(t, addDays(t, 29), days)); count = Math.max(1, Math.ceil(remaining / s2)); }
+    if(count > remaining) count = remaining;
+    const sn = {start:pos, count:count};
+    unit.snaps[t] = sn; saveState();
+    return sn;
+  }
+  function markFinished(planId, unit, key){
+    if(unit.rec[key]) return;
+    unit.rec[key] = todayStr();
+    const seq = seqOf(planId, unit);
+    if(seq.length && prefixLen(seq, unit.rec) >= seq.length){ unit.banked = (unit.banked || 0) + seq.length; unit.rec = {}; unit.snaps = {}; }
+    saveState();
+  }
+
+  /* ---------- overlay rendering ---------- */
+  const body = () => $("plBody");
+  function goalChips(planId, plan){
+    return '<div class="pl-goals">' + [1,2,3].map(m =>
+      '<button data-goal="' + m + '" class="' + (plan.goalMonths === m ? "on" : "") + '">' + goalLabel(m) + "</button>").join("") + "</div>";
+  }
+  function renderChooser(){
+    let h = "<h3>PLAN</h3>";
+    PLAN_IDS.forEach(id => {
+      const plan = S.plans[id];
+      const sub = plan.started ? (doneOf(id) + " of " + totalOf(id) + " \u00B7 " + goalLabel(plan.goalMonths)) : (totalOf(id) + " chapters");
+      h += '<button class="pl-planrow" data-plan="' + id + '"><span class="pl-ref">' + esc(nameOf(id)) + '</span><span class="pl-sub">' + sub + "</span></button>";
+    });
+    body().innerHTML = h;
+  }
+  function renderGoal(planId){
+    const plan = S.plans[planId];
+    let h = "<h3>" + esc(nameOf(planId).toUpperCase()) + "</h3>";
+    h += goalChips(planId, plan);
+    h += '<button class="pl-start" id="plStart">Start</button>';
+    h += '<div class="pl-bar2"><button data-nav="chooser">Plans</button></div>';
+    body().innerHTML = h;
+    $("plStart").addEventListener("click", () => {
+      plan.started = true; plan.startDate = todayStr(); S.active = planId; saveState();
+      renderToday(planId);
+    });
+  }
+  function portionRows(planId, plan, unit, withHeads){
+    const seq = seqOf(planId, unit);
+    const por = unitPortion(planId, plan, unit);
+    let h = "", lastEra = -1;
+    for(let i = por.start; i < por.start + por.count && i < seq.length; i++){
+      const it = seq[i], k = keyOf(it), fin = !!unit.rec[k];
+      if(withHeads && it.era != null && it.era !== lastEra){ lastEra = it.era; h += '<div class="pl-era">' + esc(PDATA.eras[it.era] || "") + "</div>"; }
+      h += '<div class="pl-row"><button class="pl-ref' + (fin ? " done" : "") + '" data-open="' + esc(k) + '">' + esc(it.b) + " " + it.c + "</button>"
+         + '<button class="pl-done' + (fin ? " on" : "") + '" data-fin="' + esc(k) + '" data-unit="' + esc(unit.key || planId) + '" aria-label="Finished">&#10003;</button></div>';
+    }
+    return h;
+  }
+  function renderToday(planId){
+    const plan = S.plans[planId];
+    const dayNum = Math.max(1, diffDays(plan.startDate, todayStr()) + 1);
+    let h = "<h3>" + esc(nameOf(planId).toUpperCase()) + "</h3>";
+    h += '<div class="pl-num">Day ' + dayNum + " of " + (plan.goalMonths * 30) + "</div>";
+    h += '<div class="pl-num">' + doneOf(planId) + " of " + totalOf(planId) + "</div>";
+    h += goalChips(planId, plan);
+    const wd = parseD(todayStr()).getDay();
+    if(planId === "custom"){
+      plan.profiles.forEach(p => {
+        if(!p.books.length || p.days.indexOf(wd) < 0) return;
+        const rows = portionRows(planId, plan, p, false);
+        if(rows) h += '<div class="pl-era">' + esc(p.name) + "</div>" + rows;
+      });
+    } else {
+      h += portionRows(planId, plan, plan, planId === "chrono");
+    }
+    h += '<div class="pl-bar2"><button data-nav="chooser">Plans</button>'
+       + (planId === "custom" ? '<button data-nav="editor">Edit</button>' : "") + "</div>";
+    body().innerHTML = h;
+  }
+  let openProf = 0;
+  function renderEditor(){
+    const plan = S.plans.custom;
+    let h = "<h3>CUSTOM</h3>";
+    h += '<input class="pl-nameinp" id="plNameInp" type="text" value="' + esc(plan.name || "") + '" aria-label="Plan name">';
+    plan.profiles.forEach((p, i) => {
+      const tot = seqProfile(p).length;
+      h += '<div class="pl-prof' + (i === openProf ? " open" : "") + '"><div class="pl-profhead">'
+        + '<input class="pl-profname" data-pname="' + i + '" type="text" value="' + esc(p.name) + '" aria-label="Profile name">'
+        + '<span class="pl-profcount">' + tot + "</span>"
+        + '<button class="pl-proftog" data-tog="' + i + '">' + (i === openProf ? "\u25B4" : "\u25BE") + "</button></div>"
+        + '<div class="pl-profbody"><div class="pl-days">'
+        + DAY_LETTERS.map((L, d) => '<button data-day="' + d + '" data-prof="' + i + '" class="' + (p.days.indexOf(d) >= 0 ? "on" : "") + '">' + L + "</button>").join("")
+        + '<button data-daily="' + i + '" class="' + (p.days.length === 7 ? "on" : "") + '">Daily</button>'
+        + '<button data-eve="' + i + '" class="' + (p.eve ? "on" : "") + '">Evenings</button></div>'
+        + '<div class="pl-books">' + BOOKS.map(b => '<button data-book="' + esc(b[1]) + '" data-prof="' + i + '" class="' + (p.books.indexOf(b[1]) >= 0 ? "on" : "") + '">' + esc(b[1]) + "</button>").join("") + "</div>"
+        + "</div></div>";
+    });
+    h += '<div class="pl-bar2"><button data-nav="' + (plan.started ? "today" : "chooser") + '">' + (plan.started ? "Today" : "Plans") + "</button></div>";
+    body().innerHTML = h;
+  }
+
+  /* ---------- overlay open/close ---------- */
+  function openPlan(){
+    const pick = $("plPick"); if(!pick) return;
+    const pane = $("biblepane");
+    pick.classList.toggle("day", !!(pane && pane.classList.contains("day")));
+    const a = S.active && S.plans[S.active] && S.plans[S.active].started ? S.active : null;
+    if(a) renderToday(a); else renderChooser();
+    pick.classList.add("open");
+  }
+  function closePlan(){ const pick = $("plPick"); if(pick) pick.classList.remove("open"); }
+
+  /* ---------- events ---------- */
+  function wire(){
+    const pick = $("plPick"); if(!pick) return;
+    $("plClose").addEventListener("click", closePlan);
+    $("plPlanBtn").addEventListener("click", openPlan);
+    body().addEventListener("click", e => {
+      const t = e.target;
+      const planBtn = t.closest ? t.closest("[data-plan]") : null;
+      if(planBtn){ const id = planBtn.dataset.plan; const plan = S.plans[id];
+        if(plan.started){ S.active = id; saveState(); renderToday(id); } else renderGoal(id);
+        return; }
+      const goalBtn = t.closest ? t.closest("[data-goal]") : null;
+      if(goalBtn){
+        const planId = currentView.planId;
+        if(planId){ const plan = S.plans[planId]; plan.goalMonths = +goalBtn.dataset.goal;
+          unitsOf(planId, plan).forEach(u => { u.snaps = {}; });
+          saveState();
+          if(currentView.view === "goal") renderGoal(planId); else renderToday(planId);
+        }
+        return; }
+      const nav = t.closest ? t.closest("[data-nav]") : null;
+      if(nav){ const v = nav.dataset.nav;
+        if(v === "chooser") renderChooser();
+        else if(v === "editor") renderEditor();
+        else if(v === "today") renderToday("custom");
+        return; }
+      const open = t.closest ? t.closest("[data-open]") : null;
+      if(open){ const k = open.dataset.open; const at = k.lastIndexOf("|");
+        const bk = k.slice(0, at), ch = k.slice(at + 1);
+        closePlan();
+        try { Bible.openAt(bk + " " + ch + ":1"); } catch(_){ }
+        return; }
+      const fin = t.closest ? t.closest("[data-fin]") : null;
+      if(fin){ const planId = currentView.planId; if(!planId) return; const plan = S.plans[planId];
+        const unit = planId === "custom" ? plan.profiles.find(p => p.key === fin.dataset.unit) : plan;
+        if(unit){ markFinished(planId, unit, fin.dataset.fin); renderToday(planId); }
+        return; }
+      const tog = t.closest ? t.closest("[data-tog]") : null;
+      if(tog){ const i = +tog.dataset.tog; openProf = openProf === i ? -1 : i; renderEditorKeepScroll(); return; }
+      const day = t.closest ? t.closest("[data-day]") : null;
+      if(day){ const p = S.plans.custom.profiles[+day.dataset.prof]; const d = +day.dataset.day;
+        const at = p.days.indexOf(d); if(at >= 0) p.days.splice(at, 1); else { p.days.push(d); p.days.sort(); }
+        p.snaps = {}; saveState(); renderEditorKeepScroll(); return; }
+      const daily = t.closest ? t.closest("[data-daily]") : null;
+      if(daily){ const p = S.plans.custom.profiles[+daily.dataset.daily]; p.days = ALL_DAYS.slice(); p.snaps = {}; saveState(); renderEditorKeepScroll(); return; }
+      const eve = t.closest ? t.closest("[data-eve]") : null;
+      if(eve){ const p = S.plans.custom.profiles[+eve.dataset.eve]; p.eve = !p.eve; saveState(); renderEditorKeepScroll(); return; }
+      const bk = t.closest ? t.closest("[data-book]") : null;
+      if(bk){ const p = S.plans.custom.profiles[+bk.dataset.prof]; const name = bk.dataset.book;
+        const set = new Set(p.books); if(set.has(name)) set.delete(name); else set.add(name);
+        p.books = BOOKS.map(b => b[1]).filter(n => set.has(n));
+        Object.keys(p.rec).forEach(k => { if(!set.has(k.slice(0, k.lastIndexOf("|")))) delete p.rec[k]; });
+        p.snaps = {}; saveState(); renderEditorKeepScroll(); return; }
+    });
+    body().addEventListener("input", e => {
+      if(e.target.id === "plNameInp"){ S.plans.custom.name = e.target.value; saveState(); return; }
+      const pn = e.target.closest ? e.target.closest("[data-pname]") : null;
+      if(pn){ S.plans.custom.profiles[+pn.dataset.pname].name = e.target.value; saveState(); }
+    });
+  }
+  function renderEditorKeepScroll(){
+    const pick = $("plPick"); const y = pick ? pick.scrollTop : 0;
+    renderEditor();
+    if(pick) pick.scrollTop = y;
+  }
+  /* Which plan and view the overlay is currently showing. */
+  const currentView = { planId: null, view: null };
+  const _renderToday = renderToday, _renderGoal = renderGoal, _renderChooser = renderChooser, _renderEditor = renderEditor;
+  renderToday = function(id){ currentView.planId = id; currentView.view = "today"; _renderToday(id); };
+  renderGoal = function(id){ currentView.planId = id; currentView.view = "goal"; _renderGoal(id); };
+  renderChooser = function(){ currentView.planId = null; currentView.view = "chooser"; _renderChooser(); };
+  renderEditor = function(){ currentView.planId = "custom"; currentView.view = "editor"; _renderEditor(); };
+
+  /* ---------- translation control: one tap target + Plan beside it ---------- */
+  function syncTrLabel(){
+    const btn = $("plTrBtn"), host = $("bvTrans"); if(!btn || !host) return;
+    const btns = Array.prototype.slice.call(host.querySelectorAll("button"));
+    let on = btns.find(b => b.classList.contains("on") && getComputedStyle(b).display !== "none");
+    if(!on){ let code = "kjv"; try { code = localStorage.getItem("wv-bible-tr") || "kjv"; } catch(_){ }
+      on = btns.find(b => b.textContent.trim().toLowerCase() === code) || btns[0]; }
+    if(on) btn.textContent = on.textContent.trim();
+  }
+  function wireTrans(){
+    const host = $("bvTrans"), tBtn = $("plTrBtn"); if(!host || !tBtn) return;
+    tBtn.addEventListener("click", () => host.classList.toggle("open"));
+    host.addEventListener("click", e => {
+      if(e.target && e.target.closest && e.target.closest("button")) setTimeout(() => host.classList.remove("open"), 60);
+    });
+    const obs = new MutationObserver(() => syncTrLabel());
+    obs.observe(host, {childList:true, attributes:true, attributeFilter:["class"], subtree:true});
+    const bobs = new MutationObserver(() => syncTrLabel());
+    bobs.observe(document.body, {attributes:true, attributeFilter:["class"]});
+    syncTrLabel();
+  }
+
+  function init(){ wire(); wireTrans(); }
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
 })();
 
