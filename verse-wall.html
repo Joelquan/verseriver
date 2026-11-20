@@ -935,6 +935,7 @@ body.steady #bvSearchBtn{display:none;}
     </div>
       <div class="wv-dr-sub">The Holy Bible, New King James Version® © 1982 by Thomas Nelson, Inc. All Rights Reserved</div>
     <button class="wv-dr-install" id="a2hsBtn">Add to Home Screen</button>
+    <div style="display:flex;gap:8px"><button class="wv-dr-install" id="txExportBtn" style="flex:1">Export</button><button class="wv-dr-install" id="txImportBtn" style="flex:1">Import</button></div><input type="file" id="txFile" accept="application/json,.json" hidden>
   </div>
   <div class="dr-panel" id="drBible" style="display:none">
     <button class="wv-dr-back" data-back>&#8592; Menu</button>
@@ -1442,7 +1443,7 @@ function renderShareImage(c){
   x.globalAlpha = 0.9;
   x.font = "300 36px 'Josefin Sans', sans-serif";
   x.fillStyle = "#c9933a";
-  x.fillText("verseriver.com", W / 2, H - 92);
+  x.fillText("theversebible.com", W / 2, H - 92);
   x.globalAlpha = 1;
   try { x.letterSpacing = "0px"; } catch (e) {}
   return new Promise(res => cv.toBlob(b => res(new File([b], "verse.png", { type: "image/png" })), "image/png"));
@@ -1578,7 +1579,7 @@ function renderWallVerseImage(v, skin){
   x.globalAlpha = 0.9;
   x.font = "300 36px 'Josefin Sans', sans-serif";
   x.fillStyle = acc;
-  x.fillText("verseriver.com", W / 2, H - 92);
+  x.fillText("theversebible.com", W / 2, H - 92);
   x.globalAlpha = 1;
   try { x.letterSpacing = "0px"; } catch (e) {}
   return new Promise(res => cv.toBlob(b => res(new File([b], "verse.png", { type: "image/png" })), "image/png"));
@@ -5694,7 +5695,7 @@ window.__wall = { cards, tick, setVerse, fitText, verseRest,
       "DTSTART:" + startS.replace(/-/g, "") + "T" + hh + mm + "00",
       "RRULE:FREQ=DAILY;COUNT=" + days,
       "SUMMARY:" + title,
-      "DESCRIPTION:https://verseriver.com/verse-wall",
+      "DESCRIPTION:https://theversebible.com/bible",
       "BEGIN:VALARM", "ACTION:DISPLAY", "TRIGGER:PT0M", "DESCRIPTION:" + title, "END:VALARM",
       "END:VEVENT", "END:VCALENDAR"].join("\r\n") + "\r\n";
   }
@@ -5908,6 +5909,47 @@ window.__wall = { cards, tick, setVerse, fitText, verseRest,
     const sk = $("obSkip"); if(sk) sk.addEventListener("click", skipOnboard);
     const hc = $("a2hsHelpClose"); if(hc) hc.addEventListener("click", () => { const h = $("a2hsHelp"); if(h) h.classList.remove("open"); });
     setTimeout(maybeOnboard, 600);
+  }
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
+})();
+
+</script>
+<script id="transfer-js">
+"use strict";
+/* Export / Import (Joel's migration ruling, Nov 19, 2026): one JSON file
+   carrying every localStorage record of this app (notes with attachments,
+   highlights, bookmarks, plan state, settings). The same build runs on the
+   old and new homes, so a file exported from either restores on the other.
+   Labels only; no explanations on the platform. */
+(function(){
+  const $ = id => document.getElementById(id);
+  function doExport(){
+    const data = {};
+    for(let i = 0; i < localStorage.length; i++){ const k = localStorage.key(i); data[k] = localStorage.getItem(k); }
+    const blob = new Blob([JSON.stringify({app:"verse-bible", v:1, data:data})], {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "verse-bible-export.json";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  }
+  function doImport(file){
+    if(!file) return;
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        const p = JSON.parse(String(r.result));
+        if(!p || p.app !== "verse-bible" || !p.data || typeof p.data !== "object") return;
+        Object.keys(p.data).forEach(k => { try { localStorage.setItem(k, p.data[k]); } catch(_){ } });
+        location.reload();
+      } catch(_){ }
+    };
+    r.readAsText(file);
+  }
+  function init(){
+    const ex = $("txExportBtn"), im = $("txImportBtn"), fi = $("txFile");
+    if(ex) ex.addEventListener("click", doExport);
+    if(im && fi){ im.addEventListener("click", () => fi.click()); fi.addEventListener("change", () => { doImport(fi.files && fi.files[0]); fi.value = ""; }); }
   }
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
 })();
